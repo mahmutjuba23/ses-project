@@ -1,8 +1,10 @@
+require("dotenv").config();
+
 const express = require("express");
 
 const app = express();
 
-const PORT = 3010;
+const PORT = process.env.PORT;
 
 app.get("/api/health", (req, res) => {
   res.json({
