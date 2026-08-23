@@ -17,21 +17,34 @@ module.exports = (sequelize, DataTypes) => {
         unique: true,
       },
 
-      created_at: {
-        type: DataTypes.DATE,
-        allowNull: false,
-      },
+     created_at: {
+  type: DataTypes.DATE,
+  allowNull: false,
+  defaultValue: DataTypes.NOW,
+},
 
-      updated_at: {
-        type: DataTypes.DATE,
-        allowNull: false,
-      },
+updated_at: {
+  type: DataTypes.DATE,
+  allowNull: false,
+  defaultValue: DataTypes.NOW,
+},
     },
     {
       tableName: "roles",
       timestamps: false,
     }
   );
+
+  Role.associate = (models) => {
+    Role.belongsToMany(models.User, {
+  through: {
+    model: "user_roles",
+    timestamps: false,
+  },
+  foreignKey: "role_id",
+  otherKey: "user_id",
+});
+  };
 
   return Role;
 };
