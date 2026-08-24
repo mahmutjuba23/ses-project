@@ -22,6 +22,11 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
       },
 
+      password_hash: {
+        type: DataTypes.STRING(255),
+        allowNull: true,
+      },
+
       is_active: {
         type: DataTypes.BOOLEAN,
         allowNull: false,
