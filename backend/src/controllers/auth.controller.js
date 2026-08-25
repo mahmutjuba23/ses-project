@@ -1,4 +1,4 @@
-const { User } = require("../../models");
+const { User, Role } = require("../../models");
 
 const {
   hashPassword,
@@ -122,7 +122,10 @@ async function loginSubmit(req, res) {
   try {
     const { email, password } = req.body;
 
-    const user = await User.findOne({ where: { email } });
+    const user = await User.findOne({ 
+      where: { email },
+      include: [{ model: Role, through: { attributes: [] } }]
+    });
 
     if (!user) {
       return res.render("auth/login", {
@@ -148,7 +151,14 @@ async function loginSubmit(req, res) {
 
     // Store token in a cookie for view-based auth
     res.cookie("token", token, { httpOnly: true, maxAge: 24 * 60 * 60 * 1000 });
-    return res.redirect("/auth/me");
+    
+    // Redirect based on role
+    const isAdminOrReviewer = user.Roles && user.Roles.some(r => r.name === 'admin' || r.name === 'reviewer');
+    if (isAdminOrReviewer) {
+      return res.redirect("/dashboard");
+    } else {
+      return res.redirect("/scholarships");
+    }
   } catch (error) {
     console.error("Login view error:", error);
     return res.render("auth/login", {
