@@ -6,7 +6,7 @@ block content
     p Create and manage academic periods.
 
   if error
-    .alert.alert-error Action failed (perhaps overlapping dates). Please try again.
+    .alert.alert-error Action failed (perhaps overlapping dates or invalid JSON). Please try again.
 
   .card(style="margin-bottom: 20px; padding: 20px; border: 1px solid #ccc; border-radius: 4px;")
     h3 Create New Period
@@ -26,6 +26,10 @@ block content
       .form-group
         label Point Goal
         input.form-control(type="number" name="point_goal" required)
+      .form-group
+        label Scope Rule (optional JSON)
+        textarea.form-control(name="scope_rule_json" rows="2" placeholder='e.g. {"min_scholarship_percentage": 50, "faculty": "FCS"}')
+        small.form-text Keys: min_scholarship_percentage, study_level, faculty. Leave empty for all active students.
       button.btn.btn-primary(type="submit") Create Period
 
   table.table
@@ -35,6 +39,7 @@ block content
         th Name
         th Dates
         th Goal
+        th Scope Rule
         th Status
         th Actions
     tbody
@@ -44,11 +49,12 @@ block content
           td= p.name
           td #{p.start_date} to #{p.end_date}
           td= p.point_goal
+          td= p.scope_rule_json ? JSON.stringify(p.scope_rule_json) : 'All students'
           td= p.status
           td
             if p.status === 'draft'
               form(action="/admin/periods/activate" method="POST" style="display:inline;")
                 input(type="hidden" name="period_id" value=p.id)
                 button.btn.btn-sm.btn-success(type="submit") Activate
-            else if p.status === 'active'
-              button.btn.btn-sm.btn-warning Close (TODO)
+            if p.status === 'active'
+              a.btn.btn-sm.btn-primary(href=`/admin/periods/${p.id}/enrolments`) View Enrolments

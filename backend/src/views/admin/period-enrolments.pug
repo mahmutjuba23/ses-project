@@ -1,0 +1,36 @@
+extends ../layout
+
+block content
+  .admin-header
+    h1 Enrolments — #{period.name}
+    p Period: #{period.code} | Goal: #{period.point_goal} pts | Status: #{period.status}
+    a(href="/admin/periods" style="display:inline-block; margin-bottom:15px;") &larr; Back to Periods
+
+  table.table
+    thead
+      tr
+        th Student #
+        th Name
+        th Email
+        th Goal
+        th Override Reason
+        th Collected
+        th Status
+        th Actions
+    tbody
+      each e in enrolments
+        tr
+          td= e.Student ? e.Student.student_number : '—'
+          td= e.Student ? (e.Student.first_name + ' ' + e.Student.last_name) : '—'
+          td= e.Student ? e.Student.email : '—'
+          td= e.goal_points
+          td= e.goal_override_reason || '—'
+          td= e.collected_points || 0
+          td= e.result_status
+          td
+            if period.status !== 'closed'
+              form(action="/admin/periods/override-goal" method="POST" style="display:flex; gap:5px; align-items:center;")
+                input(type="hidden" name="enrolment_id" value=e.id)
+                input.form-control(type="number" name="new_goal" placeholder="New goal" style="width:80px;" required)
+                input.form-control(type="text" name="reason" placeholder="Reason" style="width:150px;" required)
+                button.btn.btn-sm.btn-primary(type="submit") Override

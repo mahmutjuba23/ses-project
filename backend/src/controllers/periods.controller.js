@@ -19,7 +19,7 @@ async function listPeriods(req, res) {
 
 async function createPeriod(req, res) {
   try {
-    const { code, name, start_date, end_date, point_goal } = req.body;
+    const { code, name, start_date, end_date, point_goal, scope_rule_json } = req.body;
     
     // Check for overlaps
     const overlapping = await Period.findOne({
@@ -39,13 +39,24 @@ async function createPeriod(req, res) {
       return res.redirect("/admin/periods?error=overlap");
     }
 
+    // Parse scope rule if provided
+    let parsedScope = null;
+    if (scope_rule_json && scope_rule_json.trim()) {
+      try {
+        parsedScope = JSON.parse(scope_rule_json);
+      } catch (e) {
+        return res.redirect("/admin/periods?error=invalid_scope_json");
+      }
+    }
+
     await Period.create({
       code,
       name,
       start_date,
       end_date,
       point_goal,
-      status: "draft"
+      status: "draft",
+      scope_rule_json: parsedScope
     });
 
     await logAction({
@@ -63,6 +74,26 @@ async function createPeriod(req, res) {
   }
 }
 
+/**
+ * Build a Sequelize where clause from a scope rule JSON.
+ * Supported keys: min_scholarship_percentage, study_level, faculty
+ */
+function buildScopeWhere(scopeRule) {
+  const where = { is_active: true };
+  if (!scopeRule) return where;
+
+  if (scopeRule.min_scholarship_percentage) {
+    where.scholarship_percentage = { [Op.gte]: parseInt(scopeRule.min_scholarship_percentage) };
+  }
+  if (scopeRule.study_level) {
+    where.study_level = scopeRule.study_level;
+  }
+  if (scopeRule.faculty) {
+    where.faculty = scopeRule.faculty;
+  }
+  return where;
+}
+
 async function activatePeriod(req, res) {
   try {
     const { period_id } = req.body;
@@ -76,8 +107,9 @@ async function activatePeriod(req, res) {
     period.status = 'active';
     await period.save();
 
-    // Find all active students
-    const activeStudents = await Student.findAll({ where: { is_active: true } });
+    // Apply scope rule to filter students
+    const studentWhere = buildScopeWhere(period.scope_rule_json);
+    const activeStudents = await Student.findAll({ where: studentWhere });
     
     // Bulk create enrolments
     const enrolments = activeStudents.map(student => ({
@@ -96,7 +128,8 @@ async function activatePeriod(req, res) {
       entity: "Period",
       entity_id: period.id,
       action: "ACTIVATE_PERIOD",
-      reason: `Admin activated period and enrolled ${enrolments.length} students`
+      reason: `Activated period and enrolled ${enrolments.length} students` +
+        (period.scope_rule_json ? ` (scope: ${JSON.stringify(period.scope_rule_json)})` : ' (all active students)')
     });
 
     res.redirect("/admin/periods");
@@ -106,8 +139,70 @@ async function activatePeriod(req, res) {
   }
 }
 
+async function showEnrolments(req, res) {
+  try {
+    const period = await Period.findByPk(req.params.id);
+    if (!period) {
+      return res.redirect("/admin/periods?error=not_found");
+    }
+
+    const enrolments = await PeriodEnrolment.findAll({
+      where: { period_id: period.id },
+      include: [{ model: Student }]
+    });
+
+    res.render("admin/period-enrolments", {
+      title: `Enrolments — ${period.name}`,
+      currentPage: "admin-periods",
+      period,
+      enrolments,
+      user: req.user
+    });
+  } catch (error) {
+    console.error("Show Enrolments error:", error);
+    res.status(500).send("Internal Server Error");
+  }
+}
+
+async function overrideGoal(req, res) {
+  try {
+    const { enrolment_id, new_goal, reason } = req.body;
+
+    if (!reason || !reason.trim()) {
+      return res.redirect("back");
+    }
+
+    const enrolment = await PeriodEnrolment.findByPk(enrolment_id);
+    if (!enrolment) {
+      return res.redirect("back");
+    }
+
+    const oldGoal = enrolment.goal_points;
+    enrolment.goal_points = parseInt(new_goal);
+    enrolment.goal_override_reason = reason;
+    await enrolment.save();
+
+    await logAction({
+      actor_user_id: req.user ? req.user.id : 1,
+      entity: "PeriodEnrolment",
+      entity_id: enrolment.id,
+      action: "OVERRIDE_GOAL",
+      old_value: { goal_points: oldGoal },
+      new_value: { goal_points: parseInt(new_goal) },
+      reason
+    });
+
+    res.redirect(`/admin/periods/${enrolment.period_id}/enrolments`);
+  } catch (error) {
+    console.error("Override Goal error:", error);
+    res.redirect("back");
+  }
+}
+
 module.exports = {
   listPeriods,
   createPeriod,
-  activatePeriod
+  activatePeriod,
+  showEnrolments,
+  overrideGoal
 };
