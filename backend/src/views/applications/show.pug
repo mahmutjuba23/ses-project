@@ -51,6 +51,11 @@ block content
         else
           p(style="color:var(--text-muted);") No cover letter provided.
 
+      if application.resume_file
+        .card(style="margin-top: 1.5rem;")
+          h2 Resume / Transcript
+          a.btn.btn-secondary(href=`/uploads/resumes/${application.resume_file}` target="_blank" rel="noopener noreferrer") View Uploaded PDF
+
     if isAdmin || isReviewer
       .card(style="margin-top: 1.5rem;")
         h2 Reviewer Tools

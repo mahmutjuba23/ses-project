@@ -80,6 +80,7 @@ async function createApplication(req, res) {
       user_id: req.user.id,
       scholarship_id,
       cover_letter,
+      resume_file: req.file ? req.file.filename : null,
       status: "pending",
     });
 

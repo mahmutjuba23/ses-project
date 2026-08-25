@@ -9,6 +9,7 @@ const {
 } = require("../controllers/applicationsView.controller");
 
 const { authenticateView } = require("../middleware/viewAuth.middleware");
+const { upload } = require("../middleware/upload.middleware");
 
 const router = express.Router();
 
@@ -17,7 +18,7 @@ router.use(authenticateView);
 
 // Applicant apply routes
 router.get("/new", applyPage);
-router.post("/", applySubmit);
+router.post("/", upload.single("resume"), applySubmit);
 
 // View applications (lists depend on user role)
 router.get("/", applicationsPage);

@@ -32,6 +32,11 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: true,
       },
 
+      resume_file: {
+        type: DataTypes.STRING,
+        allowNull: true,
+      },
+
       reviewer_notes: {
         type: DataTypes.TEXT,
         allowNull: true,

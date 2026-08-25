@@ -9,11 +9,12 @@ const {
 
 const { authenticate } = require("../middleware/auth.middleware");
 const { authorize } = require("../middleware/role.middleware");
+const { upload } = require("../middleware/upload.middleware");
 
 const router = express.Router();
 
 // Applicant routes
-router.post("/", authenticate, createApplication);
+router.post("/", authenticate, upload.single("resume"), createApplication);
 
 // Admin/Reviewer routes
 // Note: In a real app, you might want to restrict getApplications to only see the current user's applications if they are an applicant, and all if admin/reviewer. For now, we restrict to admin.
