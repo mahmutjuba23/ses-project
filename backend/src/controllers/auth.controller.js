@@ -169,6 +169,33 @@ async function loginSubmit(req, res) {
   }
 }
 
+async function mockGoogleLogin(req, res) {
+  try {
+    // For testing, we log in as the default admin
+    const email = "admin@ses.com";
+    const user = await User.findOne({ 
+      where: { email },
+      include: [{ model: Role, through: { attributes: [] } }]
+    });
+
+    if (!user) {
+      return res.render("auth/login", {
+        title: "Sign In — SES",
+        currentPage: "login",
+        error: "Mock user not found in DB. Run seeds.",
+      });
+    }
+
+    const token = generateToken(user);
+    res.cookie("token", token, { httpOnly: true, maxAge: 24 * 60 * 60 * 1000 });
+    
+    return res.redirect("/dashboard");
+  } catch (error) {
+    console.error("Mock Google Login error:", error);
+    return res.redirect("/auth/login");
+  }
+}
+
 async function registerSubmit(req, res) {
   try {
     const { email, full_name, password } = req.body;
@@ -218,4 +245,5 @@ module.exports = {
   loginSubmit,
   registerSubmit,
   profilePage,
+  mockGoogleLogin,
 };
