@@ -1,4 +1,4 @@
-const { User, Role } = require("../../models");
+const { User, Role, Student } = require("../../models");
 
 const {
   hashPassword,
@@ -184,6 +184,14 @@ async function mockGoogleLogin(req, res) {
         currentPage: "login",
         error: "Mock user not found in DB. Run seeds.",
       });
+    }
+
+    // Link to Student record if it exists and isn't linked yet
+    const student = await Student.findOne({ where: { email: user.email } });
+    if (student && !student.user_id) {
+      student.user_id = user.id;
+      await student.save();
+      console.log(`Linked User ${user.id} to Student ${student.id}`);
     }
 
     const token = generateToken(user);
