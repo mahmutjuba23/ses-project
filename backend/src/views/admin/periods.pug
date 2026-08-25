@@ -1,0 +1,54 @@
+extends ../layout
+
+block content
+  .admin-header
+    h1 Manage Periods
+    p Create and manage academic periods.
+
+  if error
+    .alert.alert-error Action failed (perhaps overlapping dates). Please try again.
+
+  .card(style="margin-bottom: 20px; padding: 20px; border: 1px solid #ccc; border-radius: 4px;")
+    h3 Create New Period
+    form(action="/admin/periods/create" method="POST")
+      .form-group
+        label Code (e.g. FALL2026)
+        input.form-control(type="text" name="code" required)
+      .form-group
+        label Name (e.g. Fall Semester 2026)
+        input.form-control(type="text" name="name" required)
+      .form-group
+        label Start Date
+        input.form-control(type="date" name="start_date" required)
+      .form-group
+        label End Date
+        input.form-control(type="date" name="end_date" required)
+      .form-group
+        label Point Goal
+        input.form-control(type="number" name="point_goal" required)
+      button.btn.btn-primary(type="submit") Create Period
+
+  table.table
+    thead
+      tr
+        th Code
+        th Name
+        th Dates
+        th Goal
+        th Status
+        th Actions
+    tbody
+      each p in periods
+        tr
+          td= p.code
+          td= p.name
+          td #{p.start_date} to #{p.end_date}
+          td= p.point_goal
+          td= p.status
+          td
+            if p.status === 'draft'
+              form(action="/admin/periods/activate" method="POST" style="display:inline;")
+                input(type="hidden" name="period_id" value=p.id)
+                button.btn.btn-sm.btn-success(type="submit") Activate
+            else if p.status === 'active'
+              button.btn.btn-sm.btn-warning Close (TODO)
