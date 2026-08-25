@@ -524,6 +524,8 @@ html(lang="en")
         span.logo-icon SES
         span Scholarship Engagement System
       ul.navbar-nav
+        li
+          a(href="/scholarships" class=(currentPage === 'scholarships' ? 'active' : '')) Scholarships
         if user
           li
             a(href="/users" class=(currentPage === 'users' ? 'active' : '')) Users

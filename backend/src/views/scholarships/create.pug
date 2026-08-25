@@ -1,0 +1,63 @@
+extends ../layout
+
+block content
+  .main-content
+    .page-header
+      div
+        h1 New Scholarship
+        p Create a new scholarship listing
+      a.btn.btn-secondary(href="/scholarships") ← Back
+
+    .card(style="max-width:620px;")
+      if error
+        .alert.alert-error= error
+
+      form(action="/scholarships" method="POST")
+        .form-group
+          label(for="title") Title
+          input#title.form-control(
+            type="text"
+            name="title"
+            placeholder="e.g. STEM Excellence Scholarship"
+            required
+            value=title || ''
+          )
+
+        .form-group
+          label(for="description") Description
+          textarea#description.form-control(
+            name="description"
+            rows="4"
+            placeholder="Describe the scholarship, eligibility requirements, etc."
+            style="resize:vertical;"
+          )= description || ''
+
+        .form-group
+          label(for="amount") Amount ($)
+          input#amount.form-control(
+            type="number"
+            name="amount"
+            placeholder="e.g. 5000"
+            required
+            min="1"
+            step="0.01"
+            value=amount || ''
+          )
+
+        .form-group
+          label(for="deadline") Application Deadline
+          input#deadline.form-control(
+            type="date"
+            name="deadline"
+            required
+            value=deadline || ''
+          )
+
+        .form-group
+          label(for="status") Status
+          select#status.form-control(name="status")
+            option(value="draft" selected=((!status || status==='draft') ? true : false)) Draft
+            option(value="open" selected=(status==='open' ? true : false)) Open
+            option(value="closed" selected=(status==='closed' ? true : false)) Closed
+
+        button.btn.btn-primary(type="submit") Create Scholarship

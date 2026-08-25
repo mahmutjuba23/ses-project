@@ -1,0 +1,18 @@
+extends ../layout
+
+block content
+  .main-content
+    .page-header
+      div
+        h1 Delete Scholarship
+        p Confirm deletion
+
+    .card(style="max-width:480px;")
+      .confirm-dialog
+        p Are you sure you want to delete <strong>#{scholarship.title}</strong>? This action cannot be undone.
+
+        .btn-group
+          a.btn.btn-secondary(href=`/scholarships/${scholarship.id}`) Cancel
+          form(action=`/scholarships/${scholarship.id}/delete` method="POST" style="display:inline;")
+            input(type="hidden" name="_method" value="DELETE")
+            button.btn.btn-danger(type="submit") Delete Scholarship

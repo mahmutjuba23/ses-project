@@ -1,0 +1,55 @@
+extends ../layout
+
+block content
+  .main-content
+    .page-header
+      div
+        h1= scholarship.title
+        p Scholarship details
+      .action-group
+        a.btn.btn-secondary(href="/scholarships") ← Back
+        if user
+          a.btn.btn-primary(href=`/scholarships/${scholarship.id}/edit`) Edit
+
+    .card
+      .detail-row
+        span.detail-label Status
+        span.detail-value
+          if scholarship.status === 'open'
+            span.badge.badge-success
+              span.badge-dot
+              | Open
+          else if scholarship.status === 'closed'
+            span.badge.badge-danger
+              span.badge-dot
+              | Closed
+          else
+            span.badge(style="background:rgba(245,158,11,0.15);color:#fbbf24;")
+              span.badge-dot
+              | Draft
+
+      .detail-row
+        span.detail-label Amount
+        span.detail-value(style="font-size:1.25rem;font-weight:700;color:var(--accent-hover);") $#{parseFloat(scholarship.amount).toLocaleString('en-US', { minimumFractionDigits: 2 })}
+
+      .detail-row
+        span.detail-label Deadline
+        span.detail-value= new Date(scholarship.deadline).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })
+
+      if scholarship.creator
+        .detail-row
+          span.detail-label Created By
+          span.detail-value= scholarship.creator.full_name
+
+      .detail-row
+        span.detail-label Posted
+        span.detail-value= new Date(scholarship.created_at).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
+
+      if scholarship.description
+        div(style="padding:1.5rem 0;border-top:1px solid rgba(45,49,72,0.5);margin-top:0.5rem;")
+          p.detail-label(style="margin-bottom:0.75rem;") Description
+          p(style="color:var(--text-secondary);line-height:1.75;white-space:pre-wrap;")= scholarship.description
+
+      if scholarship.status === 'open'
+        div(style="margin-top:1.5rem;")
+          a.btn.btn-primary(href=`/applications/new?scholarship_id=${scholarship.id}`) Apply Now

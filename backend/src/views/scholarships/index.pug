@@ -1,0 +1,52 @@
+extends ../layout
+
+block content
+  .main-content
+    .page-header
+      div
+        h1 Scholarships
+        p Browse available scholarship opportunities
+      if user
+        a.btn.btn-primary(href="/scholarships/create") + New Scholarship
+
+    .table-wrapper
+      table
+        thead
+          tr
+            th Title
+            th Amount
+            th Deadline
+            th Status
+            th Created By
+            th Actions
+        tbody
+          if scholarships && scholarships.length
+            each s in scholarships
+              tr
+                td
+                  strong= s.title
+                td $#{parseFloat(s.amount).toLocaleString('en-US', { minimumFractionDigits: 2 })}
+                td= new Date(s.deadline).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })
+                td
+                  if s.status === 'open'
+                    span.badge.badge-success
+                      span.badge-dot
+                      | Open
+                  else if s.status === 'closed'
+                    span.badge.badge-danger
+                      span.badge-dot
+                      | Closed
+                  else
+                    span.badge(style="background:rgba(245,158,11,0.15);color:#fbbf24;")
+                      span.badge-dot
+                      | Draft
+                td= s.creator ? s.creator.full_name : '—'
+                td
+                  .action-group
+                    a.btn.btn-secondary.btn-sm(href=`/scholarships/${s.id}`) View
+                    if user
+                      a.btn.btn-secondary.btn-sm(href=`/scholarships/${s.id}/edit`) Edit
+                      a.btn.btn-danger.btn-sm(href=`/scholarships/${s.id}/delete`) Delete
+          else
+            tr
+              td(colspan="6" style="text-align:center;padding:3rem;color:var(--text-muted);") No scholarships found
