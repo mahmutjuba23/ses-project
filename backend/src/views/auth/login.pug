@@ -1,0 +1,38 @@
+extends ../layout
+
+block content
+  .auth-wrapper
+    .auth-card
+      h1 Welcome back
+      p.subtitle Sign in to your SES account
+
+      if error
+        .alert.alert-error= error
+
+      form(action="/auth/login" method="POST")
+        .form-group
+          label(for="email") Email Address
+          input#email.form-control(
+            type="email"
+            name="email"
+            placeholder="you@example.com"
+            required
+            autocomplete="email"
+            value=email || ''
+          )
+
+        .form-group
+          label(for="password") Password
+          input#password.form-control(
+            type="password"
+            name="password"
+            placeholder="Enter your password"
+            required
+            autocomplete="current-password"
+          )
+
+        button.btn.btn-primary.btn-block(type="submit") Sign In
+
+      .auth-footer
+        | Don't have an account?&nbsp;
+        a(href="/auth/register") Create one

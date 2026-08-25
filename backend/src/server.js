@@ -1,15 +1,38 @@
 require("dotenv").config();
 
+const path = require("path");
 const express = require("express");
+const cookieParser = require("cookie-parser");
+
 const authRoutes = require("./routes/auth.routes");
 const usersRoutes = require("./routes/users.routes");
+const authViewRoutes = require("./routes/authView.routes");
+const usersViewRoutes = require("./routes/usersView.routes");
 const sequelize = require("./config/database");
 
 const app = express();
-app.use(express.json());
 
+// ── View engine setup ──
+app.set("view engine", "pug");
+app.set("views", path.join(__dirname, "views"));
+
+// ── Middleware ──
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
+
+// ── API routes (JSON) ──
 app.use("/api/auth", authRoutes);
 app.use("/api/users", usersRoutes);
+
+// ── View routes (Pug) ──
+app.use("/auth", authViewRoutes);
+app.use("/users", usersViewRoutes);
+
+// ── Root redirect ──
+app.get("/", (req, res) => {
+  res.redirect("/auth/login");
+});
 
 const PORT = process.env.PORT;
 

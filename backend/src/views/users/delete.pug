@@ -1,0 +1,21 @@
+extends ../layout
+
+block content
+  .main-content
+    .page-header
+      div
+        h1 Delete User
+        p Confirm user deletion
+
+    .card(style="max-width: 480px;")
+      .confirm-dialog
+        .profile-avatar(style="margin: 0 auto 1.5rem; width: 64px; height: 64px; font-size: 1.5rem;")= userData.full_name ? userData.full_name.charAt(0).toUpperCase() : '?'
+
+        h2(style="margin-bottom: 0.5rem;")= userData.full_name
+        p Are you sure you want to delete this user? This action cannot be undone.
+
+        .btn-group
+          a.btn.btn-secondary(href="/users") Cancel
+          form(action=`/users/${userData.id}/delete` method="POST" style="display: inline;")
+            input(type="hidden" name="_method" value="DELETE")
+            button.btn.btn-danger(type="submit") Delete User

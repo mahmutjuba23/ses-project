@@ -1,0 +1,46 @@
+extends ../layout
+
+block content
+  .main-content
+    .page-header
+      div
+        h1 Create User
+        p Add a new user to the system
+      a.btn.btn-secondary(href="/users") ← Back to Users
+
+    .card(style="max-width: 560px;")
+      if error
+        .alert.alert-error= error
+
+      form(action="/users" method="POST")
+        .form-group
+          label(for="full_name") Full Name
+          input#full_name.form-control(
+            type="text"
+            name="full_name"
+            placeholder="John Doe"
+            required
+            value=full_name || ''
+          )
+
+        .form-group
+          label(for="email") Email Address
+          input#email.form-control(
+            type="email"
+            name="email"
+            placeholder="user@example.com"
+            required
+            value=email || ''
+          )
+
+        .form-group
+          label(for="password") Password
+          input#password.form-control(
+            type="password"
+            name="password"
+            placeholder="Set a password"
+            required
+            minlength="6"
+          )
+
+        button.btn.btn-primary(type="submit") Create User

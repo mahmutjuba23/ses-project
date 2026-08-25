@@ -1,0 +1,45 @@
+extends ../layout
+
+block content
+  .main-content
+    .page-header
+      div
+        h1 Users
+        p Manage all system users
+      a.btn.btn-primary(href="/users/create") + New User
+
+    .table-wrapper
+      table
+        thead
+          tr
+            th ID
+            th Name
+            th Email
+            th Status
+            th Created
+            th Actions
+        tbody
+          if users && users.length
+            each u in users
+              tr
+                td= u.id
+                td= u.full_name
+                td= u.email
+                td
+                  if u.is_active
+                    span.badge.badge-success
+                      span.badge-dot
+                      | Active
+                  else
+                    span.badge.badge-danger
+                      span.badge-dot
+                      | Inactive
+                td= u.created_at ? new Date(u.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '—'
+                td
+                  .action-group
+                    a.btn.btn-secondary.btn-sm(href=`/users/${u.id}`) View
+                    a.btn.btn-secondary.btn-sm(href=`/users/${u.id}/edit`) Edit
+                    a.btn.btn-danger.btn-sm(href=`/users/${u.id}/delete`) Delete
+          else
+            tr
+              td(colspan="6" style="text-align: center; padding: 3rem; color: var(--text-muted);") No users found

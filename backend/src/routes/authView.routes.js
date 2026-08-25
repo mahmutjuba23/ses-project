@@ -1,0 +1,24 @@
+const express = require("express");
+
+const {
+  loginPage,
+  registerPage,
+  loginSubmit,
+  registerSubmit,
+  profilePage,
+} = require("../controllers/auth.controller");
+
+const { authenticateView } = require("../middleware/viewAuth.middleware");
+
+const router = express.Router();
+
+// GET pages
+router.get("/login", loginPage);
+router.get("/register", registerPage);
+router.get("/me", authenticateView, profilePage);
+
+// POST form submissions
+router.post("/login", loginSubmit);
+router.post("/register", registerSubmit);
+
+module.exports = router;

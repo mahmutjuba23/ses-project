@@ -1,0 +1,50 @@
+extends ../layout
+
+block content
+  .main-content
+    .page-header
+      div
+        h1 Edit User
+        p Updating user ##{userData.id}
+      a.btn.btn-secondary(href="/users") ← Back to Users
+
+    .card(style="max-width: 560px;")
+      if error
+        .alert.alert-error= error
+
+      form(action=`/users/${userData.id}` method="POST")
+        input(type="hidden" name="_method" value="PATCH")
+
+        .form-group
+          label(for="full_name") Full Name
+          input#full_name.form-control(
+            type="text"
+            name="full_name"
+            placeholder="John Doe"
+            value=userData.full_name || ''
+          )
+
+        .form-group
+          label(for="email") Email Address
+          input#email.form-control(
+            type="email"
+            name="email"
+            placeholder="user@example.com"
+            value=userData.email || ''
+          )
+
+        .form-group
+          label(for="password") New Password
+          input#password.form-control(
+            type="password"
+            name="password"
+            placeholder="Leave blank to keep current"
+          )
+
+        .form-group
+          label(for="is_active") Status
+          select#is_active.form-control(name="is_active")
+            option(value="true" selected=(userData.is_active ? true : false)) Active
+            option(value="false" selected=(!userData.is_active ? true : false)) Inactive
+
+        button.btn.btn-primary(type="submit") Save Changes

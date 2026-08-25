@@ -1,0 +1,50 @@
+extends ../layout
+
+block content
+  .auth-wrapper
+    .auth-card
+      h1 Create account
+      p.subtitle Join the Scholarship Engagement System
+
+      if error
+        .alert.alert-error= error
+
+      form(action="/auth/register" method="POST")
+        .form-group
+          label(for="full_name") Full Name
+          input#full_name.form-control(
+            type="text"
+            name="full_name"
+            placeholder="John Doe"
+            required
+            autocomplete="name"
+            value=full_name || ''
+          )
+
+        .form-group
+          label(for="email") Email Address
+          input#email.form-control(
+            type="email"
+            name="email"
+            placeholder="you@example.com"
+            required
+            autocomplete="email"
+            value=email || ''
+          )
+
+        .form-group
+          label(for="password") Password
+          input#password.form-control(
+            type="password"
+            name="password"
+            placeholder="Create a strong password"
+            required
+            autocomplete="new-password"
+            minlength="6"
+          )
+
+        button.btn.btn-primary.btn-block(type="submit") Create Account
+
+      .auth-footer
+        | Already have an account?&nbsp;
+        a(href="/auth/login") Sign in
