@@ -1,0 +1,47 @@
+extends ../layout
+
+block content
+  .main-content
+    .page-header
+      div
+        h1 My Applications
+        p Track the status of your scholarship applications
+
+    .table-wrapper
+      table
+        thead
+          tr
+            th Scholarship
+            th Applied On
+            th Status
+            th Actions
+        tbody
+          if applications && applications.length
+            each app in applications
+              tr
+                td
+                  strong= app.scholarship ? app.scholarship.title : '—'
+                td= new Date(app.created_at).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })
+                td
+                  if app.status === 'pending'
+                    span.badge(style="background:rgba(245,158,11,0.15);color:#fbbf24;")
+                      span.badge-dot
+                      | Pending
+                  else if app.status === 'under_review'
+                    span.badge(style="background:rgba(59,130,246,0.15);color:#60a5fa;")
+                      span.badge-dot
+                      | Under Review
+                  else if app.status === 'approved'
+                    span.badge.badge-success
+                      span.badge-dot
+                      | Approved
+                  else if app.status === 'rejected'
+                    span.badge.badge-danger
+                      span.badge-dot
+                      | Rejected
+                td
+                  .action-group
+                    a.btn.btn-secondary.btn-sm(href=`/applications/${app.id}`) View Details
+          else
+            tr
+              td(colspan="4" style="text-align:center;padding:3rem;color:var(--text-muted);") You have not applied for any scholarships yet.

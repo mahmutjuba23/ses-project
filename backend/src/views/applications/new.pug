@@ -1,0 +1,28 @@
+extends ../layout
+
+block content
+  .main-content
+    .page-header
+      div
+        h1 Apply for Scholarship
+        p= scholarship.title
+      a.btn.btn-secondary(href=`/scholarships/${scholarship.id}`) ← Back
+
+    .card(style="max-width:720px;")
+      if error
+        .alert.alert-error= error
+
+      form(action="/applications" method="POST")
+        input(type="hidden" name="scholarship_id" value=scholarship.id)
+
+        .form-group
+          label(for="cover_letter") Cover Letter / Statement of Purpose
+          textarea#cover_letter.form-control(
+            name="cover_letter"
+            rows="10"
+            placeholder="Introduce yourself and explain why you are a strong candidate for this scholarship..."
+            required
+            style="resize:vertical;"
+          )= cover_letter || ''
+
+        button.btn.btn-primary(type="submit") Submit Application

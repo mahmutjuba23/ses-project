@@ -11,6 +11,7 @@ const applicationsRoutes = require("./routes/applications.routes");
 const authViewRoutes = require("./routes/authView.routes");
 const usersViewRoutes = require("./routes/usersView.routes");
 const scholarshipsViewRoutes = require("./routes/scholarshipsView.routes");
+const applicationsViewRoutes = require("./routes/applicationsView.routes");
 const sequelize = require("./config/database");
 
 const app = express();
@@ -34,6 +35,7 @@ app.use("/api/applications", applicationsRoutes);
 app.use("/auth", authViewRoutes);
 app.use("/users", usersViewRoutes);
 app.use("/scholarships", scholarshipsViewRoutes);
+app.use("/applications", applicationsViewRoutes);
 
 // ── Root redirect ──
 app.get("/", (req, res) => {

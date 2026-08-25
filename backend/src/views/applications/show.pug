@@ -1,0 +1,75 @@
+extends ../layout
+
+block content
+  .main-content
+    .page-header
+      div
+        h1 Application Details
+        p Application ID: ##{application.id}
+      .action-group
+        a.btn.btn-secondary(href="/applications") ← Back to Applications
+
+    .profile-grid
+      .card
+        h2 Overview
+        .detail-row
+          span.detail-label Applicant
+          span.detail-value= application.applicant ? application.applicant.full_name : '—'
+
+        .detail-row
+          span.detail-label Scholarship
+          span.detail-value= application.scholarship ? application.scholarship.title : '—'
+
+        .detail-row
+          span.detail-label Status
+          span.detail-value
+            if application.status === 'pending'
+              span.badge(style="background:rgba(245,158,11,0.15);color:#fbbf24;")
+                span.badge-dot
+                | Pending
+            else if application.status === 'under_review'
+              span.badge(style="background:rgba(59,130,246,0.15);color:#60a5fa;")
+                span.badge-dot
+                | Under Review
+            else if application.status === 'approved'
+              span.badge.badge-success
+                span.badge-dot
+                | Approved
+            else if application.status === 'rejected'
+              span.badge.badge-danger
+                span.badge-dot
+                | Rejected
+
+        .detail-row
+          span.detail-label Submitted On
+          span.detail-value= new Date(application.created_at).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
+
+      .card
+        h2 Cover Letter
+        if application.cover_letter
+          p(style="color:var(--text-secondary);line-height:1.75;white-space:pre-wrap;")= application.cover_letter
+        else
+          p(style="color:var(--text-muted);") No cover letter provided.
+
+    if isAdmin || isReviewer
+      .card(style="margin-top: 1.5rem;")
+        h2 Reviewer Tools
+        form(action=`/applications/${application.id}/review` method="POST")
+          .form-group
+            label(for="status") Update Status
+            select#status.form-control(name="status")
+              option(value="pending" selected=(application.status==='pending' ? true : false)) Pending
+              option(value="under_review" selected=(application.status==='under_review' ? true : false)) Under Review
+              option(value="approved" selected=(application.status==='approved' ? true : false)) Approved
+              option(value="rejected" selected=(application.status==='rejected' ? true : false)) Rejected
+
+          .form-group
+            label(for="reviewer_notes") Internal Notes
+            textarea#reviewer_notes.form-control(
+              name="reviewer_notes"
+              rows="4"
+              placeholder="Private notes (only visible to reviewers and admins)"
+              style="resize:vertical;"
+            )= application.reviewer_notes || ''
+
+          button.btn.btn-primary(type="submit") Save Review
