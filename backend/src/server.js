@@ -6,6 +6,7 @@ const cookieParser = require("cookie-parser");
 
 const authRoutes = require("./routes/auth.routes");
 const usersRoutes = require("./routes/users.routes");
+const scholarshipsRoutes = require("./routes/scholarships.routes");
 const authViewRoutes = require("./routes/authView.routes");
 const usersViewRoutes = require("./routes/usersView.routes");
 const sequelize = require("./config/database");
@@ -24,6 +25,7 @@ app.use(cookieParser());
 // ── API routes (JSON) ──
 app.use("/api/auth", authRoutes);
 app.use("/api/users", usersRoutes);
+app.use("/api/scholarships", scholarshipsRoutes);
 
 // ── View routes (Pug) ──
 app.use("/auth", authViewRoutes);
