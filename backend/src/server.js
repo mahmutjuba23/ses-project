@@ -7,6 +7,7 @@ const cookieParser = require("cookie-parser");
 const authRoutes = require("./routes/auth.routes");
 const usersRoutes = require("./routes/users.routes");
 const scholarshipsRoutes = require("./routes/scholarships.routes");
+const applicationsRoutes = require("./routes/applications.routes");
 const authViewRoutes = require("./routes/authView.routes");
 const usersViewRoutes = require("./routes/usersView.routes");
 const scholarshipsViewRoutes = require("./routes/scholarshipsView.routes");
@@ -27,6 +28,7 @@ app.use(cookieParser());
 app.use("/api/auth", authRoutes);
 app.use("/api/users", usersRoutes);
 app.use("/api/scholarships", scholarshipsRoutes);
+app.use("/api/applications", applicationsRoutes);
 
 // ── View routes (Pug) ──
 app.use("/auth", authViewRoutes);
