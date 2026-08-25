@@ -1,0 +1,41 @@
+extends ../layout
+
+block content
+  .admin-header
+    h1 Manage Users & Roles
+    p Search users and assign roles below.
+
+  if error
+    .alert.alert-error Action failed. Please try again.
+
+  table.table
+    thead
+      tr
+        th ID
+        th Full Name
+        th Email
+        th Current Roles
+        th Manage
+    tbody
+      each u in users
+        tr
+          td= u.id
+          td= u.full_name
+          td= u.email
+          td
+            ul
+              each r in u.Roles
+                li
+                  | #{r.name} 
+                  form(action="/admin/users/remove-role" method="POST" style="display:inline;")
+                    input(type="hidden" name="user_id" value=u.id)
+                    input(type="hidden" name="role_id" value=r.id)
+                    button.btn.btn-sm.btn-danger(type="submit" style="padding: 2px 5px; font-size: 10px; margin-left: 5px;") Remove
+          td
+            form(action="/admin/users/assign-role" method="POST" style="display:flex; gap: 5px;")
+              input(type="hidden" name="user_id" value=u.id)
+              select(name="role_id" required)
+                option(value="") -- Select Role --
+                each role in allRoles
+                  option(value=role.id)= role.name
+              button.btn.btn-sm.btn-primary(type="submit") Assign
