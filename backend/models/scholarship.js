@@ -65,6 +65,11 @@ module.exports = (sequelize, DataTypes) => {
       foreignKey: "created_by",
       as: "creator",
     });
+
+    Scholarship.hasMany(models.Application, {
+      foreignKey: "scholarship_id",
+      as: "applications",
+    });
   };
 
   return Scholarship;

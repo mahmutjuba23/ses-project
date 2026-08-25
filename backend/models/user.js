@@ -61,6 +61,16 @@ User.associate = (models) => {
       foreignKey: "created_by",
       as: "scholarships",
     });
+
+    User.hasMany(models.Application, {
+      foreignKey: "user_id",
+      as: "applications",
+    });
+
+    User.hasMany(models.Application, {
+      foreignKey: "reviewed_by",
+      as: "reviewed_applications",
+    });
   };
 
   return User;
