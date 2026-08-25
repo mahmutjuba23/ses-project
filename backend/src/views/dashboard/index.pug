@@ -1,0 +1,62 @@
+extends ../layout
+
+block content
+  .main-content
+    .page-header
+      div
+        h1 Dashboard
+        p Overview of the Scholarship Engagement System
+
+    .profile-grid(style="margin-bottom: 2rem;")
+      .card(style="text-align: center;")
+        h2(style="color: var(--text-secondary); font-size: 1rem; margin-bottom: 0.5rem;") Total Users
+        p(style="font-size: 2.5rem; font-weight: 700; color: var(--accent-hover); margin: 0;")= stats.totalUsers
+      
+      .card(style="text-align: center;")
+        h2(style="color: var(--text-secondary); font-size: 1rem; margin-bottom: 0.5rem;") Open Scholarships
+        p(style="font-size: 2.5rem; font-weight: 700; color: var(--success); margin: 0;")= stats.openScholarships
+
+      .card(style="text-align: center;")
+        h2(style="color: var(--text-secondary); font-size: 1rem; margin-bottom: 0.5rem;") Pending Applications
+        p(style="font-size: 2.5rem; font-weight: 700; color: #fbbf24; margin: 0;")= stats.pendingApplications
+
+    .card
+      h2 Recent Applications
+      if recentApplications && recentApplications.length
+        .table-wrapper(style="box-shadow: none; border: none;")
+          table
+            thead
+              tr
+                th Applicant
+                th Scholarship
+                th Status
+                th Date
+                th Actions
+            tbody
+              each app in recentApplications
+                tr
+                  td= app.applicant ? app.applicant.full_name : '—'
+                  td
+                    strong= app.scholarship ? app.scholarship.title : '—'
+                  td
+                    if app.status === 'pending'
+                      span.badge(style="background:rgba(245,158,11,0.15);color:#fbbf24;")
+                        span.badge-dot
+                        | Pending
+                    else if app.status === 'under_review'
+                      span.badge(style="background:rgba(59,130,246,0.15);color:#60a5fa;")
+                        span.badge-dot
+                        | Under Review
+                    else if app.status === 'approved'
+                      span.badge.badge-success
+                        span.badge-dot
+                        | Approved
+                    else if app.status === 'rejected'
+                      span.badge.badge-danger
+                        span.badge-dot
+                        | Rejected
+                  td= new Date(app.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+                  td
+                    a.btn.btn-secondary.btn-sm(href=`/applications/${app.id}`) View
+      else
+        p(style="color: var(--text-muted);") No recent applications.
