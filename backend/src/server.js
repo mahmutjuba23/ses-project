@@ -3,6 +3,19 @@ require("dotenv").config();
 const path = require("path");
 const express = require("express");
 const cookieParser = require("cookie-parser");
+const morgan = require("morgan");
+const winston = require("winston");
+
+const logger = winston.createLogger({
+  level: 'info',
+  format: winston.format.combine(
+    winston.format.timestamp(),
+    winston.format.json()
+  ),
+  transports: [
+    new winston.transports.Console()
+  ]
+});
 
 const authRoutes = require("./routes/auth.routes");
 const usersRoutes = require("./routes/users.routes");
@@ -29,6 +42,7 @@ app.use("/uploads", express.static(path.join(__dirname, "../uploads")));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
+app.use(morgan("combined", { stream: { write: message => logger.info(message.trim()) } }));
 
 // ── API routes (JSON) ──
 app.use("/api/auth", authRoutes);
@@ -60,13 +74,13 @@ app.get("/api/health", (req, res) => {
 async function startServer() {
   try {
     await sequelize.authenticate();
-    console.log("Database connection established.");
+    logger.info("Database connection established.");
 
     app.listen(PORT, () => {
-      console.log(`SES API running on http://localhost:${PORT}`);
+      logger.info(`SES API running on http://localhost:${PORT}`);
     });
   } catch (error) {
-    console.error("Unable to connect to the database:", error.message);
+    logger.error("Unable to connect to the database:", error.message);
   }
 }
 
