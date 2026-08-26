@@ -1,0 +1,75 @@
+extends ../layout
+
+block content
+  .admin-header
+    h1 Manage Events
+    p Create and manage events and their lifecycle.
+
+  // Parse query string for warnings/errors (simple implementation)
+  - const urlParams = new URLSearchParams(typeof window !== 'undefined' ? window.location.search : '')
+  - const warning = urlParams.get('warning')
+  - const error = urlParams.get('error')
+
+  if warning === 'no_period_match'
+    .alert.alert-warning(style="background-color: #fff3cd; color: #856404; padding: 10px; margin-bottom: 20px; border-radius: 4px;") Warning: The event was created, but its dates do not fall within any active Period. No period was automatically assigned.
+  
+  if error
+    .alert.alert-error Action failed. Please try again.
+
+  .card(style="margin-bottom: 20px; padding: 20px; border: 1px solid #ccc; border-radius: 4px;")
+    h3 Create New Event
+    form(action="/admin/events/create" method="POST")
+      .form-group
+        label Title
+        input.form-control(type="text" name="title" required)
+      .form-group
+        label Category
+        select.form-control(name="category_id" required)
+          option(value="") -- Select Category --
+          each cat in categories
+            option(value=cat.id)= cat.name
+      .form-group
+        label Start Date
+        input.form-control(type="date" name="start_date" required)
+      .form-group
+        label End Date
+        input.form-control(type="date" name="end_date" required)
+      .form-group
+        label Description (Rich Text coming soon)
+        textarea.form-control(name="description" rows="3")
+      button.btn.btn-primary(type="submit") Create Draft Event
+
+  table.table
+    thead
+      tr
+        th Title
+        th Category
+        th Dates
+        th Period
+        th Status
+        th Actions
+    tbody
+      each e in events
+        tr
+          td= e.title
+          td= e.EventCategory ? e.EventCategory.name : '—'
+          td #{e.start_date} to #{e.end_date}
+          td= e.Period ? e.Period.code : 'None'
+          td= e.status
+          td
+            if e.status === 'draft'
+              form(action="/admin/events/publish" method="POST" style="display:inline;")
+                input(type="hidden" name="event_id" value=e.id)
+                button.btn.btn-sm.btn-success(type="submit" style="margin-right:5px;") Publish
+              form(action="/admin/events/cancel" method="POST" style="display:inline;")
+                input(type="hidden" name="event_id" value=e.id)
+                input(type="hidden" name="cancel_reason" value="Cancelled while in draft")
+                button.btn.btn-sm.btn-danger(type="submit") Cancel
+            else if e.status === 'published'
+              form(action="/admin/events/finish" method="POST" style="display:inline;")
+                input(type="hidden" name="event_id" value=e.id)
+                button.btn.btn-sm.btn-primary(type="submit" style="margin-right:5px;") Finish
+              form(action="/admin/events/cancel" method="POST" style="display:inline;")
+                input(type="hidden" name="event_id" value=e.id)
+                input(type="text" name="cancel_reason" placeholder="Reason" required style="width:100px; padding:2px; margin-right:5px;")
+                button.btn.btn-sm.btn-danger(type="submit") Cancel
