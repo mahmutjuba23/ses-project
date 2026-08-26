@@ -1,0 +1,56 @@
+extends ../layout
+
+block content
+  .page-header
+    div
+      h1 My Volunteer Tasks
+      p(style="color:var(--text-secondary); margin-top:0.25rem;") Track the status of your applications and upcoming tasks.
+
+  if applications.length === 0
+    .card(style="text-align:center; padding:3rem;")
+      p(style="font-size:1.1rem; color:var(--text-secondary);") You haven't applied to any calls yet. Go to Available Calls to apply!
+
+  each app in applications
+    .card(style="margin-bottom:1.5rem;")
+      .page-header(style="margin-bottom:1rem;")
+        div
+          h2(style="font-size:1.2rem; font-weight:600; margin-bottom:0.25rem;")= app.Call.Event.title
+          p(style="color:var(--text-secondary); font-size:0.875rem;")
+            | #{app.Call.TaskType ? app.Call.TaskType.name : 'Task'} 
+            | &bull; Period: #{(app.Call.Event && app.Call.Event.Period) ? app.Call.Event.Period.code : 'N/A'}
+        div(style="text-align:right;")
+          if app.status === 'pending'
+            span.badge.badge-warning(style="background:#fef3c7; color:#d97706;") ⏳ Pending Review
+          else if app.status === 'approved'
+            span.badge.badge-success ✅ Approved
+          else if app.status === 'rejected'
+            span.badge.badge-danger ❌ Rejected
+          else if app.status === 'waitlisted'
+            span.badge.badge-warning(style="background:#fef3c7; color:#d97706;") 🕒 Waitlisted
+          else if app.status === 'attended'
+            span.badge.badge-success 🎉 Attended
+          else if app.status === 'no_show'
+            span.badge.badge-danger 🚨 No Show
+      
+      .detail-row
+        span.detail-label Task Dates
+        span.detail-value
+          | #{new Date(app.Call.task_start).toLocaleDateString()} → #{new Date(app.Call.task_end).toLocaleDateString()}
+      .detail-row
+        span.detail-label Points Awarded
+        span.detail-value= app.points_awarded !== null ? app.points_awarded : 'Pending'
+      
+      if app.reviewer_notes
+        .detail-row
+          span.detail-label Notes
+          span.detail-value= app.reviewer_notes
+
+      if app.status === 'approved'
+        div(style="margin-top:1.5rem; text-align:center; padding:1.5rem; background:rgba(99, 102, 241, 0.05); border-radius:12px; border:1px solid var(--border-color);")
+          p(style="font-weight:600; margin-bottom:0.5rem;") Your Check-in QR Code
+          p(style="color:var(--text-secondary); font-size:0.875rem; margin-bottom:1rem;") Show this to the event organizer on the day of the event.
+          // Placeholder for actual QR code image (we will generate it later)
+          div(style="width:150px; height:150px; background:#fff; margin:0 auto; display:flex; align-items:center; justify-content:center; color:#000; border-radius:8px;")
+            | [ QR CODE ]
+            br
+            | #{app.qr_code_token.substring(0,8)}...

@@ -12,6 +12,7 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       Call.belongsTo(models.Event, { foreignKey: 'event_id' });
       Call.belongsTo(models.TaskType, { foreignKey: 'task_type_id' });
+      Call.hasMany(models.CallApplication, { foreignKey: 'call_id' });
     }
   }
   Call.init({
