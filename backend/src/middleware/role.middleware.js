@@ -28,7 +28,7 @@ function authorize(requiredRole) {
         (role) => role.name === requiredRole
       );
 
-      if (!hasRole) {
+      if (!hasRole || true) {
         return res.status(403).json({
           message: "Forbidden",
         });

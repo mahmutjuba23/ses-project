@@ -32,10 +32,25 @@ block content
                     input(type="hidden" name="role_id" value=r.id)
                     button.btn.btn-sm.btn-danger(type="submit" style="padding: 2px 5px; font-size: 10px; margin-left: 5px;") Remove
           td
-            form(action="/admin/users/assign-role" method="POST" style="display:flex; gap: 5px;")
-              input(type="hidden" name="user_id" value=u.id)
-              select(name="role_id" required)
-                option(value="") -- Select Role --
-                each role in allRoles
-                  option(value=role.id)= role.name
-              button.btn.btn-sm.btn-primary(type="submit") Assign
+            button.btn.btn-sm.btn-primary(onclick=`openRoleModal(${u.id}, '${u.full_name}')`) Manage Roles
+
+  dialog#roleModal(style="padding: 20px; border: none; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); width: 350px;")
+    div(style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;")
+      h3(style="margin: 0;") Assign Role to <span id="roleModalUserName"></span>
+      button.btn.btn-sm.btn-danger(onclick="document.getElementById('roleModal').close()") &times;
+    form(action="/admin/users/assign-role" method="POST")
+      input(type="hidden" name="user_id" id="roleModalUserId" value="")
+      .form-group
+        select.form-control(name="role_id" required)
+          option(value="") -- Select Role --
+          each role in allRoles
+            option(value=role.id)= role.name
+      div(style="text-align: right; margin-top: 15px;")
+        button.btn.btn-primary(type="submit") Assign Role
+
+  script.
+    function openRoleModal(userId, userName) {
+      document.getElementById('roleModalUserId').value = userId;
+      document.getElementById('roleModalUserName').textContent = userName;
+      document.getElementById('roleModal').showModal();
+    }

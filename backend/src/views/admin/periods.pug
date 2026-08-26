@@ -8,8 +8,12 @@ block content
   if error
     .alert.alert-error Action failed (perhaps overlapping dates or invalid JSON). Please try again.
 
-  .card(style="margin-bottom: 20px; padding: 20px; border: 1px solid #ccc; border-radius: 4px;")
-    h3 Create New Period
+  button.btn.btn-primary(onclick="document.getElementById('createPeriodModal').showModal()" style="margin-bottom: 20px;") + Create New Period
+
+  dialog#createPeriodModal(style="padding: 20px; border: none; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); width: 400px; max-width: 90vw;")
+    div(style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;")
+      h3(style="margin: 0;") Create New Period
+      button.btn.btn-sm.btn-danger(onclick="document.getElementById('createPeriodModal').close()") &times;
     form(action="/admin/periods/create" method="POST")
       .form-group
         label Code (e.g. FALL2026)
@@ -30,7 +34,8 @@ block content
         label Scope Rule (optional JSON)
         textarea.form-control(name="scope_rule_json" rows="2" placeholder='e.g. {"min_scholarship_percentage": 50, "faculty": "FCS"}')
         small.form-text Keys: min_scholarship_percentage, study_level, faculty. Leave empty for all active students.
-      button.btn.btn-primary(type="submit") Create Period
+      div(style="text-align: right; margin-top: 15px;")
+        button.btn.btn-primary(type="submit") Create Period
 
   table.table
     thead
