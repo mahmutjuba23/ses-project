@@ -19,7 +19,9 @@ async function listEvents(req, res) {
       currentPage: "admin-events",
       events,
       categories,
-      user: req.user
+      user: req.user,
+      error: req.query.error,
+      warning: req.query.warning
     });
   } catch (error) {
     console.error("List Events error:", error);

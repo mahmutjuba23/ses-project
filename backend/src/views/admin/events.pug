@@ -5,11 +5,6 @@ block content
     h1 Manage Events
     p Create and manage events and their lifecycle.
 
-  // Parse query string for warnings/errors (simple implementation)
-  - const urlParams = new URLSearchParams(typeof window !== 'undefined' ? window.location.search : '')
-  - const warning = urlParams.get('warning')
-  - const error = urlParams.get('error')
-
   if warning === 'no_period_match'
     .alert.alert-warning(style="background-color: #fff3cd; color: #856404; padding: 10px; margin-bottom: 20px; border-radius: 4px;") Warning: The event was created, but its dates do not fall within any active Period. No period was automatically assigned.
   
