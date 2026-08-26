@@ -6,25 +6,25 @@ module.exports = {
     const now = new Date();
 
     // EventCategories
-    await queryInterface.bulkInsert("eventcategories", [
-      { name: "Academic Conferences", is_active: true, created_at: now, updated_at: now },
-      { name: "Student Clubs", is_active: true, created_at: now, updated_at: now },
-      { name: "Departmental Support", is_active: true, created_at: now, updated_at: now },
-      { name: "University Promotion", is_active: true, created_at: now, updated_at: now },
+    await queryInterface.bulkInsert("EventCategories", [
+      { name: "Academic Conferences", is_active: true, createdAt: now, updatedAt: now },
+      { name: "Student Clubs", is_active: true, createdAt: now, updatedAt: now },
+      { name: "Departmental Support", is_active: true, createdAt: now, updatedAt: now },
+      { name: "University Promotion", is_active: true, createdAt: now, updatedAt: now },
     ]);
 
     // TaskTypes
-    await queryInterface.bulkInsert("tasktypes", [
-      { name: "Ushering / Registration", is_active: true, created_at: now, updated_at: now },
-      { name: "Lab Assistance", is_active: true, created_at: now, updated_at: now },
-      { name: "Event Setup / Teardown", is_active: true, created_at: now, updated_at: now },
-      { name: "Campus Tour Guide", is_active: true, created_at: now, updated_at: now },
-      { name: "Social Media / Photography", is_active: true, created_at: now, updated_at: now },
+    await queryInterface.bulkInsert("TaskTypes", [
+      { name: "Ushering / Registration", is_active: true, createdAt: now, updatedAt: now },
+      { name: "Lab Assistance", is_active: true, createdAt: now, updatedAt: now },
+      { name: "Event Setup / Teardown", is_active: true, createdAt: now, updatedAt: now },
+      { name: "Campus Tour Guide", is_active: true, createdAt: now, updatedAt: now },
+      { name: "Social Media / Photography", is_active: true, createdAt: now, updatedAt: now },
     ]);
   },
 
   async down(queryInterface, Sequelize) {
-    await queryInterface.bulkDelete("eventcategories", null, {});
-    await queryInterface.bulkDelete("tasktypes", null, {});
+    await queryInterface.bulkDelete("EventCategories", null, {});
+    await queryInterface.bulkDelete("TaskTypes", null, {});
   }
 };
