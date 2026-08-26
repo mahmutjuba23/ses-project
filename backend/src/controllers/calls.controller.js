@@ -1,9 +1,18 @@
 const { Call, Event, TaskType, Period, CallApplication, Student, User } = require("../../models");
 const { logAction } = require("../services/audit.service");
 
-async function listCalls(req, res) {
+async function listEventCalls(req, res) {
   try {
+    const { event_id } = req.params;
+    
+    const event = await Event.findByPk(event_id, {
+      include: [{ model: Period }]
+    });
+
+    if (!event) return res.redirect("/admin/events?warning=event_not_found");
+
     const calls = await Call.findAll({
+      where: { event_id },
       include: [
         { model: Event, include: [{ model: Period }] },
         { model: TaskType }
@@ -11,23 +20,19 @@ async function listCalls(req, res) {
       order: [['application_start', 'DESC']]
     });
 
-    const events = await Event.findAll({
-      where: { status: 'published' },
-      include: [{ model: Period }]
-    });
     const taskTypes = await TaskType.findAll({ where: { is_active: true } });
 
-    res.render("admin/calls", {
-      title: "Manage Calls — SES",
-      currentPage: "admin-calls",
+    res.render("admin/event-calls", {
+      title: `Manage Calls: ${event.title} — SES`,
+      currentPage: "admin-events",
       calls,
-      events,
+      event,
       taskTypes,
       user: req.user,
       pageWarning: req.query.warning || null
     });
   } catch (err) {
-    console.error("List Calls error:", err);
+    console.error("List Event Calls error:", err);
     res.status(500).send("Internal Server Error");
   }
 }
@@ -77,16 +82,16 @@ async function createCall(req, res) {
       reason: "Admin created a new call"
     });
 
-    res.redirect("/admin/calls");
+    res.redirect(`/admin/events/${event_id}/calls`);
   } catch (err) {
     console.error("Create Call error:", err);
-    res.redirect("/admin/calls?warning=failed");
+    res.redirect("back");
   }
 }
 
 async function deleteCall(req, res) {
   try {
-    const { call_id } = req.body;
+    const { call_id, event_id } = req.body;
     await Call.destroy({ where: { id: call_id } });
 
     await logAction({
@@ -97,10 +102,10 @@ async function deleteCall(req, res) {
       reason: "Admin deleted a call"
     });
 
-    res.redirect("/admin/calls");
+    res.redirect(`/admin/events/${event_id}/calls`);
   } catch (err) {
     console.error("Delete Call error:", err);
-    res.redirect("/admin/calls?warning=delete_failed");
+    res.redirect("back");
   }
 }
 
@@ -116,7 +121,7 @@ async function reviewApplications(req, res) {
       ]
     });
 
-    if (!call) return res.redirect("/admin/calls?warning=not_found");
+    if (!call) return res.redirect("back");
 
     const applications = await CallApplication.findAll({
       where: { call_id },
@@ -148,7 +153,7 @@ async function updateApplicationStatus(req, res) {
     const { app_id, status } = req.body;
     const application = await CallApplication.findByPk(app_id);
     
-    if (!application) return res.redirect("/admin/calls?warning=app_not_found");
+    if (!application) return res.redirect("back");
 
     application.status = status;
     // Generate QR code if approved and doesn't have one
@@ -169,8 +174,8 @@ async function updateApplicationStatus(req, res) {
     res.redirect(`/admin/calls/${application.call_id}/applications`);
   } catch (err) {
     console.error("Update Application Status error:", err);
-    res.redirect("/admin/calls?warning=update_failed");
+    res.redirect("back");
   }
 }
 
-module.exports = { listCalls, createCall, deleteCall, reviewApplications, updateApplicationStatus };
+module.exports = { listEventCalls, createCall, deleteCall, reviewApplications, updateApplicationStatus };

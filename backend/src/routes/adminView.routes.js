@@ -2,7 +2,7 @@ const express = require("express");
 const { manageUsersPage, assignRole, removeRole } = require("../controllers/admin.controller");
 const { listPeriods, createPeriod, activatePeriod, showEnrolments, overrideGoal } = require("../controllers/periods.controller");
 const { listEvents, createEvent, publishEvent, finishEvent, cancelEvent } = require("../controllers/events.controller");
-const { listCalls, createCall, deleteCall, reviewApplications, updateApplicationStatus } = require("../controllers/calls.controller");
+const { listEventCalls, createCall, deleteCall, reviewApplications, updateApplicationStatus } = require("../controllers/calls.controller");
 const { authenticateView, isAdmin } = require("../middleware/viewAuth.middleware");
 
 const router = express.Router();
@@ -29,11 +29,11 @@ router.post("/events/publish", adminOnly, publishEvent);
 router.post("/events/finish", adminOnly, finishEvent);
 router.post("/events/cancel", adminOnly, cancelEvent);
 
-// Calls (admin only — students cannot access these)
-router.get("/calls", adminOnly, listCalls);
-router.post("/calls/create", adminOnly, createCall);
-router.post("/calls/delete", adminOnly, deleteCall);
-router.get("/calls/:call_id/applications", adminOnly, reviewApplications);
-router.post("/calls/applications/status", adminOnly, updateApplicationStatus);
+// Calls for a specific event
+router.get("/events/:event_id/calls", isAdmin, listEventCalls);
+router.post("/events/calls/create", isAdmin, createCall);
+router.post("/events/calls/delete", isAdmin, deleteCall);
+router.get("/calls/:call_id/applications", isAdmin, reviewApplications);
+router.post("/calls/applications/status", isAdmin, updateApplicationStatus);
 
 module.exports = router;

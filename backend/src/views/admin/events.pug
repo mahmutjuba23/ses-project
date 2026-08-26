@@ -58,6 +58,7 @@ block content
                 input(type="hidden" name="cancel_reason" value="Cancelled while in draft")
                 button.btn.btn-sm.btn-danger(type="submit") Cancel
             else if e.status === 'published'
+              a.btn.btn-sm.btn-success(href=`/admin/events/${e.id}/calls` style="margin-right:5px;") Manage Calls
               form(action="/admin/events/finish" method="POST" style="display:inline;")
                 input(type="hidden" name="event_id" value=e.id)
                 button.btn.btn-sm.btn-primary(type="submit" style="margin-right:5px;") Finish
