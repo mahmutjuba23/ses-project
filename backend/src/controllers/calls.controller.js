@@ -49,7 +49,7 @@ async function createCall(req, res) {
 
     // Validate application_end > application_start
     if (new Date(application_end) <= new Date(application_start)) {
-      return res.redirect("/admin/calls?warning=dates_invalid");
+      return res.redirect(`/admin/events/${event_id}/calls?warning=dates_invalid`);
     }
 
     let parsedEligibility = null;
@@ -57,7 +57,7 @@ async function createCall(req, res) {
       try {
         parsedEligibility = JSON.parse(eligibility_rule_json);
       } catch (e) {
-        return res.redirect("/admin/calls?warning=invalid_json");
+        return res.redirect(`/admin/events/${event_id}/calls?warning=invalid_json`);
       }
     }
 
@@ -85,7 +85,7 @@ async function createCall(req, res) {
     res.redirect(`/admin/events/${event_id}/calls`);
   } catch (err) {
     console.error("Create Call error:", err);
-    res.redirect("back");
+    res.redirect(`/admin/events/${req.body.event_id}/calls?warning=failed`);
   }
 }
 
@@ -105,7 +105,7 @@ async function deleteCall(req, res) {
     res.redirect(`/admin/events/${event_id}/calls`);
   } catch (err) {
     console.error("Delete Call error:", err);
-    res.redirect("back");
+    res.redirect(`/admin/events/${req.body.event_id}/calls?warning=delete_failed`);
   }
 }
 
@@ -121,7 +121,7 @@ async function reviewApplications(req, res) {
       ]
     });
 
-    if (!call) return res.redirect("back");
+    if (!call) return res.redirect(`/admin/events?warning=not_found`);
 
     const applications = await CallApplication.findAll({
       where: { call_id },
@@ -153,7 +153,7 @@ async function updateApplicationStatus(req, res) {
     const { app_id, status } = req.body;
     const application = await CallApplication.findByPk(app_id);
     
-    if (!application) return res.redirect("back");
+    if (!application) return res.redirect(`/admin/events?warning=app_not_found`);
 
     application.status = status;
     // Generate QR code if approved and doesn't have one
@@ -174,7 +174,7 @@ async function updateApplicationStatus(req, res) {
     res.redirect(`/admin/calls/${application.call_id}/applications`);
   } catch (err) {
     console.error("Update Application Status error:", err);
-    res.redirect("back");
+    res.redirect(`/admin/events`);
   }
 }
 
