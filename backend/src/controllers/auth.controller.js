@@ -204,6 +204,40 @@ async function mockGoogleLogin(req, res) {
   }
 }
 
+async function mockStudentLogin(req, res) {
+  try {
+    // For testing, we log in as the default student (Maria Garcia)
+    const email = "maria.garcia@ses.com";
+    const user = await User.findOne({ 
+      where: { email },
+      include: [{ model: Role, through: { attributes: [] } }]
+    });
+
+    if (!user) {
+      return res.render("auth/login", {
+        title: "Sign In — SES",
+        currentPage: "login",
+        error: "Mock student not found in DB. Run seeds.",
+      });
+    }
+
+    // Ensure student record is linked properly
+    const student = await Student.findOne({ where: { email: user.email } });
+    if (student && !student.user_id) {
+      student.user_id = user.id;
+      await student.save();
+    }
+
+    const token = generateToken(user);
+    res.cookie("token", token, { httpOnly: true, maxAge: 24 * 60 * 60 * 1000 });
+    
+    return res.redirect("/calls"); // Students go directly to Available Calls
+  } catch (error) {
+    console.error("Mock Student Login error:", error);
+    return res.redirect("/auth/login");
+  }
+}
+
 async function registerSubmit(req, res) {
   try {
     const { email, full_name, password } = req.body;
@@ -254,4 +288,5 @@ module.exports = {
   registerSubmit,
   profilePage,
   mockGoogleLogin,
+  mockStudentLogin,
 };
