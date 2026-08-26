@@ -5,11 +5,8 @@ block content
     h1 Manage Events
     p Create and manage events and their lifecycle.
 
-  if warning === 'no_period_match'
+  if pageWarning === 'no_period_match'
     .alert.alert-warning(style="background-color: #fff3cd; color: #856404; padding: 10px; margin-bottom: 20px; border-radius: 4px;") Warning: The event was created, but its dates do not fall within any active Period. No period was automatically assigned.
-  
-  if error
-    .alert.alert-error Action failed. Please try again.
 
   .card(style="margin-bottom: 20px; padding: 20px; border: 1px solid #ccc; border-radius: 4px;")
     h3 Create New Event
@@ -30,7 +27,7 @@ block content
         label End Date
         input.form-control(type="date" name="end_date" required)
       .form-group
-        label Description (Rich Text coming soon)
+        label Description
         textarea.form-control(name="description" rows="3")
       button.btn.btn-primary(type="submit") Create Draft Event
 

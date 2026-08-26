@@ -534,6 +534,12 @@ html(lang="en")
           li
             a(href="/users" class=(currentPage === 'users' ? 'active' : '')) Users
           li
+            a(href="/admin/users" class=(currentPage === 'admin-users' ? 'active' : '')) Students
+          li
+            a(href="/admin/periods" class=(currentPage === 'admin-periods' ? 'active' : '')) Periods
+          li
+            a(href="/admin/events" class=(currentPage === 'admin-events' ? 'active' : '')) Events
+          li
             a(href="/auth/me" class=(currentPage === 'profile' ? 'active' : '')) Profile
           li
             a(href="/auth/login") Logout

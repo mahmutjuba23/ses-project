@@ -20,8 +20,8 @@ async function listEvents(req, res) {
       events,
       categories,
       user: req.user,
-      error: req.query.error,
-      warning: req.query.warning
+      error: req.query.error || null,
+      pageWarning: req.query.warning || null
     });
   } catch (error) {
     console.error("List Events error:", error);
