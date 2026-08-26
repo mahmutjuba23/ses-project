@@ -22,6 +22,10 @@ async function logAction({
   reason = null,
 }) {
   try {
+    if (!actor_user_id) {
+      console.warn(`[AuditLog] Skipped: no actor_user_id for action '${action}' on ${entity}:${entity_id}`);
+      return;
+    }
     await AuditLog.create({
       actor_user_id,
       entity,

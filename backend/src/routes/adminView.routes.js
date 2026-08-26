@@ -30,10 +30,10 @@ router.post("/events/finish", adminOnly, finishEvent);
 router.post("/events/cancel", adminOnly, cancelEvent);
 
 // Calls for a specific event
-router.get("/events/:event_id/calls", isAdmin, listEventCalls);
-router.post("/events/calls/create", isAdmin, createCall);
-router.post("/events/calls/delete", isAdmin, deleteCall);
-router.get("/calls/:call_id/applications", isAdmin, reviewApplications);
-router.post("/calls/applications/status", isAdmin, updateApplicationStatus);
+router.get("/events/:event_id/calls", adminOnly, listEventCalls);
+router.post("/events/calls/create", adminOnly, createCall);
+router.post("/events/calls/delete", adminOnly, deleteCall);
+router.get("/calls/:call_id/applications", adminOnly, reviewApplications);
+router.post("/calls/applications/status", adminOnly, updateApplicationStatus);
 
 module.exports = router;
