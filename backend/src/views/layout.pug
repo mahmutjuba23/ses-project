@@ -529,7 +529,7 @@ html(lang="en")
         if user
           li
             a(href="/dashboard" class=(currentPage === 'dashboard' ? 'active' : '')) Dashboard
-          if user.roles && user.roles.includes('System Admin')
+          if user.roles && user.roles.includes('admin')
             li
               a(href="/admin/users" class=(currentPage === 'admin-users' ? 'active' : '')) Students
             li
