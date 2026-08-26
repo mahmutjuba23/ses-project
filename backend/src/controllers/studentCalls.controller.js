@@ -47,9 +47,25 @@ async function applyToCall(req, res) {
     const call = await Call.findByPk(call_id);
     if (!call) return res.redirect("/calls?error=Call not found");
 
-    // Get the student record for the logged-in user
-    const student = await Student.findOne({ where: { user_id: req.user.id } });
-    if (!student) return res.redirect("/calls?error=Student profile not found. Are you an imported scholarship student?");
+    // Get the student record — try user_id first, then match by email and link
+    let student = await Student.findOne({ where: { user_id: req.user.id } });
+    if (!student && req.user.email) {
+      student = await Student.findOne({ where: { email: req.user.email } });
+      if (student) {
+        student.user_id = req.user.id;
+        await student.save();
+      }
+    }
+    // If still no student record, create a minimal one so the user can test
+    if (!student) {
+      student = await Student.create({
+        user_id: req.user.id,
+        email: req.user.email,
+        first_name: req.user.full_name ? req.user.full_name.split(' ')[0] : 'Student',
+        last_name: req.user.full_name ? req.user.full_name.split(' ').slice(1).join(' ') : '',
+        is_active: true
+      });
+    }
 
     // Check if already applied
     const existing = await CallApplication.findOne({
@@ -71,14 +87,27 @@ async function applyToCall(req, res) {
     res.redirect("/calls?success=Application submitted successfully!");
   } catch (err) {
     console.error("Apply to Call error:", err);
-    res.redirect("/calls?error=Failed to apply");
+    res.redirect("/calls?error=Failed to apply. Error: " + err.message);
   }
 }
 
 async function listMyTasks(req, res) {
   try {
-    const student = await Student.findOne({ where: { user_id: req.user.id } });
-    if (!student) return res.redirect("/?error=Student profile not found");
+    // Find student by user_id or fall back to email
+    let student = await Student.findOne({ where: { user_id: req.user.id } });
+    if (!student && req.user.email) {
+      student = await Student.findOne({ where: { email: req.user.email } });
+      if (student) {
+        student.user_id = req.user.id;
+        await student.save();
+      }
+    }
+    if (!student) return res.render("student/myTasks", {
+      title: "My Volunteer Tasks — SES",
+      currentPage: "student-tasks",
+      applications: [],
+      user: req.user
+    });
 
     const applications = await CallApplication.findAll({
       where: { student_id: student.id },
