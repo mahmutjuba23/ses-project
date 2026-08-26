@@ -32,19 +32,19 @@ block content
             option(value=tt.id)= tt.name
       .form-group
         label Quota (max students)
-        input.form-control(type="number" name="quota" min="1" required)
+        input.form-control(type="number" name="quota" min="1" step="1" required)
       .form-group
         label Application Window Start
-        input.form-control(type="datetime-local" name="application_start" required)
+        input.form-control(type="datetime-local" name="application_start" step="any" required)
       .form-group
         label Application Window End
-        input.form-control(type="datetime-local" name="application_end" required)
+        input.form-control(type="datetime-local" name="application_end" step="any" required)
       .form-group
         label Task Start Date
-        input.form-control(type="datetime-local" name="task_start" required)
+        input.form-control(type="datetime-local" name="task_start" step="any" required)
       .form-group
         label Task End Date
-        input.form-control(type="datetime-local" name="task_end" required)
+        input.form-control(type="datetime-local" name="task_end" step="any" required)
       .form-group
         label Eligibility Rule (optional JSON)
         textarea.form-control(name="eligibility_rule_json" rows="2" placeholder='e.g. {"min_scholarship_percentage": 50}')
