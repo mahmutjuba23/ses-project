@@ -1,0 +1,59 @@
+extends ../layout
+
+block content
+  .page-header
+    div
+      h1 Review Applications
+      p(style="color:var(--text-secondary); margin-top:0.25rem;")
+        | Call: 
+        strong #{call.TaskType ? call.TaskType.name : 'Task'}
+        |  | Event: 
+        strong #{call.Event ? call.Event.title : '—'}
+        |  | Quota: 
+        strong #{call.quota}
+
+  if pageWarning === 'not_found'
+    .alert.alert-error Call not found.
+  else if pageWarning === 'app_not_found'
+    .alert.alert-error Application not found.
+  else if pageWarning
+    .alert.alert-warning Action failed. Please try again.
+
+  .card
+    table.table
+      thead
+        tr
+          th Applicant
+          th Student ID
+          th Status
+          th Applied At
+          th Actions
+      tbody
+        if applications.length === 0
+          tr
+            td(colspan="5" style="text-align:center; color:#94a3b8; padding:2rem;") No applications yet.
+        each app in applications
+          tr
+            td= app.Student && app.Student.User ? app.Student.User.full_name : 'Unknown User'
+            td= app.Student ? app.Student.id : '—'
+            td
+              if app.status === 'pending'
+                span.badge.badge-warning ⏳ Pending
+              else if app.status === 'approved'
+                span.badge.badge-success ✅ Approved
+              else if app.status === 'rejected'
+                span.badge.badge-danger ❌ Rejected
+              else if app.status === 'waitlisted'
+                span.badge.badge-warning 🕒 Waitlisted
+              else
+                span.badge= app.status
+            td= new Date(app.createdAt).toLocaleString()
+            td
+              form(action="/admin/calls/applications/status" method="POST" style="display:inline-block; margin-right:5px;")
+                input(type="hidden" name="app_id" value=app.id)
+                select(name="status" style="padding:4px; margin-right:5px;")
+                  option(value="pending" selected=(app.status==='pending')) Pending
+                  option(value="approved" selected=(app.status==='approved')) Approve
+                  option(value="rejected" selected=(app.status==='rejected')) Reject
+                  option(value="waitlisted" selected=(app.status==='waitlisted')) Waitlist
+                button.btn.btn-sm.btn-primary(type="submit") Update
