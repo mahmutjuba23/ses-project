@@ -1,4 +1,4 @@
-const { Call, Event, TaskType, Period, Student, PeriodEnrolment } = require("../../models");
+const { Call, Event, TaskType, Period, Student, PeriodEnrolment, CallApplication } = require("../../models");
 const { Op } = require("sequelize");
 
 /**
@@ -9,10 +9,9 @@ async function listOpenCalls(req, res) {
   try {
     const now = new Date();
 
-    // Find open calls
+    // Find calls whose application window hasn't closed yet
     const openCalls = await Call.findAll({
       where: {
-        application_start: { [Op.lte]: now },
         application_end: { [Op.gte]: now }
       },
       include: [
