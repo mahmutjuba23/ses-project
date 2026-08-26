@@ -1,0 +1,43 @@
+extends ../layout
+
+block content
+  .page-header
+    div
+      h1 Available Calls
+      p(style="color:var(--text-secondary); margin-top:0.25rem;") Browse open volunteer calls and apply. Applications close on the dates shown.
+
+  if openCalls.length === 0
+    .card(style="text-align:center; padding:3rem;")
+      p(style="font-size:1.1rem; color:var(--text-secondary);") 🎉 No calls are currently open. Check back soon!
+
+  each call in openCalls
+    .card(style="margin-bottom:1.5rem;")
+      .page-header(style="margin-bottom:1rem;")
+        div
+          h2(style="font-size:1.2rem; font-weight:600; margin-bottom:0.25rem;")= call.Event.title
+          p(style="color:var(--text-secondary); font-size:0.875rem;")
+            | #{call.TaskType ? call.TaskType.name : 'General Task'} 
+            | &bull; Period: #{(call.Event && call.Event.Period) ? call.Event.Period.code : 'N/A'}
+        div(style="text-align:right;")
+          span.badge.badge-success Accepting Applications
+      
+      .detail-row
+        span.detail-label Quota
+        span.detail-value #{call.quota} students
+      .detail-row
+        span.detail-label Application Deadline
+        span.detail-value #{new Date(call.application_end).toLocaleDateString()}
+      .detail-row
+        span.detail-label Task Dates
+        span.detail-value
+          | #{new Date(call.task_start).toLocaleDateString()} → #{new Date(call.task_end).toLocaleDateString()}
+      .detail-row
+        span.detail-label Auto-approved
+        span.detail-value= call.auto_approve ? 'Yes — you will be confirmed immediately' : 'No — awaiting staff review'
+      .detail-row
+        span.detail-label Waitlist
+        span.detail-value= call.has_waitlist ? 'Available if quota is full' : 'Not available'
+      
+      div(style="margin-top:1.5rem;")
+        form(action="/calls/" + call.id + "/apply" method="POST")
+          button.btn.btn-primary(type="submit") Apply Now

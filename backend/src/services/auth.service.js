@@ -10,10 +10,13 @@ async function comparePassword(password, passwordHash) {
 }
 
 function generateToken(user) {
+  // Extract role names from eagerly loaded Roles association
+  const roles = user.Roles ? user.Roles.map(r => r.name) : [];
   return jwt.sign(
     {
       id: user.id,
       email: user.email,
+      roles,
     },
     process.env.JWT_SECRET,
     {

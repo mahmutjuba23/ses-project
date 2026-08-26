@@ -1,0 +1,93 @@
+extends ../layout
+
+block content
+  .admin-header
+    h1 Manage Calls
+    p Create volunteer/task calls for published events. Students can only apply — they cannot modify calls.
+
+  if pageWarning === 'dates_invalid'
+    .alert.alert-warning(style="background:#fff3cd;color:#856404;padding:10px;margin-bottom:20px;border-radius:4px;") Error: Application end date must be after start date.
+  else if pageWarning === 'invalid_json'
+    .alert.alert-warning(style="background:#fff3cd;color:#856404;padding:10px;margin-bottom:20px;border-radius:4px;") Error: Eligibility rule is not valid JSON.
+  else if pageWarning
+    .alert.alert-warning(style="background:#fff3cd;color:#856404;padding:10px;margin-bottom:20px;border-radius:4px;") An error occurred. Please try again.
+
+  .card(style="margin-bottom:24px;")
+    h3(style="margin-bottom:16px; font-size:1.1rem; font-weight:600;") Create New Call
+    form(action="/admin/calls/create" method="POST")
+      .form-group
+        label Event (must be Published)
+        select.form-control(name="event_id" required)
+          option(value="") -- Select Published Event --
+          each ev in events
+            option(value=ev.id)= ev.title + (ev.Period ? ' [' + ev.Period.code + ']' : ' [No Period]')
+      .form-group
+        label Task Type
+        select.form-control(name="task_type_id" required)
+          option(value="") -- Select Task Type --
+          each tt in taskTypes
+            option(value=tt.id)= tt.name
+      .form-group
+        label Quota (max students)
+        input.form-control(type="number" name="quota" min="1" required)
+      .form-group
+        label Application Window Start
+        input.form-control(type="datetime-local" name="application_start" required)
+      .form-group
+        label Application Window End
+        input.form-control(type="datetime-local" name="application_end" required)
+      .form-group
+        label Task Start Date
+        input.form-control(type="datetime-local" name="task_start" required)
+      .form-group
+        label Task End Date
+        input.form-control(type="datetime-local" name="task_end" required)
+      .form-group
+        label Eligibility Rule (optional JSON)
+        textarea.form-control(name="eligibility_rule_json" rows="2" placeholder='e.g. {"min_scholarship_percentage": 50}')
+        small.form-text Keys: min_scholarship_percentage, study_level, faculty. Leave empty for all enrolled students.
+      .form-group(style="display:flex; gap:20px; align-items:center;")
+        label(style="display:flex; gap:8px; align-items:center; cursor:pointer;")
+          input(type="checkbox" name="auto_approve")
+          | Auto-approve applications
+        label(style="display:flex; gap:8px; align-items:center; cursor:pointer;")
+          input(type="checkbox" name="has_waitlist")
+          | Enable waitlist
+      button.btn.btn-primary(type="submit") Create Call
+
+  table.table
+    thead
+      tr
+        th Event
+        th Period
+        th Task Type
+        th Quota
+        th Application Window
+        th Task Dates
+        th Auto Approve
+        th Waitlist
+        th Actions
+    tbody
+      if calls.length === 0
+        tr
+          td(colspan="9" style="text-align:center; color:#94a3b8; padding:2rem;") No calls created yet.
+      each c in calls
+        tr
+          td= c.Event ? c.Event.title : '—'
+          td= (c.Event && c.Event.Period) ? c.Event.Period.code : 'None'
+          td= c.TaskType ? c.TaskType.name : '—'
+          td= c.quota
+          td
+            | #{c.application_start ? new Date(c.application_start).toLocaleDateString() : '—'}
+            |  → 
+            | #{c.application_end ? new Date(c.application_end).toLocaleDateString() : '—'}
+          td
+            | #{c.task_start ? new Date(c.task_start).toLocaleDateString() : '—'}
+            |  → 
+            | #{c.task_end ? new Date(c.task_end).toLocaleDateString() : '—'}
+          td= c.auto_approve ? '✅ Yes' : '❌ No'
+          td= c.has_waitlist ? '✅ Yes' : '❌ No'
+          td
+            form(action="/admin/calls/delete" method="POST" style="display:inline;" onsubmit="return confirm('Delete this call?')")
+              input(type="hidden" name="call_id" value=c.id)
+              button.btn.btn-sm.btn-danger(type="submit") Delete

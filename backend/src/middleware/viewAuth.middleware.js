@@ -21,6 +21,30 @@ function authenticateView(req, res, next) {
   }
 }
 
+/**
+ * Middleware: only allow users with "System Admin" role.
+ * Must be used AFTER authenticateView.
+ */
+function isAdmin(req, res, next) {
+  if (req.user && req.user.roles && req.user.roles.includes("System Admin")) {
+    return next();
+  }
+  return res.status(403).send("Forbidden: Admin access required.");
+}
+
+/**
+ * Middleware: only allow users with "Applicant" role (scholarship students).
+ * Must be used AFTER authenticateView.
+ */
+function isStudent(req, res, next) {
+  if (req.user && req.user.roles && req.user.roles.includes("Applicant")) {
+    return next();
+  }
+  return res.status(403).send("Forbidden: Student access required.");
+}
+
 module.exports = {
   authenticateView,
+  isAdmin,
+  isStudent,
 };

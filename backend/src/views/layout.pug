@@ -529,16 +529,20 @@ html(lang="en")
         if user
           li
             a(href="/dashboard" class=(currentPage === 'dashboard' ? 'active' : '')) Dashboard
-          li
-            a(href="/applications" class=(currentPage === 'applications' ? 'active' : '')) Applications
-          li
-            a(href="/users" class=(currentPage === 'users' ? 'active' : '')) Users
-          li
-            a(href="/admin/users" class=(currentPage === 'admin-users' ? 'active' : '')) Students
-          li
-            a(href="/admin/periods" class=(currentPage === 'admin-periods' ? 'active' : '')) Periods
-          li
-            a(href="/admin/events" class=(currentPage === 'admin-events' ? 'active' : '')) Events
+          if user.roles && user.roles.includes('System Admin')
+            li
+              a(href="/admin/users" class=(currentPage === 'admin-users' ? 'active' : '')) Students
+            li
+              a(href="/admin/periods" class=(currentPage === 'admin-periods' ? 'active' : '')) Periods
+            li
+              a(href="/admin/events" class=(currentPage === 'admin-events' ? 'active' : '')) Events
+            li
+              a(href="/admin/calls" class=(currentPage === 'admin-calls' ? 'active' : '')) Manage Calls
+          else
+            li
+              a(href="/calls" class=(currentPage === 'student-calls' ? 'active' : '')) Available Calls
+            li
+              a(href="/applications" class=(currentPage === 'applications' ? 'active' : '')) My Applications
           li
             a(href="/auth/me" class=(currentPage === 'profile' ? 'active' : '')) Profile
           li
