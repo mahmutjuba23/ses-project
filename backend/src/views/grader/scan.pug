@@ -40,8 +40,12 @@ block content
       const readerDiv = document.getElementById('reader');
       
       async function onScanSuccess(decodedText, decodedResult) {
-        // Pause scanner
-        html5QrcodeScanner.pause();
+        // Attempt to pause scanner, ignore if it wasn't running
+        try {
+          html5QrcodeScanner.pause();
+        } catch (err) {
+          console.warn("Scanner could not be paused (it may not be running).");
+        }
         
         try {
           const res = await fetch('/grader/scan/verify', {
@@ -63,11 +67,11 @@ block content
             scanResultDiv.style.display = 'block';
           } else {
             alert(data.message || "Invalid QR Code.");
-            html5QrcodeScanner.resume();
+            try { html5QrcodeScanner.resume(); } catch (e) {}
           }
         } catch (e) {
           alert("Error verifying QR code. Please try again.");
-          html5QrcodeScanner.resume();
+          try { html5QrcodeScanner.resume(); } catch (e) {}
         }
       }
 
@@ -92,7 +96,7 @@ block content
         readerDiv.style.display = 'block';
         document.getElementById('manual-entry').style.display = 'block';
         document.getElementById('points-input').value = '';
-        html5QrcodeScanner.resume();
+        try { html5QrcodeScanner.resume(); } catch (e) {}
       });
 
       document.getElementById('points-form').addEventListener('submit', async (e) => {
