@@ -40,6 +40,7 @@ async function listOpenCalls(req, res) {
 }
 
 const crypto = require("crypto");
+const QRCode = require("qrcode");
 
 async function applyToCall(req, res) {
   try {
@@ -122,6 +123,18 @@ async function listMyTasks(req, res) {
       ],
       order: [['createdAt', 'DESC']]
     });
+
+    // Generate QR codes for approved applications
+    for (let app of applications) {
+      if (app.status === 'approved' && app.qr_code_token) {
+        try {
+          app.qrCodeDataUri = await QRCode.toDataURL(app.qr_code_token);
+        } catch (e) {
+          console.error("QR Code generation error:", e);
+          app.qrCodeDataUri = null;
+        }
+      }
+    }
 
     res.render("student/myTasks", {
       title: "My Volunteer Tasks — SES",

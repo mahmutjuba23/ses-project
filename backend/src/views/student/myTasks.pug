@@ -49,8 +49,11 @@ block content
         div(style="margin-top:1.5rem; text-align:center; padding:1.5rem; background:rgba(99, 102, 241, 0.05); border-radius:12px; border:1px solid var(--border-color);")
           p(style="font-weight:600; margin-bottom:0.5rem;") Your Check-in QR Code
           p(style="color:var(--text-secondary); font-size:0.875rem; margin-bottom:1rem;") Show this to the event organizer on the day of the event.
-          // Placeholder for actual QR code image (we will generate it later)
-          div(style="width:150px; height:150px; background:#fff; margin:0 auto; display:flex; align-items:center; justify-content:center; color:#000; border-radius:8px;")
-            | [ QR CODE ]
-            br
-            | #{app.qr_code_token.substring(0,8)}...
+          
+          if app.qrCodeDataUri
+            img(src=app.qrCodeDataUri alt="QR Code" style="width:150px; height:150px; border-radius:8px; box-shadow:0 2px 4px rgba(0,0,0,0.1);")
+          else
+            div(style="width:150px; height:150px; background:#fff; margin:0 auto; display:flex; align-items:center; justify-content:center; color:#000; border-radius:8px;")
+              | [ ERROR ]
+          
+          p(style="font-family:monospace; font-size:0.8rem; margin-top:0.5rem;") #{app.qr_code_token.substring(0,8)}...
