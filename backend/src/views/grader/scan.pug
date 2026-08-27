@@ -9,6 +9,13 @@ block content
   .card(style="max-width: 600px; margin: 0 auto;")
     div#reader(style="width: 100%; min-height: 300px;")
     
+    div#manual-entry(style="margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--border-color);")
+      h4(style="margin-top:0;") Can't use the camera?
+      p(style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 10px;") For testing on a single device, you can manually paste the student's QR token below:
+      div(style="display: flex; gap: 10px;")
+        input.form-control(type="text" id="manual-token" placeholder="Paste QR token here..." style="flex: 1;")
+        button.btn.btn-secondary(type="button" id="btn-manual-verify") Verify Token
+    
     div#scan-result(style="display:none; margin-top: 20px;")
       .alert.alert-success(style="background:#f0fdf4; color:#166534; border:1px solid #bbf7d0;")
         h3(style="margin-top:0; margin-bottom:10px;") ✅ Valid QR Code Scanned!
@@ -52,6 +59,7 @@ block content
             document.getElementById('res-app-id').value = data.application_id;
             
             readerDiv.style.display = 'none';
+            document.getElementById('manual-entry').style.display = 'none';
             scanResultDiv.style.display = 'block';
           } else {
             alert(data.message || "Invalid QR Code.");
@@ -69,9 +77,20 @@ block content
 
       html5QrcodeScanner.render(onScanSuccess, onScanFailure);
 
+      // Handle manual entry
+      document.getElementById('btn-manual-verify').addEventListener('click', () => {
+        const token = document.getElementById('manual-token').value.trim();
+        if (token) {
+          onScanSuccess(token, null);
+        } else {
+          alert("Please enter a token.");
+        }
+      });
+
       document.getElementById('btn-scan-again').addEventListener('click', () => {
         scanResultDiv.style.display = 'none';
         readerDiv.style.display = 'block';
+        document.getElementById('manual-entry').style.display = 'block';
         document.getElementById('points-input').value = '';
         html5QrcodeScanner.resume();
       });
