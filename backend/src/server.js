@@ -22,6 +22,7 @@ const usersViewRoutes = require("./routes/usersView.routes");
 const scholarshipsViewRoutes = require("./routes/scholarshipsView.routes");
 const applicationsViewRoutes = require("./routes/applicationsView.routes");
 const adminViewRoutes = require("./routes/adminView.routes");
+const graderViewRoutes = require("./routes/graderView.routes");
 const callsViewRoutes = require("./routes/callsView.routes");
 const dashboardRoutes = require("./routes/dashboard.routes");
 const sequelize = require("./config/database");
@@ -52,6 +53,7 @@ app.use("/scholarships", scholarshipsViewRoutes);
 app.use("/applications", applicationsViewRoutes);
 app.use("/dashboard", dashboardRoutes);
 app.use("/admin", adminViewRoutes);
+app.use("/grader", graderViewRoutes);
 app.use("/calls", callsViewRoutes);
 
 // ── Root redirect ──
