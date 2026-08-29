@@ -1,52 +1,169 @@
 extends ../layout
 
 block content
-  .admin-header
-    h1 Manage Users & Roles
-    p Search users and assign roles below.
+  style.
+    .users-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+      animation: fadeIn 0.4s ease-out;
+    }
+    body::-webkit-scrollbar, dialog::-webkit-scrollbar, textarea::-webkit-scrollbar { display: none; }
+    body, dialog, textarea { -ms-overflow-style: none; scrollbar-width: none; }
+    body:has(dialog[open]) { overflow: hidden; }
 
-  if error
-    .alert.alert-error Action failed. Please try again.
+    .admin-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 30px;
+      padding-bottom: 15px;
+      border-bottom: 1px solid var(--border-color);
+    }
+    .admin-header h1 { margin: 0; color: var(--text-primary); font-size: 2rem; font-weight: 600; }
+    .admin-header p  { margin: 5px 0 0; color: var(--text-secondary); font-size: 0.95rem; }
+    .header-actions { display: flex; gap: 10px; align-items: center; }
 
-  table.table
-    thead
-      tr
-        th ID
-        th Full Name
-        th Email
-        th Current Roles
-        th Manage
-    tbody
-      each u in users
-        tr
-          td= u.id
-          td= u.full_name
-          td= u.email
-          td
-            ul
-              each r in u.Roles
-                li
-                  | #{r.name} 
-                  form(action="/admin/users/remove-role" method="POST" style="display:inline;")
-                    input(type="hidden" name="user_id" value=u.id)
-                    input(type="hidden" name="role_id" value=r.id)
-                    button.btn.btn-sm.btn-danger(type="submit" style="padding: 2px 5px; font-size: 10px; margin-left: 5px;") Remove
-          td
-            button.btn.btn-sm.btn-primary(onclick=`openRoleModal(${u.id}, '${u.full_name}')`) Manage Roles
+    .card {
+      background: var(--bg-card);
+      border-radius: 12px;
+      box-shadow: var(--shadow);
+      padding: 25px;
+      margin-bottom: 30px;
+      border: 1px solid var(--border-color);
+    }
+    .table-responsive { overflow-x: auto; border-radius: 8px; }
 
-  dialog#roleModal(style="padding: 20px; border: none; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); width: 350px;")
-    div(style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;")
-      h3(style="margin: 0;") Assign Role to <span id="roleModalUserName"></span>
-      button.btn.btn-sm.btn-danger(onclick="document.getElementById('roleModal').close()") &times;
-    form(action="/admin/users/assign-role" method="POST")
-      input(type="hidden" name="user_id" id="roleModalUserId" value="")
-      .form-group
-        select.form-control(name="role_id" required)
-          option(value="") -- Select Role --
-          each role in allRoles
-            option(value=role.id)= role.name
-      div(style="text-align: right; margin-top: 15px;")
-        button.btn.btn-primary(type="submit") Assign Role
+    table.modern-table { width: 100%; border-collapse: collapse; text-align: left; }
+    table.modern-table th {
+      background-color: var(--bg-secondary); color: var(--text-secondary); font-weight: 600;
+      padding: 15px; border-bottom: 2px solid var(--border-color);
+      font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.5px;
+    }
+    table.modern-table td {
+      padding: 15px; border-bottom: 1px solid rgba(255,255,255,0.05);
+      color: var(--text-primary); font-size: 0.95rem; vertical-align: middle;
+    }
+    table.modern-table tbody tr:hover { background-color: rgba(255,255,255,0.04); }
+
+    .role-pill {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: rgba(244,63,94,0.1); color: var(--accent);
+      padding: 4px 10px; border-radius: 20px; font-size: 0.8rem; font-weight: 500;
+      border: 1px solid rgba(244,63,94,0.25); margin: 2px;
+    }
+    .role-pill button {
+      background: none; border: none; cursor: pointer; color: var(--accent);
+      font-size: 1rem; line-height: 1; padding: 0; transition: color 0.2s;
+    }
+    .role-pill button:hover { color: var(--danger); }
+
+    .btn-modern {
+      padding: 10px 20px; border-radius: 8px; font-weight: 500;
+      transition: all 0.2s; border: none; cursor: pointer;
+      display: inline-flex; align-items: center; justify-content: center;
+      text-decoration: none; gap: 6px;
+    }
+    .btn-modern-primary {
+      background: var(--gradient-1); color: white;
+      box-shadow: 0 4px 15px var(--accent-glow);
+    }
+    .btn-modern-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 20px var(--accent-glow); }
+    .btn-modern-outline {
+      background: transparent; color: var(--text-secondary);
+      border: 1px solid var(--border-color);
+    }
+    .btn-modern-outline:hover { color: var(--text-primary); border-color: var(--accent); }
+    .btn-modern-sm { padding: 6px 12px; font-size: 0.85rem; border-radius: 6px; }
+
+    dialog::backdrop { background-color: rgba(0,0,0,0.7); backdrop-filter: blur(4px); }
+    dialog[open] {
+      animation: modalFadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards; margin: auto;
+    }
+    @keyframes modalFadeIn {
+      from { opacity: 0; transform: scale(0.95) translateY(-20px); }
+      to   { opacity: 1; transform: scale(1) translateY(0); }
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .form-control-modern {
+      width: 100%; padding: 10px 15px;
+      background: var(--bg-input); border: 1px solid var(--border-color);
+      color: var(--text-primary); border-radius: 6px; font-size: 0.95rem;
+      transition: border-color 0.2s, box-shadow 0.2s; box-sizing: border-box;
+    }
+    .form-control-modern:focus {
+      outline: none; border-color: var(--border-focus);
+      box-shadow: 0 0 0 3px var(--accent-glow);
+    }
+    .form-group-modern { margin-bottom: 18px; }
+    .form-group-modern label {
+      display: block; margin-bottom: 6px; font-weight: 500;
+      color: var(--text-secondary); font-size: 0.9rem;
+    }
+
+  .users-container
+    .admin-header
+      div
+        h1 Manage Users & Roles
+        p Search users and assign roles below.
+      .header-actions
+        a.btn-modern.btn-modern-outline(href="/admin/students/import")
+          span ↑
+          | Import Students (Excel)
+    
+    if error
+      .alert.alert-error(style="background: rgba(239,68,68,0.15); color: var(--danger); padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid rgba(239,68,68,0.3);") Action failed. Please try again.
+
+    .card
+      .table-responsive
+        table.modern-table
+          thead
+            tr
+              th ID
+              th Full Name
+              th Email
+              th Current Roles
+              th Manage
+          tbody
+            each u in users
+              tr
+                td(style="color: var(--text-muted); font-size: 0.85rem;")= u.id
+                td(style="font-weight: 500;")= u.full_name
+                td(style="color: var(--text-secondary);")= u.email
+                td
+                  if u.Roles && u.Roles.length
+                    each r in u.Roles
+                      span.role-pill
+                        | #{r.name}
+                        form(action="/admin/users/remove-role" method="POST" style="display:inline; margin:0;")
+                          input(type="hidden" name="user_id" value=u.id)
+                          input(type="hidden" name="role_id" value=r.id)
+                          button(type="submit" title="Remove role") ×
+                  else
+                    span(style="color: var(--text-muted); font-style: italic; font-size: 0.9rem;") No roles
+                td
+                  button.btn-modern.btn-modern-primary.btn-modern-sm(onclick=`openRoleModal(${u.id}, '${u.full_name}')`) Manage Roles
+
+    dialog#roleModal(style="padding: 30px; border: 1px solid var(--border-color); background: var(--bg-card); color: var(--text-primary); border-radius: 16px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.5); width: 420px; max-width: 90vw;")
+      div(style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;")
+        h3(style="margin: 0; color: var(--text-primary); font-size: 1.3rem; font-weight: 600;")
+          | Assign Role to&nbsp;
+          span#roleModalUserName(style="color: var(--accent);")
+        button(onclick="document.getElementById('roleModal').close()" style="background: var(--bg-secondary); border: none; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--text-secondary); transition: all 0.2s; font-size: 1.2rem;" title="Close") &times;
+      form(action="/admin/users/assign-role" method="POST")
+        input(type="hidden" name="user_id" id="roleModalUserId" value="")
+        .form-group-modern
+          label Select Role
+          select.form-control-modern(name="role_id" required)
+            option(value="") -- Select Role --
+            each role in allRoles
+              option(value=role.id)= role.name
+        div(style="margin-top: 25px;")
+          button.btn-modern.btn-modern-primary(type="submit" style="width: 100%; padding: 12px;") Assign Role
 
   script.
     function openRoleModal(userId, userName) {
@@ -54,3 +171,4 @@ block content
       document.getElementById('roleModalUserName').textContent = userName;
       document.getElementById('roleModal').showModal();
     }
+

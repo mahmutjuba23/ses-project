@@ -1,68 +1,283 @@
 extends ../layout
 
 block content
-  .admin-header
-    h1 Manage Events
-    p Create and manage events and their lifecycle.
+  style.
+    /* Modern Dashboard Styling */
+    .events-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+      animation: fadeIn 0.4s ease-out;
+    }
+    /* Hide scrollbars globally for this page */
+    body::-webkit-scrollbar,
+    .events-container::-webkit-scrollbar,
+    .table-responsive::-webkit-scrollbar,
+    dialog::-webkit-scrollbar,
+    textarea::-webkit-scrollbar { 
+      display: none; 
+    }
+    body, .events-container, .table-responsive, dialog, textarea { 
+      -ms-overflow-style: none; 
+      scrollbar-width: none; 
+    }
+    
+    /* Prevent background scrolling when modal is open */
+    body:has(dialog[open]) {
+      overflow: hidden;
+    }
 
-  if pageWarning === 'no_period_match'
-    .alert.alert-warning(style="background-color: #fff3cd; color: #856404; padding: 10px; margin-bottom: 20px; border-radius: 4px;") Warning: The event was created, but its dates do not fall within any active Period. No period was automatically assigned.
+    .admin-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 30px;
+      padding-bottom: 15px;
+      border-bottom: 1px solid var(--border-color);
+    }
+    .admin-header h1 {
+      margin: 0;
+      color: var(--text-primary);
+      font-size: 2rem;
+      font-weight: 600;
+    }
+    .admin-header p {
+      margin: 5px 0 0 0;
+      color: var(--text-secondary);
+      font-size: 0.95rem;
+    }
+    
+    .card {
+      background: var(--bg-card);
+      border-radius: 12px;
+      box-shadow: var(--shadow);
+      padding: 25px;
+      margin-bottom: 30px;
+      border: 1px solid var(--border-color);
+    }
+    
+    .table-responsive {
+      overflow-x: auto;
+      border-radius: 8px;
+    }
 
-  .card(style="margin-bottom: 20px; padding: 20px; border: 1px solid #ccc; border-radius: 4px;")
-    h3 Create New Event
-    form(action="/admin/events/create" method="POST")
-      .form-group
-        label Title
-        input.form-control(type="text" name="title" required)
-      .form-group
-        label Category
-        select.form-control(name="category_id" required)
-          option(value="") -- Select Category --
-          each cat in categories
-            option(value=cat.id)= cat.name
-      .form-group
-        label Start Date
-        input.form-control(type="date" name="start_date" required)
-      .form-group
-        label End Date
-        input.form-control(type="date" name="end_date" required)
-      .form-group
-        label Description
-        textarea.form-control(name="description" rows="3")
-      button.btn.btn-primary(type="submit") Create Draft Event
+    table.modern-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+    }
+    table.modern-table th {
+      background-color: var(--bg-secondary);
+      color: var(--text-secondary);
+      font-weight: 600;
+      padding: 15px;
+      border-bottom: 2px solid var(--border-color);
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    table.modern-table td {
+      padding: 15px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      color: var(--text-primary);
+      font-size: 0.95rem;
+      vertical-align: middle;
+    }
+    table.modern-table tbody tr:hover {
+      background-color: rgba(255, 255, 255, 0.05);
+      transition: background-color 0.2s;
+    }
+    
+    .status-badge {
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      text-transform: capitalize;
+    }
+    .status-draft {
+      background-color: rgba(245, 158, 11, 0.15);
+      color: var(--warning);
+    }
+    .status-published {
+      background-color: rgba(16, 185, 129, 0.15);
+      color: var(--success);
+    }
+    .status-finished {
+      background-color: rgba(99, 102, 241, 0.15);
+      color: var(--accent);
+    }
+    .status-cancelled {
+      background-color: rgba(239, 68, 68, 0.15);
+      color: var(--danger);
+    }
 
-  table.table
-    thead
-      tr
-        th Title
-        th Category
-        th Dates
-        th Period
-        th Status
-        th Actions
-    tbody
-      each e in events
-        tr
-          td= e.title
-          td= e.EventCategory ? e.EventCategory.name : '—'
-          td #{e.start_date} to #{e.end_date}
-          td= e.Period ? e.Period.code : 'None'
-          td= e.status
-          td
-            if e.status === 'draft'
-              form(action="/admin/events/publish" method="POST" style="display:inline;")
-                input(type="hidden" name="event_id" value=e.id)
-                button.btn.btn-sm.btn-success(type="submit" style="margin-right:5px;") Publish
-              form(action="/admin/events/cancel" method="POST" style="display:inline;")
-                input(type="hidden" name="event_id" value=e.id)
-                input(type="hidden" name="cancel_reason" value="Cancelled while in draft")
-                button.btn.btn-sm.btn-danger(type="submit") Cancel
-            else if e.status === 'published'
-              a.btn.btn-sm.btn-success(href=`/admin/events/${e.id}/calls` style="margin-right:5px;") Manage Calls
-              form(action="/admin/events/finish" method="POST" style="display:inline;")
-                input(type="hidden" name="event_id" value=e.id)
-                button.btn.btn-sm.btn-primary(type="submit" style="margin-right:5px;") Finish
-              form(action="/admin/events/cancel" method="POST" style="display:inline;")
-                input(type="hidden" name="event_id" value=e.id)
-                input(type="text" name="cancel_reason" placeholder="Reason" required style="width:100px; padding:2px; margin-right:5px;")
-                button.btn.btn-sm.btn-danger(type="submit") Cancel
+    .btn-modern {
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-weight: 500;
+      transition: all 0.2s;
+      border: none;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      text-decoration: none;
+    }
+    .btn-modern-sm {
+      padding: 6px 12px;
+      font-size: 0.85rem;
+      border-radius: 6px;
+    }
+    .btn-modern-primary {
+      background: var(--gradient-1);
+      color: white;
+      box-shadow: 0 4px 6px var(--accent-glow);
+    }
+    .btn-modern-primary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 12px var(--accent-glow);
+    }
+    .btn-modern-success {
+      background-color: var(--success);
+      color: white;
+    }
+    .btn-modern-success:hover {
+      background-color: #059669;
+    }
+    .btn-modern-danger {
+      background-color: var(--danger);
+      color: white;
+    }
+    .btn-modern-danger:hover {
+      background-color: #dc2626;
+    }
+    
+    dialog::backdrop {
+      background-color: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(4px);
+    }
+    dialog[open] {
+      animation: modalFadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      margin: auto;
+    }
+    @keyframes modalFadeIn {
+      from { opacity: 0; transform: scale(0.95) translateY(-20px); }
+      to { opacity: 1; transform: scale(1) translateY(0); }
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .form-control-modern {
+      width: 100%;
+      padding: 10px 15px;
+      background: var(--bg-input);
+      border: 1px solid var(--border-color);
+      color: var(--text-primary);
+      border-radius: 6px;
+      font-size: 0.95rem;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      box-sizing: border-box;
+    }
+    .form-control-modern:focus {
+      outline: none;
+      border-color: var(--border-focus);
+      box-shadow: 0 0 0 3px var(--accent-glow);
+    }
+    .form-group-modern {
+      margin-bottom: 18px;
+    }
+    .form-group-modern label {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+    }
+
+  .events-container
+    .admin-header
+      div
+        h1 Manage Events
+        p Create and manage events and their lifecycle.
+      button.btn-modern.btn-modern-primary(onclick="document.getElementById('createEventModal').showModal()") 
+        span(style="margin-right: 8px; font-size: 1.2rem;") +
+        | New Event
+
+    if pageWarning === 'no_period_match'
+      .alert.alert-warning(style="background-color: rgba(245, 158, 11, 0.15); color: var(--warning); padding: 15px; margin-bottom: 20px; border-radius: 8px; border: 1px solid rgba(245, 158, 11, 0.3);") Warning: The event was created, but its dates do not fall within any active Period. No period was automatically assigned.
+
+    .card
+      .table-responsive
+        table.modern-table
+          thead
+            tr
+              th Title
+              th Category
+              th Dates
+              th Period
+              th Status
+              th Actions
+          tbody
+            each e in events
+              tr
+                td(style="font-weight: 500; color: var(--text-primary);")= e.title
+                td
+                  span(style="background: var(--bg-secondary); padding: 4px 8px; border-radius: 4px; font-size: 0.85rem; color: var(--text-primary);")= e.EventCategory ? e.EventCategory.name : '—'
+                td(style="color: var(--text-secondary); font-size: 0.9rem;") #{e.start_date} &rarr; #{e.end_date}
+                td= e.Period ? e.Period.code : 'None'
+                td
+                  span.status-badge(class=`status-${e.status}`)= e.status
+                td
+                  div(style="display: flex; gap: 5px; align-items: center;")
+                    if e.status === 'draft'
+                      form(action="/admin/events/publish" method="POST" style="margin: 0;")
+                        input(type="hidden" name="event_id" value=e.id)
+                        button.btn-modern.btn-modern-success.btn-modern-sm(type="submit") Publish
+                      form(action="/admin/events/cancel" method="POST" style="margin: 0;")
+                        input(type="hidden" name="event_id" value=e.id)
+                        input(type="hidden" name="cancel_reason" value="Cancelled while in draft")
+                        button.btn-modern.btn-modern-danger.btn-modern-sm(type="submit") Cancel
+                    else if e.status === 'published'
+                      a.btn-modern.btn-modern-success.btn-modern-sm(href=`/admin/events/${e.id}/calls`) Manage Calls
+                      form(action="/admin/events/finish" method="POST" style="margin: 0;")
+                        input(type="hidden" name="event_id" value=e.id)
+                        button.btn-modern.btn-modern-primary.btn-modern-sm(type="submit") Finish
+                      form(action="/admin/events/cancel" method="POST" style="margin: 0; display: flex; gap: 5px;")
+                        input(type="hidden" name="event_id" value=e.id)
+                        input.form-control-modern(type="text" name="cancel_reason" placeholder="Reason" required style="width: 120px; padding: 6px; font-size: 0.85rem; margin: 0;")
+                        button.btn-modern.btn-modern-danger.btn-modern-sm(type="submit") Cancel
+
+    dialog#createEventModal(style="padding: 30px; border: 1px solid var(--border-color); background: var(--bg-card); color: var(--text-primary); border-radius: 16px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.5); width: 500px; max-width: 90vw;")
+      div(style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;")
+        h3(style="margin: 0; color: var(--text-primary); font-size: 1.4rem; font-weight: 600;") Create New Event
+        button(onclick="document.getElementById('createEventModal').close()" style="background: var(--bg-secondary); border: none; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--text-secondary); transition: all 0.2s;" onmouseover="this.style.background='var(--bg-input)'; this.style.color='var(--text-primary)'" onmouseout="this.style.background='var(--bg-secondary)'; this.style.color='var(--text-secondary)'" title="Close") &times;
+      
+      form(action="/admin/events/create" method="POST")
+        .form-group-modern
+          label Title
+          input.form-control-modern(type="text" name="title" required)
+        
+        .form-group-modern
+          label Category
+          select.form-control-modern(name="category_id" required)
+            option(value="") -- Select Category --
+            each cat in categories
+              option(value=cat.id)= cat.name
+        
+        div(style="display: flex; gap: 15px;")
+          .form-group-modern(style="flex: 1;")
+            label Start Date
+            input.form-control-modern(type="date" name="start_date" required)
+          .form-group-modern(style="flex: 1;")
+            label End Date
+            input.form-control-modern(type="date" name="end_date" required)
+        
+        .form-group-modern
+          label Description
+          textarea.form-control-modern(name="description" rows="3")
+        
+        div(style="text-align: right; margin-top: 30px;")
+          button.btn-modern.btn-modern-primary(type="submit" style="width: 100%; padding: 12px; font-size: 1rem;") Create Draft Event

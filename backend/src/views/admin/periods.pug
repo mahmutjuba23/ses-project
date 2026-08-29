@@ -1,65 +1,258 @@
 extends ../layout
 
 block content
-  .admin-header
-    h1 Manage Periods
-    p Create and manage academic periods.
+  style.
+    /* Modern Dashboard Styling */
+    .periods-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+      animation: fadeIn 0.4s ease-out;
+    }
+    /* Hide scrollbars globally for this page */
+    body::-webkit-scrollbar,
+    .periods-container::-webkit-scrollbar,
+    .table-responsive::-webkit-scrollbar,
+    dialog::-webkit-scrollbar,
+    textarea::-webkit-scrollbar { 
+      display: none; 
+    }
+    body, .periods-container, .table-responsive, dialog, textarea { 
+      -ms-overflow-style: none; 
+      scrollbar-width: none; 
+    }
+    
+    /* Prevent background scrolling when modal is open */
+    body:has(dialog[open]) {
+      overflow: hidden;
+    }
 
-  if error
-    .alert.alert-error Action failed (perhaps overlapping dates or invalid JSON). Please try again.
+    .admin-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 30px;
+      padding-bottom: 15px;
+      border-bottom: 1px solid var(--border-color);
+    }
+    .admin-header h1 {
+      margin: 0;
+      color: var(--text-primary);
+      font-size: 2rem;
+      font-weight: 600;
+    }
+    .admin-header p {
+      margin: 5px 0 0 0;
+      color: var(--text-secondary);
+      font-size: 0.95rem;
+    }
+    
+    .card {
+      background: var(--bg-card);
+      border-radius: 12px;
+      box-shadow: var(--shadow);
+      padding: 25px;
+      margin-bottom: 30px;
+      border: 1px solid var(--border-color);
+    }
+    
+    .table-responsive {
+      overflow-x: auto;
+      border-radius: 8px;
+    }
 
-  button.btn.btn-primary(onclick="document.getElementById('createPeriodModal').showModal()" style="margin-bottom: 20px;") + Create New Period
+    table.modern-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+    }
+    table.modern-table th {
+      background-color: var(--bg-secondary);
+      color: var(--text-secondary);
+      font-weight: 600;
+      padding: 15px;
+      border-bottom: 2px solid var(--border-color);
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    table.modern-table td {
+      padding: 15px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      color: var(--text-primary);
+      font-size: 0.95rem;
+      vertical-align: middle;
+    }
+    table.modern-table tbody tr:hover {
+      background-color: rgba(255, 255, 255, 0.05);
+      transition: background-color 0.2s;
+    }
+    
+    .status-badge {
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      text-transform: capitalize;
+    }
+    .status-active {
+      background-color: rgba(16, 185, 129, 0.15);
+      color: var(--success);
+    }
+    .status-draft {
+      background-color: rgba(245, 158, 11, 0.15);
+      color: var(--warning);
+    }
 
-  dialog#createPeriodModal(style="padding: 20px; border: none; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); width: 400px; max-width: 90vw;")
-    div(style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;")
-      h3(style="margin: 0;") Create New Period
-      button.btn.btn-sm.btn-danger(onclick="document.getElementById('createPeriodModal').close()") &times;
-    form(action="/admin/periods/create" method="POST")
-      .form-group
-        label Code (e.g. FALL2026)
-        input.form-control(type="text" name="code" required)
-      .form-group
-        label Name (e.g. Fall Semester 2026)
-        input.form-control(type="text" name="name" required)
-      .form-group
-        label Start Date
-        input.form-control(type="date" name="start_date" required)
-      .form-group
-        label End Date
-        input.form-control(type="date" name="end_date" required)
-      .form-group
-        label Point Goal
-        input.form-control(type="number" name="point_goal" required)
-      .form-group
-        label Scope Rule (optional JSON)
-        textarea.form-control(name="scope_rule_json" rows="2" placeholder='e.g. {"min_scholarship_percentage": 50, "faculty": "FCS"}')
-        small.form-text Keys: min_scholarship_percentage, study_level, faculty. Leave empty for all active students.
-      div(style="text-align: right; margin-top: 15px;")
-        button.btn.btn-primary(type="submit") Create Period
+    .btn-modern {
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-weight: 500;
+      transition: all 0.2s;
+      border: none;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      text-decoration: none;
+    }
+    .btn-modern-primary {
+      background: var(--gradient-1);
+      color: white;
+      box-shadow: 0 4px 15px var(--accent-glow);
+    }
+    .btn-modern-primary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px var(--accent-glow);
+    }
+    .btn-modern-success {
+      background-color: var(--success);
+      color: white;
+    }
+    .btn-modern-success:hover {
+      background-color: #059669;
+    }
+    
+    dialog::backdrop {
+      background-color: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(4px);
+    }
+    dialog[open] {
+      animation: modalFadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      margin: auto;
+    }
+    @keyframes modalFadeIn {
+      from { opacity: 0; transform: scale(0.95) translateY(-20px); }
+      to { opacity: 1; transform: scale(1) translateY(0); }
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .form-control-modern {
+      width: 100%;
+      padding: 10px 15px;
+      background: var(--bg-input);
+      border: 1px solid var(--border-color);
+      color: var(--text-primary);
+      border-radius: 6px;
+      font-size: 0.95rem;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      box-sizing: border-box;
+    }
+    .form-control-modern:focus {
+      outline: none;
+      border-color: var(--border-focus);
+      box-shadow: 0 0 0 3px var(--accent-glow);
+    }
+    .form-group-modern {
+      margin-bottom: 18px;
+    }
+    .form-group-modern label {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+    }
 
-  table.table
-    thead
-      tr
-        th Code
-        th Name
-        th Dates
-        th Goal
-        th Scope Rule
-        th Status
-        th Actions
-    tbody
-      each p in periods
-        tr
-          td= p.code
-          td= p.name
-          td #{p.start_date} to #{p.end_date}
-          td= p.point_goal
-          td= p.scope_rule_json ? JSON.stringify(p.scope_rule_json) : 'All students'
-          td= p.status
-          td
-            if p.status === 'draft'
-              form(action="/admin/periods/activate" method="POST" style="display:inline;")
-                input(type="hidden" name="period_id" value=p.id)
-                button.btn.btn-sm.btn-success(type="submit") Activate
-            if p.status === 'active'
-              a.btn.btn-sm.btn-primary(href=`/admin/periods/${p.id}/enrolments`) View Enrolments
+  .periods-container
+    .admin-header
+      div
+        h1 Manage Periods
+        p Create and manage academic periods.
+      button.btn-modern.btn-modern-primary(onclick="document.getElementById('createPeriodModal').showModal()") 
+        span(style="margin-right: 8px; font-size: 1.2rem;") +
+        | New Period
+
+    if error
+      .alert.alert-error(style="background: rgba(239, 68, 68, 0.15); color: var(--danger); padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid rgba(239, 68, 68, 0.3);") Action failed (perhaps overlapping dates or invalid JSON). Please try again.
+
+    .card
+      .table-responsive
+        table.modern-table
+          thead
+            tr
+              th Code
+              th Name
+              th Dates
+              th Goal
+              th Scope Rule
+              th Status
+              th Actions
+          tbody
+            each p in periods
+              tr
+                td(style="font-weight: 500; color: var(--text-primary);")= p.code
+                td= p.name
+                td(style="color: var(--text-secondary); font-size: 0.9rem;") #{p.start_date} &rarr; #{p.end_date}
+                td(style="font-weight: 600;")= p.point_goal
+                td
+                  if p.scope_rule_json
+                    code(style="background: var(--bg-secondary); padding: 4px 8px; border-radius: 4px; font-size: 0.8rem; color: var(--text-primary);")= JSON.stringify(p.scope_rule_json)
+                  else
+                    span(style="color: var(--text-muted); font-style: italic;") All students
+                td
+                  span.status-badge(class=`status-${p.status}`)= p.status
+                td
+                  if p.status === 'draft'
+                    form(action="/admin/periods/activate" method="POST" style="display:inline;")
+                      input(type="hidden" name="period_id" value=p.id)
+                      button.btn-modern.btn-modern-success(type="submit" style="padding: 6px 12px; font-size: 0.85rem;") Activate
+                  if p.status === 'active'
+                    a.btn-modern.btn-modern-primary(href=`/admin/periods/${p.id}/enrolments` style="padding: 6px 12px; font-size: 0.85rem;") View Enrolments
+
+    dialog#createPeriodModal(style="padding: 30px; border: 1px solid var(--border-color); background: var(--bg-card); color: var(--text-primary); border-radius: 16px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.5); width: 500px; max-width: 90vw;")
+      div(style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;")
+        h3(style="margin: 0; color: var(--text-primary); font-size: 1.4rem; font-weight: 600;") Create New Period
+        button(onclick="document.getElementById('createPeriodModal').close()" style="background: var(--bg-secondary); border: none; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--text-secondary); transition: all 0.2s;" onmouseover="this.style.background='var(--bg-input)'; this.style.color='var(--text-primary)'" onmouseout="this.style.background='var(--bg-secondary)'; this.style.color='var(--text-secondary)'" title="Close") &times;
+      
+      form(action="/admin/periods/create" method="POST")
+        .form-group-modern
+          label Code (e.g. FALL2026)
+          input.form-control-modern(type="text" name="code" required)
+        
+        .form-group-modern
+          label Name (e.g. Fall Semester 2026)
+          input.form-control-modern(type="text" name="name" required)
+        
+        div(style="display: flex; gap: 15px;")
+          .form-group-modern(style="flex: 1;")
+            label Start Date
+            input.form-control-modern(type="date" name="start_date" required)
+          .form-group-modern(style="flex: 1;")
+            label End Date
+            input.form-control-modern(type="date" name="end_date" required)
+        
+        .form-group-modern
+          label Point Goal
+          input.form-control-modern(type="number" name="point_goal" required)
+        
+        .form-group-modern
+          label Scope Rule (optional JSON)
+          textarea.form-control-modern(name="scope_rule_json" rows="3" placeholder='e.g. {"min_scholarship_percentage": 50, "faculty": "FCS"}')
+          small(style="display: block; margin-top: 6px; color: var(--text-muted); font-size: 0.8rem;") Keys: min_scholarship_percentage, study_level, faculty. Leave empty for all active students.
+        
+        div(style="text-align: right; margin-top: 30px;")
+          button.btn-modern.btn-modern-primary(type="submit" style="width: 100%; padding: 12px; font-size: 1rem;") Create Period
