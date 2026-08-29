@@ -111,11 +111,14 @@ block content
         h1 Manage Users & Roles
         p Search users and assign roles below.
       .header-actions
-        a.btn-modern.btn-modern-outline(href="/admin/students/import")
-          span ↑
-          | Import Students (Excel)
+        form(action="/admin/students/sync" method="POST" style="margin: 0;")
+          button.btn-modern.btn-modern-outline(type="submit")
+            span 🔄
+            | Sync with University SIS
     
-    if error
+    if query && query.success === 'sync'
+      .alert.alert-success(style="background: rgba(16,185,129,0.15); color: var(--success); padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid rgba(16,185,129,0.3);") Sync complete: #{query.imported} imported, #{query.skipped} skipped.
+    if error || (query && query.error === 'sync_failed')
       .alert.alert-error(style="background: rgba(239,68,68,0.15); color: var(--danger); padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid rgba(239,68,68,0.3);") Action failed. Please try again.
 
     .card
