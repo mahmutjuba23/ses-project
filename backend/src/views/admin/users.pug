@@ -99,6 +99,45 @@ block content
       to { opacity: 1; transform: translateY(0); }
     }
 
+    /* Dropdown Styles */
+    .dropdown {
+      position: relative;
+      display: inline-block;
+    }
+    .dropdown-content {
+      display: none;
+      position: absolute;
+      right: 0;
+      background-color: var(--bg-card);
+      min-width: 180px;
+      box-shadow: var(--shadow-lg);
+      z-index: 10;
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
+      overflow: hidden;
+      padding: 5px 0;
+    }
+    .dropdown:hover .dropdown-content {
+      display: block;
+      animation: fadeIn 0.2s ease-out;
+    }
+    .dropdown-item {
+      padding: 8px 15px;
+      display: block;
+      width: 100%;
+      text-align: left;
+      background: none;
+      border: none;
+      color: var(--text-primary);
+      cursor: pointer;
+      font-size: 0.85rem;
+      transition: background 0.2s;
+    }
+    .dropdown-item:hover {
+      background-color: rgba(255, 255, 255, 0.05);
+      color: var(--accent);
+    }
+
     .form-control-modern {
       width: 100%; padding: 10px 15px;
       background: var(--bg-input); border: 1px solid var(--border-color);
@@ -149,29 +188,12 @@ block content
                   else
                     span(style="color: var(--text-muted); font-style: italic; font-size: 0.9rem;") No roles
                 td
-                  button.btn-modern.btn-modern-primary.btn-modern-sm(onclick=`openRoleModal(${u.id}, '${u.full_name}')`) Manage Roles
-
-    dialog#roleModal(style="padding: 30px; border: 1px solid var(--border-color); background: var(--bg-card); color: var(--text-primary); border-radius: 16px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.5); width: 420px; max-width: 90vw;")
-      div(style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;")
-        h3(style="margin: 0; color: var(--text-primary); font-size: 1.3rem; font-weight: 600;")
-          | Assign Role to&nbsp;
-          span#roleModalUserName(style="color: var(--accent);")
-        button(onclick="document.getElementById('roleModal').close()" style="background: var(--bg-secondary); border: none; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--text-secondary); transition: all 0.2s; font-size: 1.2rem;" title="Close") &times;
-      form(action="/admin/users/assign-role" method="POST")
-        input(type="hidden" name="user_id" id="roleModalUserId" value="")
-        .form-group-modern
-          label Select Role
-          select.form-control-modern(name="role_id" required)
-            option(value="") -- Select Role --
-            each role in allRoles
-              option(value=role.id)= role.name
-        div(style="margin-top: 25px;")
-          button.btn-modern.btn-modern-primary(type="submit" style="width: 100%; padding: 12px;") Assign Role
-
-  script.
-    function openRoleModal(userId, userName) {
-      document.getElementById('roleModalUserId').value = userId;
-      document.getElementById('roleModalUserName').textContent = userName;
-      document.getElementById('roleModal').showModal();
-    }
-
+                  .dropdown
+                    button.btn-modern.btn-modern-primary.btn-modern-sm
+                      | Manage Roles ▾
+                    .dropdown-content
+                      each role in allRoles
+                        form(action="/admin/users/assign-role" method="POST" style="margin: 0;")
+                          input(type="hidden" name="user_id" value=u.id)
+                          input(type="hidden" name="role_id" value=role.id)
+                          button.dropdown-item(type="submit") + Assign #{role.name}
