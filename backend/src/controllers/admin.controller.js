@@ -79,42 +79,60 @@ async function removeRole(req, res) {
   }
 }
 
-async function syncStudentsWithSIS(req, res) {
+const xlsx = require("xlsx");
+
+async function importStudentsExcel(req, res) {
   try {
-    // MOCK: In a real system, this would make an HTTP request to the University SIS API
-    // e.g., const response = await axios.get("https://sis.university.edu/api/students?active=true", { headers: ... });
-    // For now, we mock the response from the SIS
-    const sisStudentsMock = [
-      { first_name: "Alice", last_name: "Smith", student_number: "UNIV-2026-0101" },
-      { first_name: "Bob", last_name: "Jones", student_number: "UNIV-2026-0102" },
-      { first_name: "Charlie", last_name: "Brown", student_number: "UNIV-2026-0103" }
-    ];
+    if (!req.file) {
+      return res.redirect("/admin/students?error=no_file");
+    }
+
+    // Read the uploaded file buffer
+    const workbook = xlsx.read(req.file.buffer, { type: "buffer" });
+    const sheetName = workbook.SheetNames[0];
+    const sheet = workbook.Sheets[sheetName];
+    const data = xlsx.utils.sheet_to_json(sheet);
+
+    if (!data || data.length === 0) {
+      return res.redirect("/admin/students?error=empty_file");
+    }
 
     let imported = 0;
     let skipped = 0;
 
-    for (const sisStudent of sisStudentsMock) {
-      const existing = await Student.findOne({ where: { student_number: sisStudent.student_number } });
+    for (const row of data) {
+      // Expecting columns: 'First Name', 'Last Name', 'Student ID'
+      const firstName = row["First Name"];
+      const lastName = row["Last Name"];
+      const studentId = row["Student ID"];
+
+      if (!firstName || !lastName || !studentId) {
+        skipped++;
+        continue;
+      }
+
+      // Check for existing
+      const existing = await Student.findOne({ where: { student_number: String(studentId) } });
       if (existing) {
         skipped++;
         continue;
       }
 
-      const email = `${sisStudent.student_number.toLowerCase()}@student.ses.edu`;
-      const password_hash = await hashPassword(`Ses@${sisStudent.student_number}`);
+      const email = `${String(studentId).toLowerCase()}@student.ses.edu`;
+      const password_hash = await hashPassword(`Ses@${studentId}`);
 
       const newUser = await User.create({
         email,
-        full_name: `${sisStudent.first_name} ${sisStudent.last_name}`,
+        full_name: `${firstName} ${lastName}`,
         password_hash,
         is_active: true,
       });
 
       await Student.create({
         user_id: newUser.id,
-        student_number: sisStudent.student_number,
-        first_name: sisStudent.first_name,
-        last_name: sisStudent.last_name,
+        student_number: String(studentId),
+        first_name: firstName,
+        last_name: lastName,
         email,
         is_active: true,
       });
@@ -123,18 +141,18 @@ async function syncStudentsWithSIS(req, res) {
         actor_user_id: req.user ? req.user.id : 1,
         entity: "Student",
         entity_id: newUser.id,
-        action: "SIS_SYNC",
-        new_value: sisStudent,
-        reason: "Auto-synced from SIS API",
+        action: "EXCEL_IMPORT",
+        new_value: { firstName, lastName, studentId },
+        reason: "Imported via Excel upload",
       });
 
       imported++;
     }
 
-    res.redirect(`/admin/students?success=sync&imported=${imported}&skipped=${skipped}`);
+    res.redirect(`/admin/students?success=import&imported=${imported}&skipped=${skipped}`);
   } catch (error) {
-    console.error("SIS Sync error:", error);
-    res.redirect("/admin/students?error=sync_failed");
+    console.error("Excel Import error:", error);
+    res.redirect("/admin/students?error=import_failed");
   }
 }
 
@@ -186,7 +204,7 @@ module.exports = {
   manageUsersPage,
   assignRole,
   removeRole,
-  syncStudentsWithSIS,
+  importStudentsExcel,
   listStudents,
   viewStudentProfile
 };

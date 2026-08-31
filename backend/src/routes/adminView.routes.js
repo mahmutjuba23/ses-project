@@ -1,5 +1,5 @@
 const express = require("express");
-const { manageUsersPage, assignRole, removeRole, syncStudentsWithSIS, listStudents, viewStudentProfile } = require("../controllers/admin.controller");
+const { manageUsersPage, assignRole, removeRole, importStudentsExcel, listStudents, viewStudentProfile } = require("../controllers/admin.controller");
 const { listPeriods, createPeriod, activatePeriod, showEnrolments, overrideGoal } = require("../controllers/periods.controller");
 const { listEvents, createEvent, updateEvent, publishEvent, finishEvent, cancelEvent } = require("../controllers/events.controller");
 const { listEventCalls, createCall, deleteCall, reviewApplications, updateApplicationStatus } = require("../controllers/calls.controller");
@@ -10,13 +10,15 @@ const router = express.Router();
 // All admin routes require authentication AND admin role
 const adminOnly = [authenticateView, isAdmin];
 
-// Users / Roles
+const { excelUpload } = require("../middleware/upload.middleware");
+
+// Students & Users
 router.get("/users", adminOnly, manageUsersPage);
 router.post("/users/assign-role", adminOnly, assignRole);
 router.post("/users/remove-role", adminOnly, removeRole);
 
-// Bulk Student Import (Mock SIS Sync)
-router.post("/students/sync", adminOnly, syncStudentsWithSIS);
+// Excel Student Import
+router.post("/students/import", adminOnly, excelUpload.single("file"), importStudentsExcel);
 router.get("/students", adminOnly, listStudents);
 router.get("/students/:id", adminOnly, viewStudentProfile);
 

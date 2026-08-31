@@ -76,14 +76,15 @@ block content
         h1 Students Database
         p Click on a student to view their detailed profile, points, and applications.
       .header-actions
-        form(action="/admin/students/sync" method="POST" style="margin: 0;")
+        form(action="/admin/students/import" method="POST" enctype="multipart/form-data" style="margin: 0; display: flex; align-items: center; gap: 10px;")
+          input.form-control-modern(type="file" name="file" accept=".xlsx,.xls,.csv" required style="padding: 6px; width: 220px; font-size: 0.8rem; height: auto;")
           button.btn-modern.btn-modern-outline(type="submit")
-            span 🔄
-            | Sync with University SIS
+            span 📄
+            | Import Excel
     
-    if query && query.success === 'sync'
-      .alert.alert-success(style="background: rgba(16,185,129,0.15); color: var(--success); padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid rgba(16,185,129,0.3);") Sync complete: #{query.imported} imported, #{query.skipped} skipped.
-    if error || (query && query.error === 'sync_failed')
+    if query && query.success === 'import'
+      .alert.alert-success(style="background: rgba(16,185,129,0.15); color: var(--success); padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid rgba(16,185,129,0.3);") Import complete: #{query.imported} imported, #{query.skipped} skipped.
+    if error || (query && query.error === 'import_failed')
       .alert.alert-error(style="background: rgba(239,68,68,0.15); color: var(--danger); padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid rgba(239,68,68,0.3);") Action failed. Please try again.
 
     .card

@@ -28,7 +28,7 @@ const fileFilter = (req, file, cb) => {
   }
 };
 
-// Initialize multer
+// Initialize multer for Resumes (PDFs to disk)
 const upload = multer({
   storage: storage,
   fileFilter: fileFilter,
@@ -37,6 +37,24 @@ const upload = multer({
   },
 });
 
+// Initialize multer for Excel Imports (to memory)
+const excelUpload = multer({
+  storage: multer.memoryStorage(),
+  fileFilter: (req, file, cb) => {
+    if (file.mimetype === "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" || 
+        file.mimetype === "application/vnd.ms-excel" ||
+        file.mimetype === "text/csv") {
+      cb(null, true);
+    } else {
+      cb(new Error("Only Excel/CSV files are allowed!"), false);
+    }
+  },
+  limits: {
+    fileSize: 10 * 1024 * 1024, // 10 MB limit for spreadsheets
+  }
+});
+
 module.exports = {
   upload,
+  excelUpload,
 };
