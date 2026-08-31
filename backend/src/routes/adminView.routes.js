@@ -1,7 +1,7 @@
 const express = require("express");
 const { manageUsersPage, assignRole, removeRole, syncStudentsWithSIS } = require("../controllers/admin.controller");
 const { listPeriods, createPeriod, activatePeriod, showEnrolments, overrideGoal } = require("../controllers/periods.controller");
-const { listEvents, createEvent, publishEvent, finishEvent, cancelEvent } = require("../controllers/events.controller");
+const { listEvents, createEvent, updateEvent, publishEvent, finishEvent, cancelEvent } = require("../controllers/events.controller");
 const { listEventCalls, createCall, deleteCall, reviewApplications, updateApplicationStatus } = require("../controllers/calls.controller");
 const { authenticateView, isAdmin } = require("../middleware/viewAuth.middleware");
 
@@ -28,6 +28,7 @@ router.post("/periods/override-goal", adminOnly, overrideGoal);
 // Events
 router.get("/events", adminOnly, listEvents);
 router.post("/events/create", adminOnly, createEvent);
+router.post("/events/update", adminOnly, updateEvent);
 router.post("/events/publish", adminOnly, publishEvent);
 router.post("/events/finish", adminOnly, finishEvent);
 router.post("/events/cancel", adminOnly, cancelEvent);

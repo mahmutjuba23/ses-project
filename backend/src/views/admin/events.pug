@@ -2,218 +2,145 @@ extends ../layout
 
 block content
   style.
-    /* Modern Dashboard Styling */
     .events-container {
       max-width: 1200px;
       margin: 0 auto;
       padding: 20px;
       animation: fadeIn 0.4s ease-out;
     }
-    /* Hide scrollbars globally for this page */
-    body::-webkit-scrollbar,
-    .events-container::-webkit-scrollbar,
-    .table-responsive::-webkit-scrollbar,
-    dialog::-webkit-scrollbar,
-    textarea::-webkit-scrollbar { 
-      display: none; 
+    body::-webkit-scrollbar, .events-container::-webkit-scrollbar,
+    .table-responsive::-webkit-scrollbar, dialog::-webkit-scrollbar,
+    textarea::-webkit-scrollbar { display: none; }
+    body, .events-container, .table-responsive, dialog, textarea {
+      -ms-overflow-style: none; scrollbar-width: none;
     }
-    body, .events-container, .table-responsive, dialog, textarea { 
-      -ms-overflow-style: none; 
-      scrollbar-width: none; 
-    }
-    
-    /* Prevent background scrolling when modal is open */
-    body:has(dialog[open]) {
-      overflow: hidden;
-    }
+    body:has(dialog[open]) { overflow: hidden; }
 
     .admin-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 30px;
-      padding-bottom: 15px;
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 30px; padding-bottom: 15px;
       border-bottom: 1px solid var(--border-color);
     }
-    .admin-header h1 {
-      margin: 0;
-      color: var(--text-primary);
-      font-size: 2rem;
-      font-weight: 600;
-    }
-    .admin-header p {
-      margin: 5px 0 0 0;
-      color: var(--text-secondary);
-      font-size: 0.95rem;
-    }
-    
-    .card {
-      background: var(--bg-card);
-      border-radius: 12px;
-      box-shadow: var(--shadow);
-      padding: 25px;
-      margin-bottom: 30px;
-      border: 1px solid var(--border-color);
-    }
-    
-    .table-responsive {
-      overflow-x: auto;
-      border-radius: 8px;
-    }
+    .admin-header h1 { margin: 0; color: var(--text-primary); font-size: 2rem; font-weight: 600; }
+    .admin-header p { margin: 5px 0 0; color: var(--text-secondary); font-size: 0.95rem; }
 
-    table.modern-table {
-      width: 100%;
-      border-collapse: collapse;
-      text-align: left;
+    .card {
+      background: var(--bg-card); border-radius: 12px; box-shadow: var(--shadow);
+      padding: 25px; margin-bottom: 30px; border: 1px solid var(--border-color);
     }
+    .table-responsive { overflow-x: auto; border-radius: 8px; }
+
+    table.modern-table { width: 100%; border-collapse: collapse; text-align: left; }
     table.modern-table th {
-      background-color: var(--bg-secondary);
-      color: var(--text-secondary);
-      font-weight: 600;
-      padding: 15px;
-      border-bottom: 2px solid var(--border-color);
-      font-size: 0.9rem;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
+      background-color: var(--bg-secondary); color: var(--text-secondary); font-weight: 600;
+      padding: 15px; border-bottom: 2px solid var(--border-color);
+      font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.5px;
     }
     table.modern-table td {
-      padding: 15px;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-      color: var(--text-primary);
-      font-size: 0.95rem;
-      vertical-align: middle;
+      padding: 15px; border-bottom: 1px solid rgba(255,255,255,0.05);
+      color: var(--text-primary); font-size: 0.95rem; vertical-align: middle;
     }
-    table.modern-table tbody tr:hover {
-      background-color: rgba(255, 255, 255, 0.05);
-      transition: background-color 0.2s;
+    table.modern-table tbody tr:hover { background-color: rgba(255,255,255,0.05); transition: background-color 0.2s; }
+
+    /* Clickable event title */
+    .event-title-link {
+      font-weight: 600; color: var(--text-primary); cursor: pointer;
+      display: inline-flex; align-items: center; gap: 6px; transition: color 0.2s;
     }
-    
+    .event-title-link:hover { color: var(--accent); }
+    .event-title-link .edit-icon { font-size: 0.8rem; opacity: 0; transition: opacity 0.2s; }
+    .event-title-link:hover .edit-icon { opacity: 1; }
+
     .status-badge {
-      padding: 6px 12px;
-      border-radius: 20px;
-      font-size: 0.85rem;
-      font-weight: 500;
-      text-transform: capitalize;
+      padding: 6px 12px; border-radius: 20px;
+      font-size: 0.85rem; font-weight: 500; text-transform: capitalize;
     }
-    .status-draft {
-      background-color: rgba(245, 158, 11, 0.15);
-      color: var(--warning);
-    }
-    .status-published {
-      background-color: rgba(16, 185, 129, 0.15);
-      color: var(--success);
-    }
-    .status-finished {
-      background-color: rgba(99, 102, 241, 0.15);
-      color: var(--accent);
-    }
-    .status-cancelled {
-      background-color: rgba(239, 68, 68, 0.15);
-      color: var(--danger);
-    }
+    .status-draft  { background-color: rgba(245,158,11,0.15); color: var(--warning); }
+    .status-published { background-color: rgba(16,185,129,0.15); color: var(--success); }
+    .status-finished { background-color: rgba(99,102,241,0.15); color: var(--accent); }
+    .status-cancelled { background-color: rgba(239,68,68,0.15); color: var(--danger); }
 
     .btn-modern {
-      padding: 10px 20px;
-      border-radius: 8px;
-      font-weight: 500;
-      transition: all 0.2s;
-      border: none;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      text-decoration: none;
+      padding: 10px 20px; border-radius: 8px; font-weight: 500; transition: all 0.2s;
+      border: none; cursor: pointer; display: inline-flex; align-items: center;
+      justify-content: center; gap: 5px; text-decoration: none;
     }
-    .btn-modern-sm {
-      padding: 6px 12px;
-      font-size: 0.85rem;
-      border-radius: 6px;
-    }
+    .btn-modern-sm { padding: 6px 11px; font-size: 0.82rem; border-radius: 6px; }
+
     .btn-modern-primary {
-      background: var(--gradient-1);
-      color: white;
-      box-shadow: 0 4px 6px var(--accent-glow);
+      background: var(--gradient-1); color: white; box-shadow: 0 4px 6px var(--accent-glow);
     }
-    .btn-modern-primary:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 6px 12px var(--accent-glow);
+    .btn-modern-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 12px var(--accent-glow); }
+
+    /* Teal gradient for Publish */
+    .btn-modern-publish {
+      background: linear-gradient(135deg, #0ea5e9, #10b981); color: white;
+      box-shadow: 0 4px 8px rgba(16,185,129,0.3);
     }
-    .btn-modern-success {
-      background-color: var(--success);
-      color: white;
+    .btn-modern-publish:hover { transform: translateY(-1px); box-shadow: 0 6px 14px rgba(16,185,129,0.4); }
+
+    /* Purple gradient for Manage Calls */
+    .btn-modern-manage {
+      background: linear-gradient(135deg, #8b5cf6, #6366f1); color: white;
+      box-shadow: 0 4px 8px rgba(99,102,241,0.3);
     }
-    .btn-modern-success:hover {
-      background-color: #059669;
+    .btn-modern-manage:hover { transform: translateY(-1px); box-shadow: 0 6px 14px rgba(99,102,241,0.4); }
+
+    /* Slate for Finish */
+    .btn-modern-finish {
+      background: linear-gradient(135deg, #475569, #334155); color: white;
+      box-shadow: 0 4px 8px rgba(71,85,105,0.3);
     }
+    .btn-modern-finish:hover { transform: translateY(-1px); box-shadow: 0 6px 14px rgba(71,85,105,0.4); }
+
+    /* Red gradient for Cancel/Danger */
     .btn-modern-danger {
-      background-color: var(--danger);
-      color: white;
+      background: linear-gradient(135deg, #ef4444, #dc2626); color: white;
+      box-shadow: 0 4px 8px rgba(239,68,68,0.25);
     }
-    .btn-modern-danger:hover {
-      background-color: #dc2626;
-    }
-    
-    dialog::backdrop {
-      background-color: rgba(0, 0, 0, 0.7);
-      backdrop-filter: blur(8px);
-    }
-    dialog {
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      margin: 0;
-    }
-    dialog[open] {
-      animation: modalFadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-    }
+    .btn-modern-danger:hover { transform: translateY(-1px); box-shadow: 0 6px 14px rgba(239,68,68,0.35); }
+
+    dialog::backdrop { background-color: rgba(0,0,0,0.7); backdrop-filter: blur(8px); }
+    dialog { position: fixed; top: 50%; left: 50%; transform: translate(-50%,-50%); margin: 0; }
+    dialog[open] { animation: modalFadeIn 0.4s cubic-bezier(0.16,1,0.3,1) forwards; }
     @keyframes modalFadeIn {
-      from { opacity: 0; transform: translate(-50%, -45%) scale(0.95); }
-      to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+      from { opacity: 0; transform: translate(-50%,-45%) scale(0.95); }
+      to   { opacity: 1; transform: translate(-50%,-50%) scale(1); }
     }
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
+      to   { opacity: 1; transform: translateY(0); }
     }
-    
+
     .form-control-modern {
-      width: 100%;
-      padding: 10px 15px;
-      background: var(--bg-input);
-      border: 1px solid var(--border-color);
-      color: var(--text-primary);
-      border-radius: 6px;
-      font-size: 0.95rem;
-      transition: border-color 0.2s, box-shadow 0.2s;
-      box-sizing: border-box;
+      width: 100%; padding: 10px 15px; background: var(--bg-input);
+      border: 1px solid var(--border-color); color: var(--text-primary);
+      border-radius: 6px; font-size: 0.95rem;
+      transition: border-color 0.2s, box-shadow 0.2s; box-sizing: border-box;
     }
     .form-control-modern:focus {
-      outline: none;
-      border-color: var(--border-focus);
+      outline: none; border-color: var(--border-focus);
       box-shadow: 0 0 0 3px var(--accent-glow);
     }
-    .form-group-modern {
-      margin-bottom: 18px;
-    }
+    .form-group-modern { margin-bottom: 18px; }
     .form-group-modern label {
-      display: block;
-      margin-bottom: 6px;
-      font-weight: 500;
-      color: var(--text-secondary);
-      font-size: 0.9rem;
+      display: block; margin-bottom: 6px; font-weight: 500;
+      color: var(--text-secondary); font-size: 0.9rem;
     }
+    .cancel-inline { display: flex; gap: 5px; align-items: center; margin: 0; }
+    .cancel-inline input { width: 110px; padding: 6px 10px; font-size: 0.82rem; }
 
   .events-container
     .admin-header
       div
         h1 Manage Events
         p Create and manage events and their lifecycle.
-      button.btn-modern.btn-modern-primary(onclick="document.getElementById('createEventModal').showModal()") 
-        span(style="margin-right: 8px; font-size: 1.2rem;") +
+      button.btn-modern.btn-modern-primary(onclick="document.getElementById('createEventModal').showModal()")
+        span ✦
         | New Event
 
     if pageWarning === 'no_period_match'
-      .alert.alert-warning(style="background-color: rgba(245, 158, 11, 0.15); color: var(--warning); padding: 15px; margin-bottom: 20px; border-radius: 8px; border: 1px solid rgba(245, 158, 11, 0.3);") Warning: The event was created, but its dates do not fall within any active Period. No period was automatically assigned.
+      .alert.alert-warning(style="background-color: rgba(245,158,11,0.15); color: var(--warning); padding: 15px; margin-bottom: 20px; border-radius: 8px; border: 1px solid rgba(245,158,11,0.3);") ⚠️ Warning: Event created, but its dates don't fall within any active Period.
 
     .card
       .table-responsive
@@ -229,7 +156,12 @@ block content
           tbody
             each e in events
               tr
-                td(style="font-weight: 500; color: var(--text-primary);")= e.title
+                td
+                  span.event-title-link(
+                    onclick=`openEditModal(${e.id}, '${e.title.replace(/'/g, "\\'")}', '${(e.description||'').replace(/'/g, "\\'")}', '${e.start_date}', '${e.end_date}', ${e.category_id || 'null'})`
+                  )
+                    | #{e.title}
+                    span.edit-icon ✏️
                 td
                   span(style="background: var(--bg-secondary); padding: 4px 8px; border-radius: 4px; font-size: 0.85rem; color: var(--text-primary);")= e.EventCategory ? e.EventCategory.name : '—'
                 td(style="color: var(--text-secondary); font-size: 0.9rem;") #{e.start_date} &rarr; #{e.end_date}
@@ -237,42 +169,41 @@ block content
                 td
                   span.status-badge(class=`status-${e.status}`)= e.status
                 td
-                  div(style="display: flex; gap: 5px; align-items: center;")
+                  div(style="display: flex; gap: 5px; align-items: center; flex-wrap: wrap;")
                     if e.status === 'draft'
                       form(action="/admin/events/publish" method="POST" style="margin: 0;")
                         input(type="hidden" name="event_id" value=e.id)
-                        button.btn-modern.btn-modern-success.btn-modern-sm(type="submit") Publish
+                        button.btn-modern.btn-modern-publish.btn-modern-sm(type="submit") 🚀 Publish
                       form(action="/admin/events/cancel" method="POST" style="margin: 0;")
                         input(type="hidden" name="event_id" value=e.id)
                         input(type="hidden" name="cancel_reason" value="Cancelled while in draft")
-                        button.btn-modern.btn-modern-danger.btn-modern-sm(type="submit") Cancel
+                        button.btn-modern.btn-modern-danger.btn-modern-sm(type="submit") 🗑 Cancel
                     else if e.status === 'published'
-                      a.btn-modern.btn-modern-success.btn-modern-sm(href=`/admin/events/${e.id}/calls`) Manage Calls
+                      a.btn-modern.btn-modern-manage.btn-modern-sm(href=`/admin/events/${e.id}/calls`) 📋 Calls
                       form(action="/admin/events/finish" method="POST" style="margin: 0;")
                         input(type="hidden" name="event_id" value=e.id)
-                        button.btn-modern.btn-modern-primary.btn-modern-sm(type="submit") Finish
-                      form(action="/admin/events/cancel" method="POST" style="margin: 0; display: flex; gap: 5px;")
+                        button.btn-modern.btn-modern-finish.btn-modern-sm(type="submit") ✅ Finish
+                      form.cancel-inline(action="/admin/events/cancel" method="POST")
                         input(type="hidden" name="event_id" value=e.id)
-                        input.form-control-modern(type="text" name="cancel_reason" placeholder="Reason" required style="width: 120px; padding: 6px; font-size: 0.85rem; margin: 0;")
-                        button.btn-modern.btn-modern-danger.btn-modern-sm(type="submit") Cancel
+                        input.form-control-modern(type="text" name="cancel_reason" placeholder="Reason…" required)
+                        button.btn-modern.btn-modern-danger.btn-modern-sm(type="submit") ✕
 
+    //- Create Event Modal
     dialog#createEventModal(style="padding: 30px; border: 1px solid var(--border-color); background: var(--bg-card); color: var(--text-primary); border-radius: 16px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.5); width: 500px; max-width: 90vw;")
       div(style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;")
-        h3(style="margin: 0; color: var(--text-primary); font-size: 1.4rem; font-weight: 600;") Create New Event
-        button(onclick="document.getElementById('createEventModal').close()" style="background: var(--bg-secondary); border: none; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--text-secondary); transition: all 0.2s;" onmouseover="this.style.background='var(--bg-input)'; this.style.color='var(--text-primary)'" onmouseout="this.style.background='var(--bg-secondary)'; this.style.color='var(--text-secondary)'" title="Close") &times;
-      
+        h3(style="margin: 0; color: var(--text-primary); font-size: 1.4rem; font-weight: 600;") ✦ Create New Event
+        button(onclick="document.getElementById('createEventModal').close()" style="background: var(--bg-secondary); border: none; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--text-secondary); font-size: 1.2rem; transition: all 0.2s;" title="Close") &times;
+
       form(action="/admin/events/create" method="POST")
         .form-group-modern
           label Title
           input.form-control-modern(type="text" name="title" required)
-        
         .form-group-modern
           label Category
           select.form-control-modern(name="category_id" required)
             option(value="") -- Select Category --
             each cat in categories
               option(value=cat.id)= cat.name
-        
         div(style="display: flex; gap: 15px;")
           .form-group-modern(style="flex: 1;")
             label Start Date
@@ -280,10 +211,49 @@ block content
           .form-group-modern(style="flex: 1;")
             label End Date
             input.form-control-modern(type="date" name="end_date" required)
-        
         .form-group-modern
           label Description
           textarea.form-control-modern(name="description" rows="3")
-        
-        div(style="text-align: right; margin-top: 30px;")
-          button.btn-modern.btn-modern-primary(type="submit" style="width: 100%; padding: 12px; font-size: 1rem;") Create Draft Event
+        div(style="margin-top: 30px;")
+          button.btn-modern.btn-modern-primary(type="submit" style="width: 100%; padding: 12px; font-size: 1rem;") ✦ Create Draft Event
+
+    //- Edit Event Modal
+    dialog#editEventModal(style="padding: 30px; border: 1px solid var(--border-color); background: var(--bg-card); color: var(--text-primary); border-radius: 16px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.5); width: 500px; max-width: 90vw;")
+      div(style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;")
+        h3(style="margin: 0; color: var(--text-primary); font-size: 1.4rem; font-weight: 600;") ✏️ Edit Event
+        button(onclick="document.getElementById('editEventModal').close()" style="background: var(--bg-secondary); border: none; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--text-secondary); font-size: 1.2rem; transition: all 0.2s;" title="Close") &times;
+
+      form(action="/admin/events/update" method="POST")
+        input#edit_event_id(type="hidden" name="event_id")
+        .form-group-modern
+          label Title
+          input#edit_title.form-control-modern(type="text" name="title" required)
+        .form-group-modern
+          label Category
+          select#edit_category.form-control-modern(name="category_id" required)
+            option(value="") -- Select Category --
+            each cat in categories
+              option(value=cat.id)= cat.name
+        div(style="display: flex; gap: 15px;")
+          .form-group-modern(style="flex: 1;")
+            label Start Date
+            input#edit_start_date.form-control-modern(type="date" name="start_date" required)
+          .form-group-modern(style="flex: 1;")
+            label End Date
+            input#edit_end_date.form-control-modern(type="date" name="end_date" required)
+        .form-group-modern
+          label Description
+          textarea#edit_description.form-control-modern(name="description" rows="3")
+        div(style="margin-top: 30px;")
+          button.btn-modern.btn-modern-primary(type="submit" style="width: 100%; padding: 12px; font-size: 1rem;") 💾 Save Changes
+
+  script.
+    function openEditModal(id, title, description, start_date, end_date, category_id) {
+      document.getElementById('edit_event_id').value = id;
+      document.getElementById('edit_title').value = title;
+      document.getElementById('edit_description').value = description;
+      document.getElementById('edit_start_date').value = start_date ? start_date.substring(0, 10) : '';
+      document.getElementById('edit_end_date').value = end_date ? end_date.substring(0, 10) : '';
+      if (category_id) document.getElementById('edit_category').value = category_id;
+      document.getElementById('editEventModal').showModal();
+    }

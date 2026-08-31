@@ -104,9 +104,54 @@ const publishEvent = (req, res) => updateEventStatus(req, res, 'published', 'PUB
 const finishEvent = (req, res) => updateEventStatus(req, res, 'finished', 'FINISH_EVENT');
 const cancelEvent = (req, res) => updateEventStatus(req, res, 'cancelled', 'CANCEL_EVENT');
 
+async function updateEvent(req, res) {
+  try {
+    const { event_id, title, description, start_date, end_date, category_id } = req.body;
+    const event = await Event.findByPk(event_id);
+
+    if (!event) return res.redirect("/admin/events?error=not_found");
+
+    // Re-match to an active period based on new dates
+    const period = await Period.findOne({
+      where: {
+        status: 'active',
+        start_date: { [Op.lte]: start_date },
+        end_date: { [Op.gte]: end_date }
+      }
+    });
+
+    const oldValues = { title: event.title, description: event.description, start_date: event.start_date, end_date: event.end_date };
+
+    await event.update({
+      title,
+      description,
+      start_date,
+      end_date,
+      category_id,
+      period_id: period ? period.id : event.period_id
+    });
+
+    await logAction({
+      actor_user_id: req.user ? req.user.id : 1,
+      entity: "Event",
+      entity_id: event.id,
+      action: "UPDATE_EVENT",
+      old_value: oldValues,
+      new_value: { title, description, start_date, end_date },
+      reason: "Admin edited event details"
+    });
+
+    res.redirect("/admin/events");
+  } catch (error) {
+    console.error("Update Event error:", error);
+    res.redirect("/admin/events?error=failed");
+  }
+}
+
 module.exports = {
   listEvents,
   createEvent,
+  updateEvent,
   publishEvent,
   finishEvent,
   cancelEvent
