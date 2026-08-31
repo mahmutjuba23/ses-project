@@ -26,6 +26,7 @@ const graderViewRoutes = require("./routes/graderView.routes");
 const callsViewRoutes = require("./routes/callsView.routes");
 const dashboardRoutes = require("./routes/dashboard.routes");
 const sequelize = require("./config/database");
+const { startScheduler } = require("./services/scheduler.service");
 
 const app = express();
 
@@ -77,6 +78,7 @@ async function startServer() {
 
     app.listen(PORT, () => {
       logger.info(`SES API running on http://localhost:${PORT}`);
+      startScheduler();
     });
   } catch (error) {
     logger.error("Unable to connect to the database:", error.message);

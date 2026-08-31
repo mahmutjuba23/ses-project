@@ -170,24 +170,14 @@ block content
                 td
                   span.status-badge(class=`status-${e.status}`)= e.status
                 td
-                  div(style="display: flex; gap: 5px; align-items: center; flex-wrap: wrap;")
+                  div(style="display: flex; gap: 5px; align-items: center;")
                     if e.status === 'draft'
                       form(action="/admin/events/publish" method="POST" style="margin: 0;")
                         input(type="hidden" name="event_id" value=e.id)
                         button.btn-modern.btn-modern-publish.btn-modern-sm(type="submit") 🚀 Publish
-                      form(action="/admin/events/cancel" method="POST" style="margin: 0;")
-                        input(type="hidden" name="event_id" value=e.id)
-                        input(type="hidden" name="cancel_reason" value="Cancelled while in draft")
-                        button.btn-modern.btn-modern-danger.btn-modern-sm(type="submit") 🗑 Cancel
                     else if e.status === 'published'
                       a.btn-modern.btn-modern-manage.btn-modern-sm(href=`/admin/events/${e.id}/calls`) 📋 Calls
-                      form(action="/admin/events/finish" method="POST" style="margin: 0;")
-                        input(type="hidden" name="event_id" value=e.id)
-                        button.btn-modern.btn-modern-finish.btn-modern-sm(type="submit") ✅ Finish
-                      form.cancel-inline(action="/admin/events/cancel" method="POST")
-                        input(type="hidden" name="event_id" value=e.id)
-                        input.form-control-modern(type="text" name="cancel_reason" placeholder="Reason…" required)
-                        button.btn-modern.btn-modern-danger.btn-modern-sm(type="submit") ✕
+
 
     //- Create Event Modal
     dialog#createEventModal(style="padding: 30px; border: 1px solid var(--border-color); background: var(--bg-card); color: var(--text-primary); border-radius: 16px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.5); width: 500px; max-width: 90vw;")
