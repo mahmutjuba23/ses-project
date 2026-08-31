@@ -32,6 +32,11 @@ async function assignRole(req, res) {
     // Check if role is already assigned
     const existing = await UserRole.findOne({ where: { user_id, role_id } });
     if (!existing) {
+      // User requested that only ONE role can be assigned at a time.
+      // So, remove all existing roles for this user first.
+      await UserRole.destroy({ where: { user_id } });
+      
+      // Then create the new one
       await UserRole.create({ user_id, role_id });
       
       // Log the action
@@ -41,7 +46,7 @@ async function assignRole(req, res) {
         entity_id: user_id,
         action: "ASSIGN_ROLE",
         new_value: { role_id },
-        reason: "Admin manually assigned role from UI"
+        reason: "Admin manually assigned role from UI (replacing old roles)"
       });
     }
 
