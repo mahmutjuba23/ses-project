@@ -1,0 +1,105 @@
+extends ../layout
+
+block content
+  style.
+    .students-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+      animation: fadeIn 0.4s ease-out;
+    }
+    body::-webkit-scrollbar { display: none; }
+    body { -ms-overflow-style: none; scrollbar-width: none; }
+
+    .admin-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 30px;
+      padding-bottom: 15px;
+      border-bottom: 1px solid var(--border-color);
+    }
+    .admin-header h1 { margin: 0; color: var(--text-primary); font-size: 2rem; font-weight: 600; }
+    .admin-header p  { margin: 5px 0 0; color: var(--text-secondary); font-size: 0.95rem; }
+    .header-actions { display: flex; gap: 10px; align-items: center; }
+
+    .card {
+      background: var(--bg-card);
+      border-radius: 12px;
+      box-shadow: var(--shadow);
+      padding: 25px;
+      margin-bottom: 30px;
+      border: 1px solid var(--border-color);
+    }
+    .table-responsive { overflow-x: auto; border-radius: 8px; }
+
+    table.modern-table { width: 100%; border-collapse: collapse; text-align: left; }
+    table.modern-table th {
+      background-color: var(--bg-secondary); color: var(--text-secondary); font-weight: 600;
+      padding: 15px; border-bottom: 2px solid var(--border-color);
+      font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.5px;
+    }
+    table.modern-table td {
+      padding: 15px; border-bottom: 1px solid rgba(255,255,255,0.05);
+      color: var(--text-primary); font-size: 0.95rem; vertical-align: middle;
+    }
+    
+    /* Clickable row for profile */
+    table.modern-table tbody tr.clickable-row {
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+    table.modern-table tbody tr.clickable-row:hover { 
+      background-color: rgba(255,255,255,0.08); 
+    }
+
+    .btn-modern {
+      padding: 10px 20px; border-radius: 8px; font-weight: 500;
+      transition: all 0.2s; border: none; cursor: pointer;
+      display: inline-flex; align-items: center; justify-content: center;
+      text-decoration: none; gap: 6px;
+    }
+    .btn-modern-outline {
+      background: transparent; color: var(--text-secondary);
+      border: 1px solid var(--border-color);
+    }
+    .btn-modern-outline:hover { color: var(--text-primary); border-color: var(--accent); }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+  .students-container
+    .admin-header
+      div
+        h1 Students Database
+        p Click on a student to view their detailed profile, points, and applications.
+      .header-actions
+        form(action="/admin/students/sync" method="POST" style="margin: 0;")
+          button.btn-modern.btn-modern-outline(type="submit")
+            span 🔄
+            | Sync with University SIS
+    
+    if query && query.success === 'sync'
+      .alert.alert-success(style="background: rgba(16,185,129,0.15); color: var(--success); padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid rgba(16,185,129,0.3);") Sync complete: #{query.imported} imported, #{query.skipped} skipped.
+    if error || (query && query.error === 'sync_failed')
+      .alert.alert-error(style="background: rgba(239,68,68,0.15); color: var(--danger); padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid rgba(239,68,68,0.3);") Action failed. Please try again.
+
+    .card
+      .table-responsive
+        table.modern-table
+          thead
+            tr
+              th Univ ID
+              th Full Name
+              th Email
+              th View Profile
+          tbody
+            each s in students
+              tr.clickable-row(onclick=`window.location='/admin/students/${s.id}'` title="View Profile")
+                td(style="color: var(--text-muted); font-size: 0.85rem; font-weight: 600;")= s.student_number
+                td(style="font-weight: 500;") #{s.first_name} #{s.last_name}
+                td(style="color: var(--text-secondary);")= s.email
+                td
+                  span(style="color: var(--accent);") ➔

@@ -126,10 +126,54 @@ async function syncStudentsWithSIS(req, res) {
       imported++;
     }
 
-    res.redirect(`/admin/users?success=sync&imported=${imported}&skipped=${skipped}`);
+    res.redirect(`/admin/students?success=sync&imported=${imported}&skipped=${skipped}`);
   } catch (error) {
     console.error("SIS Sync error:", error);
-    res.redirect("/admin/users?error=sync_failed");
+    res.redirect("/admin/students?error=sync_failed");
+  }
+}
+
+async function listStudents(req, res) {
+  try {
+    const students = await Student.findAll({
+      include: [{ model: User }],
+      order: [['id', 'DESC']]
+    });
+
+    res.render("admin/students", {
+      title: "Manage Students — SES",
+      currentPage: "admin-students",
+      students,
+      user: req.user,
+      query: req.query
+    });
+  } catch (error) {
+    console.error("List Students error:", error);
+    res.status(500).send("Internal Server Error");
+  }
+}
+
+async function viewStudentProfile(req, res) {
+  try {
+    const student = await Student.findByPk(req.params.id, {
+      include: [
+        { model: User },
+        { model: require("../../models").PeriodEnrolment, include: [{ model: require("../../models").Period }] },
+        { model: require("../../models").CallApplication, include: [{ model: require("../../models").Call }] }
+      ]
+    });
+
+    if (!student) return res.status(404).send("Student not found");
+
+    res.render("admin/student-profile", {
+      title: `${student.first_name} ${student.last_name} — Profile`,
+      currentPage: "admin-students",
+      student,
+      user: req.user
+    });
+  } catch (error) {
+    console.error("View Student Profile error:", error);
+    res.status(500).send("Internal Server Error");
   }
 }
 
@@ -138,4 +182,6 @@ module.exports = {
   assignRole,
   removeRole,
   syncStudentsWithSIS,
+  listStudents,
+  viewStudentProfile
 };

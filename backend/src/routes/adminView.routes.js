@@ -1,5 +1,5 @@
 const express = require("express");
-const { manageUsersPage, assignRole, removeRole, syncStudentsWithSIS } = require("../controllers/admin.controller");
+const { manageUsersPage, assignRole, removeRole, syncStudentsWithSIS, listStudents, viewStudentProfile } = require("../controllers/admin.controller");
 const { listPeriods, createPeriod, activatePeriod, showEnrolments, overrideGoal } = require("../controllers/periods.controller");
 const { listEvents, createEvent, updateEvent, publishEvent, finishEvent, cancelEvent } = require("../controllers/events.controller");
 const { listEventCalls, createCall, deleteCall, reviewApplications, updateApplicationStatus } = require("../controllers/calls.controller");
@@ -17,6 +17,8 @@ router.post("/users/remove-role", adminOnly, removeRole);
 
 // Bulk Student Import (Mock SIS Sync)
 router.post("/students/sync", adminOnly, syncStudentsWithSIS);
+router.get("/students", adminOnly, listStudents);
+router.get("/students/:id", adminOnly, viewStudentProfile);
 
 // Periods
 router.get("/periods", adminOnly, listPeriods);

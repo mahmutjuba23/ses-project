@@ -531,7 +531,9 @@ html(lang="en")
             a(href="/dashboard" class=(currentPage === 'dashboard' ? 'active' : '')) Dashboard
           if user.roles && user.roles.includes('admin')
             li
-              a(href="/admin/users" class=(currentPage === 'admin-users' ? 'active' : '')) Students
+              a(href="/admin/users" class=(currentPage === 'admin-users' ? 'active' : '')) Users
+            li
+              a(href="/admin/students" class=(currentPage === 'admin-students' ? 'active' : '')) Students
             li
               a(href="/admin/periods" class=(currentPage === 'admin-periods' ? 'active' : '')) Periods
             li

@@ -1,0 +1,227 @@
+extends ../layout
+
+block content
+  style.
+    .profile-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+      animation: fadeIn 0.4s ease-out;
+    }
+    .profile-header {
+      display: flex;
+      align-items: center;
+      gap: 25px;
+      margin-bottom: 30px;
+      padding-bottom: 25px;
+      border-bottom: 1px solid var(--border-color);
+    }
+    .avatar {
+      width: 90px;
+      height: 90px;
+      border-radius: 50%;
+      background: var(--gradient-1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: white;
+      box-shadow: 0 10px 20px rgba(244, 63, 94, 0.2);
+    }
+    .header-info h1 {
+      margin: 0 0 5px 0;
+      font-size: 2.2rem;
+      color: var(--text-primary);
+    }
+    .header-info p {
+      margin: 0;
+      color: var(--text-secondary);
+      font-size: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .badge-id {
+      background: rgba(255,255,255,0.1);
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      letter-spacing: 0.5px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 2fr;
+      gap: 25px;
+    }
+    
+    .card {
+      background: var(--bg-card);
+      border-radius: 12px;
+      box-shadow: var(--shadow);
+      padding: 25px;
+      border: 1px solid var(--border-color);
+      height: 100%;
+    }
+    .card h3 {
+      margin-top: 0;
+      margin-bottom: 20px;
+      font-size: 1.2rem;
+      color: var(--text-primary);
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+      padding-bottom: 10px;
+    }
+
+    .info-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    .info-list li {
+      display: flex;
+      flex-direction: column;
+      margin-bottom: 15px;
+    }
+    .info-list label {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      font-weight: 600;
+      margin-bottom: 3px;
+    }
+    .info-list span {
+      font-size: 1rem;
+      color: var(--text-primary);
+      font-weight: 500;
+    }
+
+    /* Tables */
+    table.modern-table { width: 100%; border-collapse: collapse; text-align: left; }
+    table.modern-table th {
+      background-color: rgba(255,255,255,0.02); color: var(--text-secondary); font-weight: 600;
+      padding: 12px 15px; border-bottom: 2px solid var(--border-color);
+      font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.5px;
+    }
+    table.modern-table td {
+      padding: 15px; border-bottom: 1px solid rgba(255,255,255,0.05);
+      color: var(--text-primary); font-size: 0.95rem; vertical-align: middle;
+    }
+    
+    .status-badge {
+      padding: 5px 10px; border-radius: 20px;
+      font-size: 0.75rem; font-weight: 600; text-transform: uppercase;
+    }
+    .status-pending { background-color: rgba(245,158,11,0.15); color: var(--warning); }
+    .status-approved { background-color: rgba(16,185,129,0.15); color: var(--success); }
+    .status-rejected { background-color: rgba(239,68,68,0.15); color: var(--danger); }
+    .status-under_review { background-color: rgba(99,102,241,0.15); color: #818cf8; }
+
+    .btn-back {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-weight: 500;
+      margin-bottom: 20px;
+      transition: color 0.2s;
+    }
+    .btn-back:hover { color: var(--text-primary); }
+
+  .profile-container
+    a.btn-back(href="/admin/students") 
+      span ←
+      | Back to Students
+
+    .profile-header
+      .avatar= student.first_name.charAt(0) + student.last_name.charAt(0)
+      .header-info
+        h1 #{student.first_name} #{student.last_name}
+        p 
+          span.badge-id #{student.student_number}
+          span #{student.email}
+
+    .grid
+      //- Left Column: Academic Info
+      .card
+        h3 Academic Profile
+        ul.info-list
+          li
+            label Faculty
+            span= student.faculty || 'Not Specified'
+          li
+            label Department
+            span= student.department || 'Not Specified'
+          li
+            label Program
+            span= student.program || 'Not Specified'
+          li
+            label Study Level
+            span= student.study_level || 'Not Specified'
+          li
+            label Enrolment Year
+            span= student.enrolment_year || 'Not Specified'
+          li
+            label Scholarship
+            span= student.scholarship_type ? `${student.scholarship_type} (${student.scholarship_percentage || 0}%)` : 'Not Specified'
+          li
+            label Status
+            span(style=`color: ${student.is_active ? 'var(--success)' : 'var(--danger)'}`)
+              | #{student.is_active ? 'Active' : 'Inactive'}
+
+      //- Right Column: Activity
+      div(style="display: flex; flex-direction: column; gap: 25px;")
+        
+        //- Period Enrolments & Points
+        .card
+          h3 Engagement Points & Periods
+          if student.PeriodEnrolments && student.PeriodEnrolments.length > 0
+            table.modern-table
+              thead
+                tr
+                  th Period
+                  th Goal
+                  th Collected
+                  th Result
+              tbody
+                each pe in student.PeriodEnrolments
+                  tr
+                    td(style="font-weight: 600;")= pe.Period.code
+                    td= pe.goal_points || 0
+                    td(style="color: var(--accent); font-weight: 700;")= pe.collected_points || 0
+                    td
+                      if pe.result_status
+                        span.status-badge(class=`status-${pe.result_status.toLowerCase()}`)= pe.result_status
+                      else
+                        span.status-badge.status-pending IN PROGRESS
+          else
+            p(style="color: var(--text-muted); font-style: italic; margin: 0;") No period enrolments found.
+
+        //- Event Call Applications
+        .card
+          h3 Event Applications
+          if student.CallApplications && student.CallApplications.length > 0
+            table.modern-table
+              thead
+                tr
+                  th Call
+                  th Status
+                  th Points Awarded
+                  th Date
+              tbody
+                each app in student.CallApplications
+                  tr
+                    td(style="font-weight: 500;")= app.Call ? app.Call.title : 'Unknown Call'
+                    td
+                      span.status-badge(class=`status-${app.status}`)= app.status.replace('_', ' ')
+                    td
+                      if app.points_awarded
+                        span(style="color: var(--success); font-weight: 600;") +#{app.points_awarded} pts
+                      else
+                        span(style="color: var(--text-muted);") —
+                    td(style="color: var(--text-muted); font-size: 0.85rem;")= new Date(app.created_at).toLocaleDateString()
+          else
+            p(style="color: var(--text-muted); font-style: italic; margin: 0;") No applications found.
