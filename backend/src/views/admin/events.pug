@@ -164,7 +164,8 @@ block content
                     span.edit-icon ✏️
                 td
                   span(style="background: var(--bg-secondary); padding: 4px 8px; border-radius: 4px; font-size: 0.85rem; color: var(--text-primary);")= e.EventCategory ? e.EventCategory.name : '—'
-                td(style="color: var(--text-secondary); font-size: 0.9rem;") #{e.start_date} &rarr; #{e.end_date}
+                td(style="color: var(--text-secondary); font-size: 0.9rem; white-space: nowrap;")
+                  | #{new Date(e.start_date).toLocaleDateString('en-GB', {day:'2-digit', month:'short'})} → #{new Date(e.end_date).toLocaleDateString('en-GB', {day:'2-digit', month:'short', year:'numeric'})}
                 td= e.Period ? e.Period.code : 'None'
                 td
                   span.status-badge(class=`status-${e.status}`)= e.status
