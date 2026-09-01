@@ -139,6 +139,11 @@ async function importStudentsExcel(req, res) {
         is_active: true,
       });
 
+      const studentRole = await Role.findOne({ where: { name: 'student' } });
+      if (studentRole) {
+        await newUser.addRole(studentRole);
+      }
+
       await logAction({
         actor_user_id: req.user ? req.user.id : 1,
         entity: "Student",
