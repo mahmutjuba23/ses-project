@@ -83,9 +83,18 @@ block content
             | Import Excel
     
     if query && query.success === 'import'
-      .alert.alert-success(style="background: rgba(16,185,129,0.15); color: var(--success); padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid rgba(16,185,129,0.3);") Import complete: #{query.imported} imported, #{query.skipped} skipped.
-    if error || (query && query.error === 'import_failed')
-      .alert.alert-error(style="background: rgba(239,68,68,0.15); color: var(--danger); padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid rgba(239,68,68,0.3);") Action failed. Please try again.
+      .alert.alert-success(style="background: rgba(16,185,129,0.1); color: #065f46; padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid rgba(16,185,129,0.2);")
+        strong ✓ Import complete:
+        |  #{query.imported} students added, #{query.skipped} skipped (duplicates/incomplete rows).
+        br
+        | Default login password for all new students: 
+        code(style="background: rgba(0,0,0,0.08); padding: 2px 8px; border-radius: 4px; font-weight: 700;") Student@SES2026
+    if query && query.error === 'no_file'
+      .alert.alert-error(style="background: rgba(239,68,68,0.1); color: #991b1b; padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid rgba(239,68,68,0.2);") ✗ No file selected. Please choose an Excel file before submitting.
+    if query && query.error === 'empty_file'
+      .alert.alert-error(style="background: rgba(239,68,68,0.1); color: #991b1b; padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid rgba(239,68,68,0.2);") ✗ The uploaded file appears to be empty.
+    if query && query.error === 'import_failed'
+      .alert.alert-error(style="background: rgba(239,68,68,0.1); color: #991b1b; padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid rgba(239,68,68,0.2);") ✗ Import failed. Please check the file format and try again.
 
     .card
       .table-responsive

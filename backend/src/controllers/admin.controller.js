@@ -119,7 +119,9 @@ async function importStudentsExcel(req, res) {
       }
 
       const email = `${String(studentId).toLowerCase()}@student.ses.edu`;
-      const password_hash = await hashPassword(`Ses@${studentId}`);
+      // All imported students share the same default password.
+      // Admins should advise students to change it after first login.
+      const password_hash = await hashPassword(`Student@SES2026`);
 
       const newUser = await User.create({
         email,
