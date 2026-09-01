@@ -11,13 +11,13 @@ const {
   deleteScholarshipSubmit,
 } = require("../controllers/scholarshipsView.controller");
 
-const { authenticateView } = require("../middleware/viewAuth.middleware");
+const { authenticateView, optionalAuth } = require("../middleware/viewAuth.middleware");
 
 const router = express.Router();
 
-// Public pages — no login required
-router.get("/", scholarshipsPage);
-router.get("/:id", scholarshipDetailPage);
+// Public pages — no login required, but optional auth to keep sidebar intact
+router.get("/", optionalAuth, scholarshipsPage);
+router.get("/:id", optionalAuth, scholarshipDetailPage);
 
 // Admin-only write pages
 router.get("/create", authenticateView, createScholarshipPage);

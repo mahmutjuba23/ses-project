@@ -22,9 +22,24 @@ function authenticateView(req, res, next) {
 }
 
 /**
- * Middleware: only allow users with "System Admin" role.
- * Must be used AFTER authenticateView.
+ * Middleware: optionally authenticates the user from a cookie.
+ * If a valid token exists, sets req.user. If not, continues silently.
+ * Used for public pages (like Scholarships) that logged-in users should see the full sidebar on.
  */
+function optionalAuth(req, res, next) {
+  const token = req.cookies && req.cookies.token;
+  if (token) {
+    try {
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      req.user = decoded;
+    } catch (_) {
+      // Invalid/expired token — just continue as guest
+    }
+  }
+  next();
+}
+
+
 function isAdmin(req, res, next) {
   // User requested to bypass admin check temporarily
   return next();
@@ -41,6 +56,7 @@ function isStudent(req, res, next) {
 
 module.exports = {
   authenticateView,
+  optionalAuth,
   isAdmin,
   isStudent,
 };
