@@ -49,7 +49,7 @@ async function createCall(req, res) {
 
     // Validate application_end > application_start
     if (new Date(application_end) <= new Date(application_start)) {
-      return res.redirect(`/admin/events/${event_id}/calls?warning=dates_invalid`);
+      return res.redirect(`/admin/events/${event_id}?warning=dates_invalid`);
     }
 
     let parsedEligibility = null;
@@ -57,7 +57,7 @@ async function createCall(req, res) {
       try {
         parsedEligibility = JSON.parse(eligibility_rule_json);
       } catch (e) {
-        return res.redirect(`/admin/events/${event_id}/calls?warning=invalid_json`);
+        return res.redirect(`/admin/events/${event_id}?warning=invalid_json`);
       }
     }
 
@@ -82,10 +82,10 @@ async function createCall(req, res) {
       reason: "Admin created a new call"
     });
 
-    res.redirect(`/admin/events/${event_id}/calls`);
+    res.redirect(`/admin/events/${event_id}`);
   } catch (err) {
     console.error("Create Call error:", err);
-    res.redirect(`/admin/events/${req.body.event_id}/calls?warning=failed`);
+    res.redirect(`/admin/events/${req.body.event_id}?warning=failed`);
   }
 }
 
@@ -102,10 +102,10 @@ async function deleteCall(req, res) {
       reason: "Admin deleted a call"
     });
 
-    res.redirect(`/admin/events/${event_id}/calls`);
+    res.redirect(`/admin/events/${event_id}`);
   } catch (err) {
     console.error("Delete Call error:", err);
-    res.redirect(`/admin/events/${req.body.event_id}/calls?warning=delete_failed`);
+    res.redirect(`/admin/events/${req.body.event_id}?warning=delete_failed`);
   }
 }
 
@@ -151,7 +151,9 @@ async function reviewApplications(req, res) {
 async function updateApplicationStatus(req, res) {
   try {
     const { app_id, status } = req.body;
-    const application = await CallApplication.findByPk(app_id);
+    const application = await CallApplication.findByPk(app_id, {
+      include: [{ model: Call }]
+    });
     
     if (!application) return res.redirect(`/admin/events?warning=app_not_found`);
 
@@ -171,11 +173,11 @@ async function updateApplicationStatus(req, res) {
       reason: `Admin updated status to ${status}`
     });
 
-    res.redirect(`/admin/calls/${application.call_id}/applications`);
+    res.redirect(`/admin/events/${application.Call.event_id}?call_id=${application.call_id}`);
   } catch (err) {
     console.error("Update Application Status error:", err);
     res.redirect(`/admin/events`);
   }
 }
 
-module.exports = { listEventCalls, createCall, deleteCall, reviewApplications, updateApplicationStatus };
+module.exports = { createCall, deleteCall, updateApplicationStatus };

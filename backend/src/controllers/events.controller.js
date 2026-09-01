@@ -1,4 +1,4 @@
-const { Event, EventCategory, Period } = require("../../models");
+const { Event, EventCategory, Period, Call, CallApplication, Student, User, TaskType } = require("../../models");
 const { logAction } = require("../services/audit.service");
 const { Op } = require("sequelize");
 
@@ -148,11 +148,63 @@ async function updateEvent(req, res) {
   }
 }
 
+async function viewEventDetails(req, res) {
+  try {
+    const { event_id } = req.params;
+    const { call_id } = req.query;
+
+    const event = await Event.findByPk(event_id, {
+      include: [
+        { model: EventCategory },
+        { model: Period }
+      ]
+    });
+
+    if (!event) return res.redirect("/admin/events?error=not_found");
+
+    const calls = await Call.findAll({
+      where: { event_id },
+      include: [{ model: TaskType }],
+      order: [['application_start', 'DESC']]
+    });
+
+    // If call_id is provided, filter by it. Otherwise get applications for all calls in this event.
+    const callIds = call_id ? [call_id] : calls.map(c => c.id);
+
+    const applications = await CallApplication.findAll({
+      where: { call_id: callIds },
+      include: [
+        { model: Call, include: [{ model: TaskType }] },
+        { model: Student, include: ['User'] }
+      ],
+      order: [['createdAt', 'DESC']]
+    });
+
+    const taskTypes = await TaskType.findAll({ where: { is_active: true } });
+
+    res.render("admin/event-details", {
+      title: `${event.title} — SES`,
+      currentPage: "admin-events",
+      event,
+      calls,
+      applications,
+      taskTypes,
+      selectedCallId: call_id || null,
+      user: req.user,
+      pageWarning: req.query.warning || null
+    });
+  } catch (error) {
+    console.error("View Event Details error:", error);
+    res.redirect("/admin/events?error=failed");
+  }
+}
+
 module.exports = {
   listEvents,
   createEvent,
   updateEvent,
   publishEvent,
   finishEvent,
-  cancelEvent
+  cancelEvent,
+  viewEventDetails
 };

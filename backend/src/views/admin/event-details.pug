@@ -1,0 +1,196 @@
+extends ../layout
+
+block content
+  style.
+    .details-container {
+      max-width: 1300px;
+      margin: 0 auto;
+      padding: 20px;
+      animation: fadeIn 0.4s ease-out;
+    }
+    .admin-header {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 30px; padding-bottom: 15px;
+      border-bottom: 1px solid var(--border-color);
+    }
+    .admin-header h1 { margin: 0; color: var(--text-primary); font-size: 2rem; font-weight: 600; }
+    .admin-header p { margin: 5px 0 0; color: var(--text-secondary); font-size: 0.95rem; }
+
+    .grid-layout {
+      display: grid;
+      grid-template-columns: 300px 1fr;
+      gap: 30px;
+      align-items: start;
+    }
+
+    .card {
+      background: var(--bg-card); border-radius: 12px; box-shadow: var(--shadow);
+      padding: 25px; border: 1px solid var(--border-color);
+    }
+
+    /* Sidebar List styles */
+    .calls-sidebar h3 {
+      margin-top: 0; margin-bottom: 20px; color: var(--text-primary); font-size: 1.2rem;
+    }
+    .call-item {
+      display: block;
+      padding: 15px;
+      border-radius: 8px;
+      background: var(--bg-secondary);
+      color: var(--text-primary);
+      text-decoration: none;
+      margin-bottom: 10px;
+      border: 1px solid var(--border-color);
+      transition: all 0.2s;
+    }
+    .call-item:hover {
+      border-color: var(--accent);
+      transform: translateY(-1px);
+    }
+    .call-item.active {
+      background: rgba(14, 165, 233, 0.1);
+      border-color: var(--accent);
+      box-shadow: inset 3px 0 0 var(--accent);
+    }
+    .call-title {
+      font-weight: 600; font-size: 1rem; margin-bottom: 5px;
+    }
+    .call-meta {
+      font-size: 0.85rem; color: var(--text-secondary);
+    }
+
+    /* Table styles */
+    .table-responsive { overflow-x: auto; border-radius: 8px; }
+    table.modern-table { width: 100%; border-collapse: collapse; text-align: left; }
+    table.modern-table th {
+      background-color: var(--bg-secondary); color: var(--text-secondary); font-weight: 600;
+      padding: 15px; border-bottom: 2px solid var(--border-color);
+      font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.5px;
+    }
+    table.modern-table td {
+      padding: 15px; border-bottom: 1px solid rgba(0,0,0,0.05);
+      color: var(--text-primary); font-size: 0.95rem; vertical-align: middle;
+    }
+    table.modern-table tbody tr:hover { background-color: rgba(0,0,0,0.02); }
+
+    .btn-modern {
+      padding: 8px 16px; border-radius: 6px; font-weight: 500; transition: all 0.2s;
+      border: none; cursor: pointer; display: inline-flex; align-items: center;
+      justify-content: center; gap: 5px; text-decoration: none; font-size: 0.85rem;
+    }
+    .btn-modern-primary {
+      background: var(--gradient-1); color: white;
+    }
+    .btn-success { background: linear-gradient(135deg, #10b981, #059669); color: white; }
+    .btn-danger { background: linear-gradient(135deg, #ef4444, #dc2626); color: white; }
+
+    .status-badge {
+      padding: 4px 10px; border-radius: 20px; font-size: 0.8rem; font-weight: 500; text-transform: capitalize;
+    }
+    .status-pending { background-color: rgba(245,158,11,0.15); color: var(--warning); }
+    .status-approved { background-color: rgba(16,185,129,0.15); color: var(--success); }
+    .status-rejected { background-color: rgba(239,68,68,0.15); color: var(--danger); }
+
+    dialog::backdrop { background-color: rgba(0,0,0,0.7); backdrop-filter: blur(8px); }
+    dialog { position: fixed; top: 50%; left: 50%; transform: translate(-50%,-50%); margin: 0; }
+
+  .details-container
+    .admin-header
+      div
+        h1 #{event.title}
+        p Event Status: #{event.status} | Period: #{event.Period ? event.Period.code : 'None'}
+      div(style="display: flex; gap: 10px;")
+        a.btn-modern.btn-modern-primary(href="/admin/events") ← Back to Events
+
+    .grid-layout
+      //- Sidebar: Calls List
+      .calls-sidebar
+        .card(style="padding: 20px;")
+          div(style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;")
+            h3(style="margin:0;") Event Calls
+            button.btn-modern.btn-modern-primary(onclick="document.getElementById('createCallModal').showModal()" style="padding: 4px 10px;") + New
+          
+          a.call-item(href=`/admin/events/${event.id}` class=(!selectedCallId ? 'active' : ''))
+            .call-title All Calls
+            .call-meta Show all applications
+          
+          each call in calls
+            a.call-item(href=`/admin/events/${event.id}?call_id=${call.id}` class=(selectedCallId == call.id ? 'active' : ''))
+              .call-title= call.TaskType ? call.TaskType.name : 'Unknown Task'
+              .call-meta Quota: #{call.quota} | Apps: #{applications.filter(a => a.call_id === call.id).length}
+
+      //- Main Content: Applications Table
+      .applications-content
+        .card
+          h3(style="margin-top: 0; margin-bottom: 20px; font-size: 1.2rem; color: var(--text-primary);") 
+            | Applications #{selectedCallId ? `for Selected Call` : `(All Calls)`}
+          
+          if applications.length === 0
+            p(style="color: var(--text-secondary); font-style: italic;") No applications found.
+          else
+            .table-responsive
+              table.modern-table
+                thead
+                  tr
+                    th Student
+                    if !selectedCallId
+                      th Call
+                    th Status
+                    th Date Applied
+                    th Actions
+                tbody
+                  each app in applications
+                    tr
+                      td
+                        div(style="font-weight: 500;") #{app.Student ? app.Student.first_name + ' ' + app.Student.last_name : 'Unknown'}
+                        div(style="font-size: 0.85rem; color: var(--text-secondary);") #{app.Student ? app.Student.student_number : ''}
+                      if !selectedCallId
+                        td #{app.Call && app.Call.TaskType ? app.Call.TaskType.name : 'Unknown'}
+                      td
+                        span.status-badge(class=`status-${app.status}`)= app.status
+                      td #{new Date(app.createdAt).toLocaleDateString('en-GB')}
+                      td
+                        if app.status === 'pending'
+                          div(style="display: flex; gap: 5px;")
+                            form(action="/admin/calls/applications/status" method="POST" style="margin: 0;")
+                              input(type="hidden" name="app_id" value=app.id)
+                              input(type="hidden" name="status" value="approved")
+                              button.btn-modern.btn-success(type="submit") ✔ Approve
+                            form(action="/admin/calls/applications/status" method="POST" style="margin: 0;")
+                              input(type="hidden" name="app_id" value=app.id)
+                              input(type="hidden" name="status" value="rejected")
+                              button.btn-modern.btn-danger(type="submit") ✖ Reject
+                        else if app.status === 'approved' && app.qr_code_token
+                          a.btn-modern.btn-modern-primary(href=`/qr/${app.qr_code_token}` target="_blank" style="padding: 4px 8px;") 📱 QR
+
+    //- Create Call Modal
+    dialog#createCallModal(style="padding: 30px; border: 1px solid var(--border-color); background: var(--bg-card); color: var(--text-primary); border-radius: 16px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.5); width: 500px; max-width: 90vw;")
+      div(style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;")
+        h3(style="margin: 0; font-size: 1.4rem; font-weight: 600;") ✦ Create New Call
+        button(onclick="document.getElementById('createCallModal').close()" style="background: transparent; border: none; font-size: 1.5rem; cursor: pointer; color: var(--text-secondary);") &times;
+      form(action="/admin/events/calls/create" method="POST")
+        input(type="hidden" name="event_id" value=event.id)
+        div(style="margin-bottom: 15px;")
+          label(style="display:block; margin-bottom: 5px; font-size:0.9rem;") Task Type
+          select(name="task_type_id" required style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid var(--border-color); background: var(--bg-input); color: var(--text-primary);")
+            each tt in taskTypes
+              option(value=tt.id)= tt.name
+        div(style="margin-bottom: 15px;")
+          label(style="display:block; margin-bottom: 5px; font-size:0.9rem;") Quota
+          input(type="number" name="quota" min="1" required style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid var(--border-color); background: var(--bg-input); color: var(--text-primary);")
+        div(style="display: flex; gap: 10px; margin-bottom: 15px;")
+          div(style="flex: 1;")
+            label(style="display:block; margin-bottom: 5px; font-size:0.9rem;") App Start
+            input(type="datetime-local" name="application_start" required style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid var(--border-color); background: var(--bg-input); color: var(--text-primary);")
+          div(style="flex: 1;")
+            label(style="display:block; margin-bottom: 5px; font-size:0.9rem;") App End
+            input(type="datetime-local" name="application_end" required style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid var(--border-color); background: var(--bg-input); color: var(--text-primary);")
+        div(style="display: flex; gap: 10px; margin-bottom: 15px;")
+          div(style="flex: 1;")
+            label(style="display:block; margin-bottom: 5px; font-size:0.9rem;") Task Start
+            input(type="datetime-local" name="task_start" required style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid var(--border-color); background: var(--bg-input); color: var(--text-primary);")
+          div(style="flex: 1;")
+            label(style="display:block; margin-bottom: 5px; font-size:0.9rem;") Task End
+            input(type="datetime-local" name="task_end" required style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid var(--border-color); background: var(--bg-input); color: var(--text-primary);")
+        div(style="margin-top: 25px;")
+          button.btn-modern.btn-modern-primary(type="submit" style="width: 100%; padding: 12px;") ✦ Create Call
