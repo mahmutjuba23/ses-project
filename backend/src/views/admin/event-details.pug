@@ -91,6 +91,45 @@ block content
     .status-approved { background-color: rgba(16,185,129,0.15); color: var(--success); }
     .status-rejected { background-color: rgba(239,68,68,0.15); color: var(--danger); }
 
+    /* ── Stats Bar ───────────────────────────────────── */
+    .stats-bar {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin-bottom: 28px;
+    }
+    .stat-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 20px 24px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      box-shadow: var(--shadow);
+    }
+    .stat-icon {
+      font-size: 1.8rem;
+      line-height: 1;
+    }
+    .stat-val {
+      font-size: 1.9rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      line-height: 1;
+    }
+    .stat-lbl {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-top: 3px;
+    }
+    .stat-card.stat-approved { border-left: 3px solid var(--success); }
+    .stat-card.stat-pending  { border-left: 3px solid var(--warning); }
+    .stat-card.stat-rejected { border-left: 3px solid var(--danger); }
+    /* ───────────────────────────────────────────────── */
+
     dialog::backdrop { background-color: rgba(0,0,0,0.7); backdrop-filter: blur(8px); }
     dialog { position: fixed; top: 50%; left: 50%; transform: translate(-50%,-50%); margin: 0; }
 
@@ -101,6 +140,35 @@ block content
         p Event Status: #{event.status} | Period: #{event.Period ? event.Period.code : 'None'}
       div(style="display: flex; gap: 10px;")
         a.btn-modern.btn-modern-primary(href="/admin/events") ← Back to Events
+
+    //- Summary Stats
+    -
+      var totalApps = applications.length;
+      var approvedCount = applications.filter(function(a){ return a.status === 'approved'; }).length;
+      var pendingCount  = applications.filter(function(a){ return a.status === 'pending'; }).length;
+      var rejectedCount = applications.filter(function(a){ return a.status === 'rejected'; }).length;
+
+    .stats-bar
+      .stat-card
+        .stat-icon 📝
+        div
+          .stat-val= totalApps
+          .stat-lbl Total Applied
+      .stat-card.stat-approved
+        .stat-icon ✓
+        div
+          .stat-val= approvedCount
+          .stat-lbl Approved
+      .stat-card.stat-pending
+        .stat-icon ⏳
+        div
+          .stat-val= pendingCount
+          .stat-lbl Pending Review
+      .stat-card.stat-rejected
+        .stat-icon ✕
+        div
+          .stat-val= rejectedCount
+          .stat-lbl Rejected
 
     .grid-layout
       //- Sidebar: Calls List

@@ -238,17 +238,47 @@ block content
                 td
                   span.status-badge(class=`status-${e.status}`)= e.status
                 td
-                  div(style="display: flex; gap: 5px; align-items: center;")
+                  div(style="display: flex; gap: 5px; align-items: center; flex-wrap: wrap;")
                     if e.status === 'draft'
                       form(action="/admin/events/publish" method="POST" style="margin: 0;")
                         input(type="hidden" name="event_id" value=e.id)
                         button.btn-modern.btn-modern-publish.btn-modern-sm(type="submit") 🚀 Publish
                     else if e.status === 'published'
                       a.btn-modern.btn-modern-manage.btn-modern-sm(href=`/admin/events/${e.id}`) 📋 Details
+                      form(action="/admin/events/finish" method="POST" style="margin: 0;")
+                        input(type="hidden" name="event_id" value=e.id)
+                        button.btn-modern.btn-modern-finish.btn-modern-sm(type="submit"
+                          onclick="return confirm('Mark this event as finished?')") ✓ Finish
+                      button.btn-modern.btn-modern-danger.btn-modern-sm(
+                        type="button"
+                        onclick=`openCancelModal(${e.id})`
+                      ) ✕ Cancel
 
             //- Empty state row shown when filter returns nothing
             tr#noResultsRow.no-results-row(style="display:none;")
               td(colspan="6") No events match this filter.
+
+
+    //- Cancel Event Modal
+    dialog#cancelEventModal(style="padding: 30px; border: 1px solid var(--border-color); background: var(--bg-card); color: var(--text-primary); border-radius: 16px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.5); width: 460px; max-width: 90vw;")
+      div(style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;")
+        h3(style="margin: 0; font-size: 1.3rem; font-weight: 600; color: var(--danger);") ✕ Cancel Event
+        button(onclick="document.getElementById('cancelEventModal').close()" style="background: transparent; border: none; font-size: 1.5rem; cursor: pointer; color: var(--text-secondary);") ×
+      p(style="color: var(--text-secondary); margin: 0 0 20px;") Please provide a reason for cancelling this event. This will be logged.
+      form(action="/admin/events/cancel" method="POST")
+        input#cancel_event_id(type="hidden" name="event_id")
+        div(style="margin-bottom: 18px;")
+          label(style="display:block; margin-bottom: 6px; font-size:0.9rem; color: var(--text-secondary);") Cancellation Reason
+          textarea(
+            name="cancel_reason"
+            rows="3"
+            required
+            placeholder="e.g. Low enrolment, scheduling conflict..."
+            style="width:100%; padding:10px; border-radius:6px; border:1px solid var(--border-color); background:var(--bg-input); color:var(--text-primary); font-size:0.95rem; resize:vertical; box-sizing:border-box;"
+          )
+        div(style="display:flex; gap:10px; margin-top:20px;")
+          button.btn-modern.btn-modern-danger(type="submit" style="flex:1; padding:11px;") ✕ Confirm Cancel
+          button(type="button" onclick="document.getElementById('cancelEventModal').close()" style="flex:1; padding:11px; border-radius:8px; border:1px solid var(--border-color); background:var(--bg-secondary); color:var(--text-secondary); cursor:pointer;") Go Back
 
 
     //- Create Event Modal
@@ -342,4 +372,9 @@ block content
 
       // Show / hide no-results
       document.getElementById('noResultsRow').style.display = visible === 0 ? '' : 'none';
+    }
+
+    function openCancelModal(eventId) {
+      document.getElementById('cancel_event_id').value = eventId;
+      document.getElementById('cancelEventModal').showModal();
     }
