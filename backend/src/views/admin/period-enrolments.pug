@@ -1,36 +1,60 @@
 extends ../layout
 
 block content
-  .admin-header
-    h1 Enrolments — #{period.name}
-    p Period: #{period.code} | Goal: #{period.point_goal} pts | Status: #{period.status}
-    a(href="/admin/periods" style="display:inline-block; margin-bottom:15px;") &larr; Back to Periods
+  style.
+    .modern-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+    .modern-table th { background: var(--bg-secondary); padding: 12px 15px; text-align: left; font-weight: 600; font-size: 0.85rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid rgba(0,0,0,0.05); }
+    .modern-table td { padding: 15px; border-bottom: 1px solid rgba(0,0,0,0.05); color: var(--text-primary); font-size: 0.95rem; vertical-align: middle; }
+    .modern-table tbody tr:hover { background-color: rgba(0,0,0,0.02); transition: background-color 0.2s; }
+    .btn-modern { font-family: inherit; font-weight: 600; border-radius: 8px; border: none; cursor: pointer; transition: all 0.2s; padding: 6px 12px; font-size: 0.85rem; }
+    .btn-modern-primary { background: var(--gradient-1); color: white; box-shadow: 0 4px 15px var(--accent-glow); }
+    .btn-modern-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 20px var(--accent-glow); }
+    .form-control-modern { padding: 8px 12px; border: 1px solid var(--border-color); border-radius: 8px; font-size: 0.9rem; background: var(--bg-input); color: var(--text-primary); transition: all 0.2s; }
+    .form-control-modern:focus { outline: none; border-color: var(--border-focus); box-shadow: 0 0 0 3px var(--accent-glow); }
 
-  table.table
-    thead
-      tr
-        th Student #
-        th Name
-        th Email
-        th Goal
-        th Override Reason
-        th Collected
-        th Status
-        th Actions
-    tbody
-      each e in enrolments
-        tr
-          td= e.Student ? e.Student.student_number : '—'
-          td= e.Student ? (e.Student.first_name + ' ' + e.Student.last_name) : '—'
-          td= e.Student ? e.Student.email : '—'
-          td= e.goal_points
-          td= e.goal_override_reason || '—'
-          td= e.collected_points || 0
-          td= e.result_status
-          td
-            if period.status !== 'closed'
-              form(action="/admin/periods/override-goal" method="POST" style="display:flex; gap:5px; align-items:center;")
-                input(type="hidden" name="enrolment_id" value=e.id)
-                input.form-control(type="number" name="new_goal" placeholder="New goal" style="width:80px;" required)
-                input.form-control(type="text" name="reason" placeholder="Reason" style="width:150px;" required)
-                button.btn.btn-sm.btn-primary(type="submit") Override
+  .enrolments-container
+    .admin-header
+      div
+        h1 Enrolments — #{period.name}
+        p Period: #{period.code} | Goal: #{period.point_goal} pts | Status: #{period.status}
+      a.btn-modern.btn-modern-primary(href="/admin/periods" style="text-decoration:none; line-height: 1.5;") &larr; Back to Periods
+
+    .card
+      .table-responsive
+        table.modern-table
+          thead
+            tr
+              th Student
+              th Goal
+              th Collected
+              th Result
+              if period.status !== 'closed'
+                th Actions (Override Goal)
+          tbody
+            if enrolments.length === 0
+              tr
+                td(colspan="5" style="text-align: center; color: var(--text-muted); font-style: italic; padding: 30px;") No students are enrolled in this period.
+            else
+              each e in enrolments
+                tr
+                  td
+                    a(href=e.Student ? `/admin/students/${e.Student.id}` : '#' style="text-decoration: none; color: inherit;")
+                      div(style="font-weight: 500;") #{e.Student ? (e.Student.first_name + ' ' + e.Student.last_name) : '—'}
+                      div(style="font-size: 0.85rem; color: var(--accent);") #{e.Student ? e.Student.student_number : '—'}
+                  td
+                    div(style="font-weight: 600;")= e.goal_points
+                    if e.goal_override_reason
+                      div(style="font-size: 0.75rem; color: var(--text-muted);") Override: #{e.goal_override_reason}
+                  td(style="font-weight: 700; color: var(--accent);")= e.collected_points || 0
+                  td
+                    if e.result_status
+                      span.status-badge(class=`status-${e.result_status.toLowerCase()}`)= e.result_status
+                    else
+                      span.status-badge.status-pending IN PROGRESS
+                  if period.status !== 'closed'
+                    td
+                      form(action="/admin/periods/override-goal" method="POST" style="display:flex; gap:5px; align-items:center;")
+                        input(type="hidden" name="enrolment_id" value=e.id)
+                        input.form-control-modern(type="number" name="new_goal" placeholder="New goal" style="width:90px;" required)
+                        input.form-control-modern(type="text" name="reason" placeholder="Reason for change" style="width:160px;" required)
+                        button.btn-modern.btn-modern-primary(type="submit") Override
