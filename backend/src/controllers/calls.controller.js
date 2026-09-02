@@ -1,4 +1,4 @@
-const { Call, Event, TaskType, Period, CallApplication, Student, User } = require("../../models");
+const { Call, Event, TaskType, Period, CallApplication, Student, User, PeriodEnrolment } = require("../../models");
 const { logAction } = require("../services/audit.service");
 
 async function listEventCalls(req, res) {
@@ -152,15 +152,42 @@ async function updateApplicationStatus(req, res) {
   try {
     const { app_id, status, points } = req.body;
     const application = await CallApplication.findByPk(app_id, {
-      include: [{ model: Call }]
+      include: [
+        { 
+          model: Call,
+          include: [{ model: Event }]
+        }
+      ]
     });
     
     if (!application) return res.redirect(`/admin/events?warning=app_not_found`);
 
+    // Prevent giving points multiple times if already attended
+    if (application.status === 'attended' && status === 'attended') {
+      return res.redirect(`/admin/events/${application.Call.event_id}?call_id=${application.call_id}`);
+    }
+
     application.status = status;
     
     if (status === 'attended' && points !== undefined) {
-      application.points_awarded = parseInt(points, 10) || 0;
+      const awarded = parseInt(points, 10) || 0;
+      application.points_awarded = awarded;
+      
+      // Update PeriodEnrolment collected_points
+      const periodId = application.Call.Event.period_id;
+      const enrolment = await PeriodEnrolment.findOne({
+        where: { student_id: application.student_id, period_id: periodId }
+      });
+      
+      if (enrolment) {
+        enrolment.collected_points = (enrolment.collected_points || 0) + awarded;
+        
+        // Auto-update result status if they reached their goal
+        if (enrolment.collected_points >= enrolment.goal_points) {
+          enrolment.result_status = 'PASS';
+        }
+        await enrolment.save();
+      }
     }
 
     await application.save();
