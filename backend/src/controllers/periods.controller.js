@@ -21,6 +21,11 @@ async function createPeriod(req, res) {
   try {
     const { code, name, start_date, end_date, point_goal, scope_rule_json } = req.body;
     
+    // Check for valid dates
+    if (new Date(end_date) <= new Date(start_date)) {
+      return res.redirect("/admin/periods?error=invalid_dates");
+    }
+
     // Check for overlaps
     const overlapping = await Period.findOne({
       where: {

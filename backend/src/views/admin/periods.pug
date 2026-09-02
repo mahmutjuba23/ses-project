@@ -192,8 +192,14 @@ block content
         span(style="margin-right: 8px; font-size: 1.2rem;") +
         | New Period
 
-    if error
-      .alert.alert-error(style="background: rgba(239, 68, 68, 0.15); color: var(--danger); padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid rgba(239, 68, 68, 0.3);") Action failed (perhaps overlapping dates or invalid JSON). Please try again.
+    if error === 'overlap'
+      .alert.alert-error(style="background: rgba(239, 68, 68, 0.15); color: var(--danger); padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid rgba(239, 68, 68, 0.3);") ❌ Error: A Period with overlapping dates already exists! You cannot have two Periods running at the same time.
+    else if error === 'invalid_dates'
+      .alert.alert-error(style="background: rgba(239, 68, 68, 0.15); color: var(--danger); padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid rgba(239, 68, 68, 0.3);") ❌ Error: The end date must be after the start date.
+    else if error === 'invalid_scope_json'
+      .alert.alert-error(style="background: rgba(239, 68, 68, 0.15); color: var(--danger); padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid rgba(239, 68, 68, 0.3);") ❌ Error: The Scope Rule you entered is not valid JSON format.
+    else if error
+      .alert.alert-error(style="background: rgba(239, 68, 68, 0.15); color: var(--danger); padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid rgba(239, 68, 68, 0.3);") ❌ Error: Action failed. Please try again.
 
     .card
       .table-responsive
