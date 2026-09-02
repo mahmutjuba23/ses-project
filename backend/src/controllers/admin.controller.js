@@ -9,7 +9,12 @@ async function manageUsersPage(req, res) {
       order: [['id', 'DESC']]
     });
 
-    const allRoles = await Role.findAll();
+    const { Op } = require("sequelize");
+    const allRoles = await Role.findAll({
+      where: {
+        name: { [Op.in]: ['admin', 'reviewer'] }
+      }
+    });
 
     res.render("admin/users", {
       title: "Manage Users — SES",
