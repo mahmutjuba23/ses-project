@@ -150,7 +150,7 @@ async function reviewApplications(req, res) {
 
 async function updateApplicationStatus(req, res) {
   try {
-    const { app_id, status } = req.body;
+    const { app_id, status, points } = req.body;
     const application = await CallApplication.findByPk(app_id, {
       include: [{ model: Call }]
     });
@@ -158,9 +158,9 @@ async function updateApplicationStatus(req, res) {
     if (!application) return res.redirect(`/admin/events?warning=app_not_found`);
 
     application.status = status;
-    // Generate QR code if approved and doesn't have one
-    if (status === 'approved' && !application.qr_code_token) {
-      application.qr_code_token = crypto.randomBytes(16).toString("hex");
+    
+    if (status === 'attended' && points !== undefined) {
+      application.points_awarded = parseInt(points, 10) || 0;
     }
 
     await application.save();
@@ -170,7 +170,7 @@ async function updateApplicationStatus(req, res) {
       entity: "CallApplication",
       entity_id: app_id,
       action: "UPDATE_STATUS",
-      reason: `Admin updated status to ${status}`
+      reason: `Admin updated status to ${status}${status === 'attended' ? ` with ${application.points_awarded} points` : ''}`
     });
 
     res.redirect(`/admin/events/${application.Call.event_id}?call_id=${application.call_id}`);

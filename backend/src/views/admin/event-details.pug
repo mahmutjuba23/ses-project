@@ -210,8 +210,9 @@ block content
                   each app in applications
                     tr
                       td
-                        div(style="font-weight: 500;") #{app.Student ? app.Student.first_name + ' ' + app.Student.last_name : 'Unknown'}
-                        div(style="font-size: 0.85rem; color: var(--text-secondary);") #{app.Student ? app.Student.student_number : ''}
+                        a(href=app.Student ? `/admin/students/${app.Student.id}` : '#' style="text-decoration: none; color: inherit;")
+                          div(style="font-weight: 500;") #{app.Student ? app.Student.first_name + ' ' + app.Student.last_name : 'Unknown'}
+                          div(style="font-size: 0.85rem; color: var(--accent);") #{app.Student ? app.Student.student_number : ''}
                       if !selectedCallId
                         td #{app.Call && app.Call.TaskType ? app.Call.TaskType.name : 'Unknown'}
                       td
@@ -228,8 +229,12 @@ block content
                               input(type="hidden" name="app_id" value=app.id)
                               input(type="hidden" name="status" value="rejected")
                               button.btn-modern.btn-danger(type="submit") ✖ Reject
-                        else if app.status === 'approved' && app.qr_code_token
-                          a.btn-modern.btn-modern-primary(href=`/qr/${app.qr_code_token}` target="_blank" style="padding: 4px 8px;") 📱 QR
+                        else if app.status === 'approved'
+                          form(action="/admin/calls/applications/status" method="POST" style="margin: 0; display: flex; gap: 5px; align-items: center;")
+                            input(type="hidden" name="app_id" value=app.id)
+                            input(type="hidden" name="status" value="attended")
+                            input(type="number" name="points" placeholder="Pts" min="0" required style="width: 60px; padding: 4px; border-radius: 4px; border: 1px solid var(--border-color); background: var(--bg-input); color: var(--text-primary);")
+                            button.btn-modern.btn-modern-primary(type="submit" style="padding: 4px 10px; font-size: 0.85rem;") ✅ Award Points
 
     //- Create Call Modal
     dialog#createCallModal(style="padding: 30px; border: 1px solid var(--border-color); background: var(--bg-card); color: var(--text-primary); border-radius: 16px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.5); width: 500px; max-width: 90vw;")
