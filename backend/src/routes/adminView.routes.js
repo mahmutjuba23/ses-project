@@ -1,7 +1,7 @@
 const express = require("express");
 const { manageUsersPage, assignRole, removeRole, importStudentsExcel, listStudents, viewStudentProfile } = require("../controllers/admin.controller");
 const { listPeriods, createPeriod, activatePeriod, showEnrolments, overrideGoal } = require("../controllers/periods.controller");
-const { listEvents, createEvent, updateEvent, publishEvent, finishEvent, cancelEvent, viewEventDetails } = require("../controllers/events.controller");
+const { listEvents, createEvent, updateEvent, publishEvent, cancelEvent, viewEventDetails } = require("../controllers/events.controller");
 const { createCall, deleteCall, updateApplicationStatus } = require("../controllers/calls.controller");
 const { authenticateView, isAdmin } = require("../middleware/viewAuth.middleware");
 
@@ -34,7 +34,6 @@ router.get("/events", adminOnly, listEvents);
 router.post("/events/create", adminOnly, createEvent);
 router.post("/events/update", adminOnly, updateEvent);
 router.post("/events/publish", adminOnly, publishEvent);
-router.post("/events/finish", adminOnly, finishEvent);
 router.post("/events/cancel", adminOnly, cancelEvent);
 
 // Calls for a specific event

@@ -71,38 +71,67 @@ async function createEvent(req, res) {
   }
 }
 
-async function updateEventStatus(req, res, newStatus, actionName) {
+async function publishEvent(req, res) {
   try {
-    const { event_id, cancel_reason } = req.body;
+    const { event_id } = req.body;
     const event = await Event.findByPk(event_id);
-    
     if (!event) return res.redirect("/admin/events?error=not_found");
 
-    event.status = newStatus;
-    if (newStatus === 'cancelled') {
-      event.cancel_reason = cancel_reason;
+    const today = new Date().toISOString().split("T")[0];
+
+    // Block publishing if start date is in the future (scheduler will handle it)
+    if (event.start_date > today) {
+      return res.redirect("/admin/events?error=event_not_started");
     }
-    
+
+    // Block publishing if end date has already passed
+    if (event.end_date < today) {
+      return res.redirect("/admin/events?error=event_expired");
+    }
+
+    event.status = "published";
     await event.save();
 
     await logAction({
       actor_user_id: req.user ? req.user.id : 1,
       entity: "Event",
       entity_id: event.id,
-      action: actionName,
-      reason: cancel_reason || `Admin changed event status to ${newStatus}`
+      action: "PUBLISH_EVENT",
+      reason: "Admin manually published event"
     });
 
     res.redirect("/admin/events");
   } catch (error) {
-    console.error(`Update Event Status (${newStatus}) error:`, error);
+    console.error("Publish Event error:", error);
     res.redirect("/admin/events?error=failed");
   }
 }
 
-const publishEvent = (req, res) => updateEventStatus(req, res, 'published', 'PUBLISH_EVENT');
-const finishEvent = (req, res) => updateEventStatus(req, res, 'finished', 'FINISH_EVENT');
-const cancelEvent = (req, res) => updateEventStatus(req, res, 'cancelled', 'CANCEL_EVENT');
+async function cancelEvent(req, res) {
+  try {
+    const { event_id, cancel_reason } = req.body;
+    const event = await Event.findByPk(event_id);
+    if (!event) return res.redirect("/admin/events?error=not_found");
+
+    event.status = "cancelled";
+    event.cancel_reason = cancel_reason;
+    await event.save();
+
+    await logAction({
+      actor_user_id: req.user ? req.user.id : 1,
+      entity: "Event",
+      entity_id: event.id,
+      action: "CANCEL_EVENT",
+      reason: cancel_reason || "Admin cancelled event"
+    });
+
+    res.redirect("/admin/events");
+  } catch (error) {
+    console.error("Cancel Event error:", error);
+    res.redirect("/admin/events?error=failed");
+  }
+}
+
 
 async function updateEvent(req, res) {
   try {
@@ -204,7 +233,6 @@ module.exports = {
   createEvent,
   updateEvent,
   publishEvent,
-  finishEvent,
   cancelEvent,
   viewEventDetails
 };

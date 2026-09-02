@@ -40,7 +40,8 @@ block content
       padding: 15px; border-bottom: 1px solid rgba(0,0,0,0.05);
       color: var(--text-primary); font-size: 0.95rem; vertical-align: middle;
     }
-    table.modern-table tbody tr:hover { background-color: rgba(0,0,0,0.05); transition: background-color 0.2s; }
+    table.modern-table tbody tr.clickable-row { cursor: pointer; }
+    table.modern-table tbody tr.clickable-row:hover { background-color: rgba(0,0,0,0.05); transition: background-color 0.2s; }
 
     /* Clickable event title */
     .event-title-link {
@@ -191,6 +192,10 @@ block content
 
     if pageWarning === 'no_period_match'
       .alert.alert-warning(style="background-color: rgba(245,158,11,0.15); color: var(--warning); padding: 15px; margin-bottom: 20px; border-radius: 8px; border: 1px solid rgba(245,158,11,0.3);") ⚠️ Warning: Event created, but its dates don't fall within any active Period.
+    if error === 'event_expired'
+      .alert.alert-danger(style="background-color: rgba(239,68,68,0.15); color: var(--danger); padding: 15px; margin-bottom: 20px; border-radius: 8px; border: 1px solid rgba(239,68,68,0.3);") ❌ Error: Cannot manually publish this event because its end date has already passed.
+    if error === 'event_not_started'
+      .alert.alert-warning(style="background-color: rgba(245,158,11,0.15); color: var(--warning); padding: 15px; margin-bottom: 20px; border-radius: 8px; border: 1px solid rgba(245,158,11,0.3);") ⚠️ Note: Cannot publish yet. This event will automatically publish when its start date arrives.
 
     //- Status Filter Bar
     .filter-bar#filterBar
@@ -223,13 +228,13 @@ block content
               th Actions
           tbody#eventsBody
             each e in events
-              tr(data-status=e.status)
+              tr.clickable-row(
+                data-status=e.status
+                onclick=e.status === 'draft' ? `openEditModal(${e.id}, '${e.title.replace(/'/g, "\\'")}', '${(e.description||'').replace(/'/g, "\\'")}', '${e.start_date}', '${e.end_date}', ${e.category_id || 'null'})` : `window.location.href='/admin/events/${e.id}'`
+              )
                 td
-                  span.event-title-link(
-                    onclick=`openEditModal(${e.id}, '${e.title.replace(/'/g, "\\'")}', '${(e.description||'').replace(/'/g, "\\'")}', '${e.start_date}', '${e.end_date}', ${e.category_id || 'null'})`
-                  )
+                  span.event-title-link(style="pointer-events: none;")
                     | #{e.title}
-                    span.edit-icon ✏️
                 td
                   span(style="background: var(--bg-secondary); padding: 4px 8px; border-radius: 4px; font-size: 0.85rem; color: var(--text-primary);")= e.EventCategory ? e.EventCategory.name : '—'
                 td(style="color: var(--text-secondary); font-size: 0.9rem; white-space: nowrap;")
@@ -242,17 +247,14 @@ block content
                     if e.status === 'draft'
                       form(action="/admin/events/publish" method="POST" style="margin: 0;")
                         input(type="hidden" name="event_id" value=e.id)
-                        button.btn-modern.btn-modern-publish.btn-modern-sm(type="submit") 🚀 Publish
+                        button.btn-modern.btn-modern-publish.btn-modern-sm(type="submit" onclick="event.stopPropagation()") 🚀 Publish
                     else if e.status === 'published'
-                      a.btn-modern.btn-modern-manage.btn-modern-sm(href=`/admin/events/${e.id}`) 📋 Details
-                      form(action="/admin/events/finish" method="POST" style="margin: 0;")
-                        input(type="hidden" name="event_id" value=e.id)
-                        button.btn-modern.btn-modern-finish.btn-modern-sm(type="submit"
-                          onclick="return confirm('Mark this event as finished?')") ✓ Finish
+                      a.btn-modern.btn-modern-manage.btn-modern-sm(href=`/admin/events/${e.id}` onclick="event.stopPropagation()") 📋 Details
                       button.btn-modern.btn-modern-danger.btn-modern-sm(
                         type="button"
-                        onclick=`openCancelModal(${e.id})`
+                        onclick=`event.stopPropagation(); openCancelModal(${e.id})`
                       ) ✕ Cancel
+
 
             //- Empty state row shown when filter returns nothing
             tr#noResultsRow.no-results-row(style="display:none;")
