@@ -130,6 +130,56 @@ block content
     .cancel-inline { display: flex; gap: 5px; align-items: center; margin: 0; }
     .cancel-inline input { width: 110px; padding: 6px 10px; font-size: 0.82rem; }
 
+    /* ── Status Filter Bar ──────────────────────────────── */
+    .filter-bar {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+    .filter-tab {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 16px;
+      border-radius: 99px;
+      border: 1px solid var(--border-color);
+      background: var(--bg-card);
+      color: var(--text-secondary);
+      font-size: 0.85rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.18s;
+      user-select: none;
+    }
+    .filter-tab:hover {
+      border-color: var(--accent);
+      color: var(--text-primary);
+    }
+    .filter-tab.active {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff;
+    }
+    .filter-tab .count {
+      background: rgba(255,255,255,0.22);
+      border-radius: 99px;
+      padding: 1px 7px;
+      font-size: 0.78rem;
+      font-weight: 700;
+    }
+    .filter-tab:not(.active) .count {
+      background: var(--bg-secondary);
+      color: var(--text-muted);
+    }
+    .no-results-row td {
+      text-align: center;
+      padding: 40px 15px;
+      color: var(--text-muted);
+      font-style: italic;
+    }
+    /* ───────────────────────────────────────────────── */
+
   .events-container
     .admin-header
       div
@@ -142,6 +192,24 @@ block content
     if pageWarning === 'no_period_match'
       .alert.alert-warning(style="background-color: rgba(245,158,11,0.15); color: var(--warning); padding: 15px; margin-bottom: 20px; border-radius: 8px; border: 1px solid rgba(245,158,11,0.3);") ⚠️ Warning: Event created, but its dates don't fall within any active Period.
 
+    //- Status Filter Bar
+    .filter-bar#filterBar
+      button.filter-tab.active(data-filter="all" onclick="filterEvents('all')")
+        | All
+        span.count#count-all= events.length
+      button.filter-tab(data-filter="draft" onclick="filterEvents('draft')")
+        | Draft
+        span.count#count-draft= events.filter(e => e.status === 'draft').length
+      button.filter-tab(data-filter="published" onclick="filterEvents('published')")
+        | Published
+        span.count#count-published= events.filter(e => e.status === 'published').length
+      button.filter-tab(data-filter="finished" onclick="filterEvents('finished')")
+        | Finished
+        span.count#count-finished= events.filter(e => e.status === 'finished').length
+      button.filter-tab(data-filter="cancelled" onclick="filterEvents('cancelled')")
+        | Cancelled
+        span.count#count-cancelled= events.filter(e => e.status === 'cancelled').length
+
     .card
       .table-responsive
         table.modern-table
@@ -153,9 +221,9 @@ block content
               th Period
               th Status
               th Actions
-          tbody
+          tbody#eventsBody
             each e in events
-              tr
+              tr(data-status=e.status)
                 td
                   span.event-title-link(
                     onclick=`openEditModal(${e.id}, '${e.title.replace(/'/g, "\\'")}', '${(e.description||'').replace(/'/g, "\\'")}', '${e.start_date}', '${e.end_date}', ${e.category_id || 'null'})`
@@ -177,6 +245,10 @@ block content
                         button.btn-modern.btn-modern-publish.btn-modern-sm(type="submit") 🚀 Publish
                     else if e.status === 'published'
                       a.btn-modern.btn-modern-manage.btn-modern-sm(href=`/admin/events/${e.id}`) 📋 Details
+
+            //- Empty state row shown when filter returns nothing
+            tr#noResultsRow.no-results-row(style="display:none;")
+              td(colspan="6") No events match this filter.
 
 
     //- Create Event Modal
@@ -247,4 +319,27 @@ block content
       document.getElementById('edit_end_date').value = end_date ? end_date.substring(0, 10) : '';
       if (category_id) document.getElementById('edit_category').value = category_id;
       document.getElementById('editEventModal').showModal();
+    }
+
+    var currentFilter = 'all';
+
+    function filterEvents(status) {
+      currentFilter = status;
+
+      // Update active tab
+      document.querySelectorAll('.filter-tab').forEach(function(tab) {
+        tab.classList.toggle('active', tab.dataset.filter === status);
+      });
+
+      // Filter rows
+      var rows = document.querySelectorAll('#eventsBody tr[data-status]');
+      var visible = 0;
+      rows.forEach(function(row) {
+        var show = status === 'all' || row.dataset.status === status;
+        row.style.display = show ? '' : 'none';
+        if (show) visible++;
+      });
+
+      // Show / hide no-results
+      document.getElementById('noResultsRow').style.display = visible === 0 ? '' : 'none';
     }
