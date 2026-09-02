@@ -9,7 +9,8 @@ async function listPeriods(req, res) {
       title: "Manage Periods — SES",
       currentPage: "admin-periods",
       periods,
-      user: req.user
+      user: req.user,
+      error: req.query.error || null
     });
   } catch (error) {
     console.error("List Periods error:", error);
