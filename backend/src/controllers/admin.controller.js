@@ -189,7 +189,21 @@ async function viewStudentProfile(req, res) {
       include: [
         { model: User },
         { model: require("../../models").PeriodEnrolment, include: [{ model: require("../../models").Period }] },
-        { model: require("../../models").CallApplication, include: [{ model: require("../../models").Call }] }
+        { 
+          model: require("../../models").CallApplication, 
+          include: [
+            { 
+              model: require("../../models").Call, 
+              include: [
+                { model: require("../../models").TaskType },
+                { 
+                  model: require("../../models").Event, 
+                  include: [{ model: require("../../models").Period }] 
+                }
+              ] 
+            }
+          ] 
+        }
       ]
     });
 

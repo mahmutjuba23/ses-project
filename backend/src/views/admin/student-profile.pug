@@ -279,56 +279,50 @@ block content
       //- Right Column: Activity
       div(style="display: flex; flex-direction: column; gap: 25px;")
         
-        //- Period Enrolments & Points
-        .card
-          h3 Engagement Points & Periods
-          if student.PeriodEnrolments && student.PeriodEnrolments.length > 0
-            table.modern-table
-              thead
-                tr
-                  th Period
-                  th Goal
-                  th Collected
-                  th Result
-              tbody
-                each pe in student.PeriodEnrolments
-                  tr
-                    td(style="font-weight: 600;")= pe.Period.code
-                    td= pe.goal_points || 0
-                    td(style="color: var(--accent); font-weight: 700;")= pe.collected_points || 0
-                    td
-                      if pe.result_status
-                        span.status-badge(class=`status-${pe.result_status.toLowerCase()}`)= pe.result_status
-                      else
-                        span.status-badge.status-pending IN PROGRESS
-          else
-            p(style="color: var(--text-muted); font-style: italic; margin: 0;") No period enrolments found.
-
-        //- Event Call Applications
-        .card
-          h3 Event Applications
-          if student.CallApplications && student.CallApplications.length > 0
-            table.modern-table
-              thead
-                tr
-                  th Call
-                  th Status
-                  th Points Awarded
-                  th Date
-              tbody
-                each app in student.CallApplications
-                  tr
-                    td(style="font-weight: 500;")= app.Call ? app.Call.title : 'Unknown Call'
-                    td
-                      span.status-badge(class=`status-${app.status}`)= app.status.replace('_', ' ')
-                    td
-                      if app.points_awarded
-                        span(style="color: var(--success); font-weight: 600;") +#{app.points_awarded} pts
-                      else
-                        span(style="color: var(--text-muted);") —
-                    td(style="color: var(--text-muted); font-size: 0.85rem;")= new Date(app.created_at).toLocaleDateString()
-          else
-            p(style="color: var(--text-muted); font-style: italic; margin: 0;") No applications found.
+        if student.PeriodEnrolments && student.PeriodEnrolments.length > 0
+          each pe in student.PeriodEnrolments.slice().sort((a,b) => new Date(b.createdAt) - new Date(a.createdAt))
+            .card(style="margin-bottom: 25px;")
+              div(style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px;")
+                div
+                  h3(style="margin: 0; color: var(--text-primary); font-size: 1.3rem;")= pe.Period.name
+                  div(style="font-size: 0.9rem; color: var(--text-secondary); margin-top: 4px;") #{pe.Period.code} | Status: #{pe.Period.status}
+                
+                div(style="text-align: right;")
+                  div(style="font-size: 1.8rem; font-weight: 700; color: var(--accent); line-height: 1;") #{pe.collected_points || 0} #[span(style="font-size: 1rem; color: var(--text-muted); font-weight: 400;") / #{pe.goal_points || 0} pts]
+                  if pe.result_status
+                    span.status-badge(class=`status-${pe.result_status.toLowerCase()}` style="margin-top: 8px; display: inline-block;")= pe.result_status
+                  else
+                    span.status-badge.status-pending(style="margin-top: 8px; display: inline-block;") IN PROGRESS
+              
+              - var periodApps = (student.CallApplications || []).filter(a => a.Call && a.Call.Event && a.Call.Event.period_id === pe.period_id);
+              
+              if periodApps.length > 0
+                .table-responsive
+                  table.modern-table
+                    thead
+                      tr
+                        th Event
+                        th Task
+                        th Status
+                        th Points
+                        th Date
+                    tbody
+                      each app in periodApps
+                        tr
+                          td(style="font-weight: 500;")= app.Call.Event.title
+                          td= app.Call.TaskType ? app.Call.TaskType.name : 'Unknown Task'
+                          td
+                            span.status-badge(class=`status-${app.status}`)= app.status.replace('_', ' ')
+                          td
+                            if app.points_awarded
+                              span(style="color: var(--success); font-weight: 600;") +#{app.points_awarded} pts
+                            else
+                              span(style="color: var(--text-muted);") —
+                          td(style="color: var(--text-secondary); font-size: 0.85rem;")= new Date(app.createdAt).toLocaleDateString()
+              else
+                p(style="color: var(--text-muted); font-style: italic; margin: 0; font-size: 0.9rem;") No event applications for this period.
+        else
+          p(style="color: var(--text-muted); font-style: italic;") Student has no period enrolments yet.
 
   script.
     // Animate the progress ring on load
