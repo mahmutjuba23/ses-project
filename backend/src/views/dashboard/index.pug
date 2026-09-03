@@ -2,109 +2,76 @@ extends ../layout
 
 block content
   style.
-    .dash-wrap { display: flex; gap: 0; min-height: calc(100vh - 60px); animation: fadeIn 0.3s ease-out; }
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+    .dash-container { max-width: 1300px; margin: 0 auto; padding: 30px; animation: fadeIn 0.4s ease-out; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-    /* --- Faculty Sidebar --- */
-    .faculty-sidebar {
-      width: 240px;
-      flex-shrink: 0;
-      background: var(--bg-card);
-      border-right: 1px solid var(--border-color);
-      padding: 28px 0;
-      position: sticky;
-      top: 0;
-      height: 100vh;
-      overflow-y: auto;
-    }
-    .faculty-sidebar-title {
-      font-size: 0.75rem;
-      font-weight: 700;
-      color: var(--text-secondary);
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      padding: 0 20px 14px;
-      border-bottom: 1px solid var(--border-color);
-      margin-bottom: 8px;
-    }
+    .admin-header { margin-bottom: 28px; }
+    .admin-header h1 { margin: 0 0 4px; font-size: 2rem; font-weight: 700; color: var(--text-primary); }
+    .admin-header p { margin: 0; color: var(--text-secondary); font-size: 0.95rem; }
 
-    /* Faculty item with hover-reveal departments */
-    .faculty-item { position: relative; }
-    .faculty-btn {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      width: 100%;
-      padding: 11px 20px;
-      background: none;
-      border: none;
-      cursor: pointer;
-      font-family: inherit;
-      font-size: 0.9rem;
-      color: var(--text-primary);
-      text-align: left;
-      transition: background 0.15s, color 0.15s;
-      border-left: 3px solid transparent;
-    }
-    .faculty-btn:hover, .faculty-item:hover .faculty-btn { background: rgba(14,165,233,0.06); color: var(--accent); border-left-color: var(--accent); }
-    .faculty-btn.active { background: rgba(14,165,233,0.1); color: var(--accent); font-weight: 600; border-left-color: var(--accent); }
-    .faculty-btn .arrow { font-size: 0.7rem; transition: transform 0.2s; }
-    .faculty-item:hover .arrow { transform: rotate(90deg); }
-
-    /* Department flyout — appears on hover */
-    .dept-flyout {
-      display: none;
-      position: absolute;
-      left: 240px;
-      top: 0;
-      min-width: 220px;
-      background: var(--bg-card);
-      border: 1px solid var(--border-color);
-      border-radius: 0 10px 10px 0;
-      box-shadow: 6px 0 24px rgba(0,0,0,0.15);
-      z-index: 100;
-      padding: 6px 0;
-    }
-    .faculty-item:hover .dept-flyout { display: block; }
-    .dept-flyout-title { font-size: 0.72rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.8px; padding: 8px 16px 6px; }
-    .dept-link {
-      display: block;
-      padding: 9px 16px;
-      font-size: 0.88rem;
-      color: var(--text-secondary);
-      text-decoration: none;
-      transition: background 0.15s, color 0.15s;
-      border-left: 3px solid transparent;
-    }
-    .dept-link:hover { background: rgba(14,165,233,0.06); color: var(--accent); border-left-color: var(--accent); }
-    .dept-link.active { background: rgba(14,165,233,0.1); color: var(--accent); font-weight: 600; border-left-color: var(--accent); }
-
-    /* Show all button in flyout */
-    .dept-link-all { border-bottom: 1px solid var(--border-color); margin-bottom: 4px; font-style: italic; }
-
-    /* --- Main Content --- */
-    .dash-main { flex: 1; padding: 30px; overflow-x: hidden; }
-
-    .page-header { margin-bottom: 25px; }
-    .page-header h1 { margin: 0 0 4px; font-size: 1.8rem; font-weight: 700; color: var(--text-primary); }
-    .page-header p { margin: 0; color: var(--text-secondary); font-size: 0.95rem; }
-
-    .stats-bar { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 25px; }
-    .stat-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; padding: 18px 22px; display: flex; align-items: center; gap: 14px; box-shadow: var(--shadow); }
-    .stat-icon { font-size: 1.8rem; }
-    .stat-val { font-size: 1.8rem; font-weight: 700; line-height: 1; }
+    .stats-bar { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin-bottom: 28px; }
+    .stat-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; padding: 20px 24px; display: flex; align-items: center; gap: 16px; box-shadow: var(--shadow); }
+    .stat-icon { font-size: 2rem; }
+    .stat-val { font-size: 1.9rem; font-weight: 700; line-height: 1; }
     .stat-lbl { font-size: 0.82rem; color: var(--text-secondary); margin-top: 3px; }
     .stat-card.c-accent .stat-val { color: var(--accent); }
     .stat-card.c-success .stat-val { color: var(--success); }
     .stat-card.c-warn .stat-val { color: #fbbf24; }
 
-    /* Breadcrumb */
-    .breadcrumb { display: flex; align-items: center; gap: 8px; font-size: 0.88rem; color: var(--text-muted); margin-bottom: 16px; flex-wrap: wrap; }
-    .breadcrumb a { color: var(--accent); text-decoration: none; }
-    .breadcrumb a:hover { text-decoration: underline; }
-    .breadcrumb .sep { color: var(--border-color); }
+    /* ---- Hover Dropdown Filter Bar ---- */
+    .filter-bar { display: flex; align-items: center; gap: 12px; margin-bottom: 24px; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; padding: 16px 20px; box-shadow: var(--shadow); }
+    .filter-label { font-size: 0.82rem; font-weight: 700; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; white-space: nowrap; }
 
-    /* Results */
+    /* Custom hover dropdown */
+    .hover-dropdown { position: relative; display: inline-block; }
+    .hover-dropdown-trigger {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 9px 16px; border-radius: 8px;
+      background: var(--bg-secondary); border: 1px solid var(--border-color);
+      color: var(--text-primary); font-size: 0.92rem; font-weight: 500;
+      cursor: pointer; user-select: none; transition: all 0.2s;
+      white-space: nowrap; min-width: 180px; justify-content: space-between;
+    }
+    .hover-dropdown-trigger:hover, .hover-dropdown:hover .hover-dropdown-trigger {
+      border-color: var(--accent); color: var(--accent);
+      background: rgba(14,165,233,0.06);
+    }
+    .hover-dropdown-trigger .caret { font-size: 0.7rem; transition: transform 0.2s; }
+    .hover-dropdown:hover .caret { transform: rotate(180deg); }
+
+    .hover-dropdown-menu {
+      display: none;
+      position: absolute;
+      top: calc(100% + 4px);
+      left: 0;
+      min-width: 220px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+      z-index: 200;
+      padding: 6px 0;
+      animation: ddFadeIn 0.15s ease-out;
+    }
+    @keyframes ddFadeIn { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: translateY(0); } }
+    .hover-dropdown:hover .hover-dropdown-menu { display: block; }
+
+    .dd-item {
+      display: block; width: 100%; text-align: left;
+      padding: 9px 16px; background: none; border: none;
+      font-family: inherit; font-size: 0.9rem; color: var(--text-secondary);
+      cursor: pointer; transition: background 0.12s, color 0.12s;
+      text-decoration: none; border-left: 3px solid transparent;
+    }
+    .dd-item:hover { background: rgba(14,165,233,0.06); color: var(--accent); border-left-color: var(--accent); }
+    .dd-item.dd-active { color: var(--accent); font-weight: 600; background: rgba(14,165,233,0.08); border-left-color: var(--accent); }
+    .dd-divider { height: 1px; background: var(--border-color); margin: 4px 0; }
+
+    .filter-arrow { color: var(--text-muted); font-size: 1.1rem; }
+    .clear-link { margin-left: auto; font-size: 0.85rem; color: var(--text-muted); text-decoration: none; padding: 6px 12px; border-radius: 6px; border: 1px solid var(--border-color); transition: all 0.2s; }
+    .clear-link:hover { color: var(--text-primary); border-color: var(--accent); }
+
+    /* ---- Results Table ---- */
     .results-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; overflow: hidden; box-shadow: var(--shadow); }
     .results-header { display: flex; justify-content: space-between; align-items: center; padding: 18px 22px; border-bottom: 1px solid var(--border-color); }
     .results-header h3 { margin: 0; font-size: 1.05rem; font-weight: 600; color: var(--text-primary); }
@@ -133,108 +100,112 @@ block content
     .empty-state h3 { margin: 0 0 8px; color: var(--text-primary); font-size: 1.15rem; }
     .empty-state p { margin: 0; color: var(--text-secondary); font-size: 0.9rem; }
 
-  .dash-wrap
-    //- Faculty Sidebar
-    nav.faculty-sidebar
-      .faculty-sidebar-title 🏛 Faculties
-      each f in faculties
-        - var fDepts = allDepartments[f] || []
-        .faculty-item
-          button.faculty-btn(class=(selectedFaculty===f ? 'active' : '') onclick=`window.location='/dashboard?faculty=${encodeURIComponent(f)}'`)
-            span= f
-            span.arrow ›
-          
-          //- Hover flyout with departments
-          .dept-flyout
-            .dept-flyout-title #{f}
-            a.dept-link.dept-link-all(href=`/dashboard?faculty=${encodeURIComponent(f)}` class=(!selectedDepartment && selectedFaculty===f ? 'active' : '')) All departments
-            each d in fDepts
-              a.dept-link(href=`/dashboard?faculty=${encodeURIComponent(f)}&department=${encodeURIComponent(d)}` class=(selectedDepartment===d && selectedFaculty===f ? 'active' : ''))= d
+  .dash-container
+    .admin-header
+      h1 Student Directory
+      p Browse all enrolled students by Faculty and Department.
 
-    //- Main content
-    main.dash-main
-      .page-header
-        h1 Student Directory
-        p Scholarship Engagement System — academic overview
+    .stats-bar
+      .stat-card.c-accent
+        .stat-icon 🎓
+        div
+          .stat-val= stats.totalStudents
+          .stat-lbl Total Students
+      .stat-card.c-success
+        .stat-icon ✅
+        div
+          .stat-val= stats.activeStudents
+          .stat-lbl Active Students
+      .stat-card.c-warn
+        .stat-icon 🏛️
+        div
+          .stat-val= stats.totalFaculties
+          .stat-lbl Faculties
 
-      .stats-bar
-        .stat-card.c-accent
-          .stat-icon 🎓
-          div
-            .stat-val= stats.totalStudents
-            .stat-lbl Total Students
-        .stat-card.c-success
-          .stat-icon ✅
-          div
-            .stat-val= stats.activeStudents
-            .stat-lbl Active Students
-        .stat-card.c-warn
-          .stat-icon 🏛️
-          div
-            .stat-val= stats.totalFaculties
-            .stat-lbl Faculties
+    //- Hover filter bar
+    .filter-bar
+      span.filter-label Filter by:
+
+      //- Faculty hover dropdown
+      .hover-dropdown
+        .hover-dropdown-trigger
+          span= selectedFaculty || 'Faculty'
+          span.caret ▼
+        .hover-dropdown-menu
+          a.dd-item(href="/dashboard" class=(!selectedFaculty ? 'dd-active' : '')) All Faculties
+          .dd-divider
+          each f in faculties
+            a.dd-item(href=`/dashboard?faculty=${encodeURIComponent(f)}` class=(selectedFaculty===f ? 'dd-active' : ''))= f
 
       if selectedFaculty
-        .breadcrumb
-          a(href="/dashboard") All Faculties
-          span.sep ›
+        span.filter-arrow ›
+
+        //- Department hover dropdown (only appears after faculty is chosen)
+        .hover-dropdown
+          .hover-dropdown-trigger
+            span= selectedDepartment || 'All Departments'
+            span.caret ▼
+          .hover-dropdown-menu
+            a.dd-item(href=`/dashboard?faculty=${encodeURIComponent(selectedFaculty)}` class=(!selectedDepartment ? 'dd-active' : '')) All Departments
+            .dd-divider
+            each d in departments
+              a.dd-item(href=`/dashboard?faculty=${encodeURIComponent(selectedFaculty)}&department=${encodeURIComponent(d)}` class=(selectedDepartment===d ? 'dd-active' : ''))= d
+
+      if selectedFaculty
+        a.clear-link(href="/dashboard") ✕ Clear
+
+    //- Results
+    .results-card
+      .results-header
+        h3
           if selectedDepartment
-            a(href=`/dashboard?faculty=${encodeURIComponent(selectedFaculty)}`)= selectedFaculty
-            span.sep ›
-            span= selectedDepartment
+            | #{selectedDepartment}
+          else if selectedFaculty
+            | #{selectedFaculty} — All Departments
           else
-            span= selectedFaculty
+            | Hover over "Faculty" above to start browsing
+        if students.length > 0
+          span.count-badge #{students.length} student#{students.length !== 1 ? 's' : ''}
 
-      .results-card
-        .results-header
-          h3
-            if selectedDepartment
-              | #{selectedDepartment}
-            else if selectedFaculty
-              | #{selectedFaculty} — All Departments
-            else
-              | 👈 Select a Faculty to view students
-          if students.length > 0
-            span.count-badge #{students.length} student#{students.length !== 1 ? 's' : ''}
-
-        if students.length === 0
-          .empty-state
-            .ei #{selectedFaculty ? '🔍' : '🏛️'}
-            h3= selectedFaculty ? 'No students found' : 'Choose a Faculty'
-            p= selectedFaculty ? 'No students match the selected filters.' : 'Hover over a faculty in the sidebar to browse departments and students.'
-        else
-          .table-responsive
-            table.modern-table
-              thead
-                tr
-                  th Student
-                  th Program
-                  th Level
-                  th Enrolled
-                  th Scholarship
-                  th Status
-              tbody
-                each s in students
-                  tr(onclick=`window.location='/admin/students/${s.id}'`)
-                    td
-                      div.sname #{s.first_name} #{s.last_name}
-                      div.sid= s.student_number
-                    td(style="max-width: 180px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--text-secondary);")= s.program || '—'
-                    td
-                      if s.study_level === 'Master'
-                        span.pill.pill-master Master
-                      else
-                        span.pill.pill-bachelor Bachelor
-                    td(style="color: var(--text-secondary);")= s.enrolment_year || '—'
-                    td
-                      if s.scholarship_type === 'Full'
-                        span.schol-full ★ Full
-                      else if s.scholarship_type === 'Partial'
-                        span.schol-partial ◑ #{s.scholarship_percentage}%
-                      else
-                        span.schol-none —
-                    td
-                      if s.is_active
-                        span.pill.pill-active Active
-                      else
-                        span.pill.pill-inactive Inactive
+      if students.length === 0
+        .empty-state
+          .ei= selectedFaculty ? '🔍' : '🏛️'
+          h3= selectedFaculty ? 'No students found' : 'Select a Faculty'
+          p= selectedFaculty ? 'No students match the selected filters.' : 'Hover over the Faculty dropdown above and click one to see its students.'
+      else
+        table.modern-table
+          thead
+            tr
+              th Student
+              th Department
+              th Program
+              th Level
+              th Enrolled
+              th Scholarship
+              th Status
+          tbody
+            each s in students
+              tr(onclick=`window.location='/admin/students/${s.id}'`)
+                td
+                  div.sname #{s.first_name} #{s.last_name}
+                  div.sid= s.student_number
+                td(style="color: var(--text-secondary);")= s.department || '—'
+                td(style="max-width: 180px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--text-secondary);")= s.program || '—'
+                td
+                  if s.study_level === 'Master'
+                    span.pill.pill-master Master
+                  else
+                    span.pill.pill-bachelor Bachelor
+                td(style="color: var(--text-secondary);")= s.enrolment_year || '—'
+                td
+                  if s.scholarship_type === 'Full'
+                    span.schol-full ★ Full
+                  else if s.scholarship_type === 'Partial'
+                    span.schol-partial ◑ #{s.scholarship_percentage}%
+                  else
+                    span.schol-none —
+                td
+                  if s.is_active
+                    span.pill.pill-active Active
+                  else
+                    span.pill.pill-inactive Inactive
