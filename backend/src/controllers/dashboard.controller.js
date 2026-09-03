@@ -15,8 +15,8 @@ async function dashboardPage(req, res) {
       return res.redirect("/scholarships");
     }
 
-    const selectedFaculty = req.query.faculty || null;
-    const selectedDepartment = req.query.department || null;
+    const selectedFaculty = req.query.faculty ? req.query.faculty.trim() : null;
+    const selectedDepartment = req.query.department ? req.query.department.trim() : null;
 
     // Get all unique faculties
     const faculties = await Student.findAll({
@@ -26,16 +26,21 @@ async function dashboardPage(req, res) {
       order: [['faculty', 'ASC']]
     });
 
-    // Get departments for the selected faculty
-    let departments = [];
-    if (selectedFaculty) {
-      departments = await Student.findAll({
-        attributes: ['department'],
-        where: { faculty: selectedFaculty, department: { [Op.ne]: null } },
-        group: ['department'],
-        order: [['department', 'ASC']]
-      });
+    // Build a map of all departments grouped by faculty (for hover flyout)
+    const allDeptRows = await Student.findAll({
+      attributes: ['faculty', 'department'],
+      where: { faculty: { [Op.ne]: null }, department: { [Op.ne]: null } },
+      group: ['faculty', 'department'],
+      order: [['faculty', 'ASC'], ['department', 'ASC']]
+    });
+    const allDepartments = {};
+    for (const row of allDeptRows) {
+      if (!allDepartments[row.faculty]) allDepartments[row.faculty] = [];
+      allDepartments[row.faculty].push(row.department);
     }
+
+    // Get departments for the selected faculty (still used for breadcrumb logic)
+    let departments = allDepartments[selectedFaculty] || [];
 
     // Get student list based on filters
     const whereClause = {};
@@ -57,7 +62,8 @@ async function dashboardPage(req, res) {
       currentPage: "dashboard",
       user: req.user,
       faculties: faculties.map(f => f.faculty),
-      departments: departments.map(d => d.department),
+      allDepartments,
+      departments,
       students,
       selectedFaculty,
       selectedDepartment,
