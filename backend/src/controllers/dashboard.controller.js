@@ -1,12 +1,12 @@
-const { User, Scholarship, Application, Role } = require("../../models");
+const { User, Role, Student } = require("../../models");
+const { Op } = require("sequelize");
 
 async function dashboardPage(req, res) {
   try {
-    // Check if user is admin or reviewer
     const user = await User.findByPk(req.user.id, {
       include: [{ model: Role, through: { attributes: [] } }],
     });
-    
+
     const isAdminOrReviewer = user.Roles.some(
       (r) => r.name === "admin" || r.name === "reviewer"
     );
@@ -15,31 +15,53 @@ async function dashboardPage(req, res) {
       return res.redirect("/scholarships");
     }
 
-    // Fetch Stats
-    const totalUsers = await User.count();
-    const openScholarships = await Scholarship.count({ where: { status: "open" } });
-    const pendingApplications = await Application.count({ where: { status: "pending" } });
+    const selectedFaculty = req.query.faculty || null;
+    const selectedDepartment = req.query.department || null;
 
-    // Fetch Recent Applications (last 5)
-    const recentApplications = await Application.findAll({
-      include: [
-        { model: User, as: "applicant", attributes: ["id", "full_name"] },
-        { model: Scholarship, as: "scholarship", attributes: ["id", "title"] }
-      ],
-      order: [["created_at", "DESC"]],
-      limit: 5
+    // Get all unique faculties
+    const faculties = await Student.findAll({
+      attributes: ['faculty'],
+      where: { faculty: { [Op.ne]: null } },
+      group: ['faculty'],
+      order: [['faculty', 'ASC']]
     });
+
+    // Get departments for the selected faculty
+    let departments = [];
+    if (selectedFaculty) {
+      departments = await Student.findAll({
+        attributes: ['department'],
+        where: { faculty: selectedFaculty, department: { [Op.ne]: null } },
+        group: ['department'],
+        order: [['department', 'ASC']]
+      });
+    }
+
+    // Get student list based on filters
+    const whereClause = {};
+    if (selectedFaculty) whereClause.faculty = selectedFaculty;
+    if (selectedDepartment) whereClause.department = selectedDepartment;
+
+    const students = (selectedFaculty) ? await Student.findAll({
+      where: whereClause,
+      order: [['last_name', 'ASC'], ['first_name', 'ASC']]
+    }) : [];
+
+    // Summary stats
+    const totalStudents = await Student.count();
+    const activeStudents = await Student.count({ where: { is_active: true } });
+    const totalFaculties = faculties.length;
 
     res.render("dashboard/index", {
       title: "Dashboard — SES",
       currentPage: "dashboard",
       user: req.user,
-      stats: {
-        totalUsers,
-        openScholarships,
-        pendingApplications
-      },
-      recentApplications: recentApplications.map(app => app.toJSON())
+      faculties: faculties.map(f => f.faculty),
+      departments: departments.map(d => d.department),
+      students,
+      selectedFaculty,
+      selectedDepartment,
+      stats: { totalStudents, activeStudents, totalFaculties }
     });
 
   } catch (error) {
@@ -48,6 +70,4 @@ async function dashboardPage(req, res) {
   }
 }
 
-module.exports = {
-  dashboardPage,
-};
+module.exports = { dashboardPage };

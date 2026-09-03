@@ -1,62 +1,166 @@
 extends ../layout
 
 block content
-  .main-content
-    .page-header
+  style.
+    .dash-container { max-width: 1300px; margin: 0 auto; padding: 20px; animation: fadeIn 0.4s ease-out; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+    .admin-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; padding-bottom: 15px; border-bottom: 1px solid var(--border-color); }
+    .admin-header h1 { margin: 0; font-size: 2rem; font-weight: 700; color: var(--text-primary); }
+    .admin-header p { margin: 5px 0 0; color: var(--text-secondary); font-size: 0.95rem; }
+
+    .stats-bar { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 30px; }
+    .stat-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; padding: 20px 25px; display: flex; align-items: center; gap: 18px; box-shadow: var(--shadow); }
+    .stat-icon { font-size: 2rem; }
+    .stat-val { font-size: 2rem; font-weight: 700; color: var(--text-primary); line-height: 1; }
+    .stat-lbl { font-size: 0.85rem; color: var(--text-secondary); margin-top: 4px; }
+    .stat-card.stat-accent .stat-val { color: var(--accent); }
+    .stat-card.stat-success .stat-val { color: var(--success); }
+
+    .filter-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; padding: 25px; margin-bottom: 25px; box-shadow: var(--shadow); }
+    .filter-card h3 { margin: 0 0 18px; font-size: 1.1rem; color: var(--text-primary); }
+    .filter-row { display: flex; gap: 15px; align-items: flex-end; flex-wrap: wrap; }
+    .filter-group { display: flex; flex-direction: column; gap: 6px; flex: 1; min-width: 200px; }
+    .filter-group label { font-size: 0.85rem; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; }
+    .filter-select { padding: 10px 14px; border: 1px solid var(--border-color); border-radius: 8px; background: var(--bg-input); color: var(--text-primary); font-size: 0.95rem; cursor: pointer; transition: all 0.2s; appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%236b7280' d='M6 8L1 3h10z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; padding-right: 36px; }
+    .filter-select:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-glow); }
+    .filter-btn { padding: 10px 22px; background: var(--gradient-1); color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 0.95rem; transition: all 0.2s; box-shadow: 0 4px 15px var(--accent-glow); white-space: nowrap; }
+    .filter-btn:hover { transform: translateY(-1px); box-shadow: 0 6px 20px var(--accent-glow); }
+    .clear-btn { padding: 10px 18px; background: transparent; color: var(--text-secondary); border: 1px solid var(--border-color); border-radius: 8px; font-weight: 500; cursor: pointer; font-size: 0.9rem; transition: all 0.2s; text-decoration: none; display: inline-flex; align-items: center; }
+    .clear-btn:hover { color: var(--text-primary); border-color: var(--accent); }
+
+    .results-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; padding: 25px; box-shadow: var(--shadow); }
+    .results-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; }
+    .results-header h3 { margin: 0; font-size: 1.1rem; color: var(--text-primary); }
+    .results-count { font-size: 0.85rem; color: var(--text-secondary); background: var(--bg-secondary); padding: 4px 12px; border-radius: 20px; }
+
+    .modern-table { width: 100%; border-collapse: collapse; }
+    .modern-table th { background: var(--bg-secondary); padding: 12px 15px; text-align: left; font-weight: 600; font-size: 0.82rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid var(--border-color); }
+    .modern-table td { padding: 14px 15px; border-bottom: 1px solid rgba(0,0,0,0.04); color: var(--text-primary); font-size: 0.93rem; vertical-align: middle; }
+    .modern-table tbody tr { cursor: pointer; transition: background 0.15s; }
+    .modern-table tbody tr:hover { background: rgba(14,165,233,0.05); }
+    .student-name { font-weight: 600; color: var(--text-primary); }
+    .student-id { font-size: 0.82rem; color: var(--accent); margin-top: 2px; }
+
+    .badge-level { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 0.78rem; font-weight: 600; }
+    .badge-bachelor { background: rgba(99,102,241,0.12); color: #818cf8; }
+    .badge-master { background: rgba(14,165,233,0.12); color: #38bdf8; }
+    .badge-active { background: rgba(16,185,129,0.12); color: var(--success); }
+    .badge-inactive { background: rgba(239,68,68,0.12); color: var(--danger); }
+    .scholarship-badge { font-size: 0.82rem; }
+    .scholarship-full { color: var(--success); font-weight: 600; }
+    .scholarship-partial { color: #fbbf24; font-weight: 600; }
+    .scholarship-none { color: var(--text-muted); }
+
+    .empty-state { text-align: center; padding: 60px 20px; color: var(--text-secondary); }
+    .empty-state .empty-icon { font-size: 3rem; margin-bottom: 15px; }
+    .empty-state h3 { margin: 0 0 8px; color: var(--text-primary); }
+    .empty-state p { margin: 0; font-size: 0.9rem; }
+
+    .faculty-pill { display: inline-flex; align-items: center; gap: 6px; background: rgba(14,165,233,0.1); color: var(--accent); padding: 3px 10px; border-radius: 20px; font-size: 0.8rem; font-weight: 500; border: 1px solid rgba(14,165,233,0.2); }
+
+  .dash-container
+    .admin-header
       div
-        h1 Dashboard
-        p Overview of the Scholarship Engagement System
+        h1 Student Directory
+        p Browse all enrolled students by Faculty and Department.
 
-    .profile-grid(style="margin-bottom: 2rem;")
-      .card(style="text-align: center;")
-        h2(style="color: var(--text-secondary); font-size: 1rem; margin-bottom: 0.5rem;") Total Users
-        p(style="font-size: 2.5rem; font-weight: 700; color: var(--accent-hover); margin: 0;")= stats.totalUsers
-      
-      .card(style="text-align: center;")
-        h2(style="color: var(--text-secondary); font-size: 1rem; margin-bottom: 0.5rem;") Open Scholarships
-        p(style="font-size: 2.5rem; font-weight: 700; color: var(--success); margin: 0;")= stats.openScholarships
+    .stats-bar
+      .stat-card
+        .stat-icon 🎓
+        div
+          .stat-val= stats.totalStudents
+          .stat-lbl Total Students
+      .stat-card.stat-success
+        .stat-icon ✅
+        div
+          .stat-val= stats.activeStudents
+          .stat-lbl Active Students
+      .stat-card.stat-accent
+        .stat-icon 🏛️
+        div
+          .stat-val= stats.totalFaculties
+          .stat-lbl Faculties
 
-      .card(style="text-align: center;")
-        h2(style="color: var(--text-secondary); font-size: 1rem; margin-bottom: 0.5rem;") Pending Applications
-        p(style="font-size: 2.5rem; font-weight: 700; color: #fbbf24; margin: 0;")= stats.pendingApplications
+    .filter-card
+      h3 🔍 Filter Students
+      form(action="/dashboard" method="GET")
+        .filter-row
+          .filter-group
+            label Faculty
+            select#facultySelect.filter-select(name="faculty" onchange="this.form.department.value=''; this.form.submit();")
+              option(value="" selected=!selectedFaculty) — All Faculties —
+              each f in faculties
+                option(value=f selected=(selectedFaculty===f))= f
+          
+          if selectedFaculty
+            .filter-group
+              label Department
+              select.filter-select(name="department" onchange="this.form.submit();")
+                option(value="" selected=!selectedDepartment) — All Departments —
+                each d in departments
+                  option(value=d selected=(selectedDepartment===d))= d
+          
+          if selectedFaculty
+            a.clear-btn(href="/dashboard") ✕ Clear Filter
 
-    .card
-      h2 Recent Applications
-      if recentApplications && recentApplications.length
-        .table-wrapper(style="box-shadow: none; border: none;")
-          table
+    .results-card
+      .results-header
+        h3
+          if selectedFaculty
+            | #{selectedDepartment ? selectedDepartment : selectedFaculty} — Students
+          else
+            | Select a Faculty to Browse Students
+        if students.length > 0
+          span.results-count #{students.length} student#{students.length !== 1 ? 's' : ''}
+
+      if !selectedFaculty
+        .empty-state
+          .empty-icon 🏛️
+          h3 Choose a Faculty above
+          p Select a faculty from the dropdown to see its students.
+
+      else if students.length === 0
+        .empty-state
+          .empty-icon 🔍
+          h3 No students found
+          p No students match the selected filters.
+
+      else
+        .table-responsive
+          table.modern-table
             thead
               tr
-                th Applicant
+                th Student
+                th Department
+                th Program
+                th Level
+                th Enrolled
                 th Scholarship
                 th Status
-                th Date
-                th Actions
             tbody
-              each app in recentApplications
-                tr
-                  td= app.applicant ? app.applicant.full_name : '—'
+              each s in students
+                tr(onclick=`window.location='/admin/students/${s.id}'`)
                   td
-                    strong= app.scholarship ? app.scholarship.title : '—'
+                    div.student-name #{s.first_name} #{s.last_name}
+                    div.student-id #{s.student_number}
+                  td= s.department || '—'
+                  td(style="max-width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;")= s.program || '—'
                   td
-                    if app.status === 'pending'
-                      span.badge(style="background:rgba(245,158,11,0.15);color:#fbbf24;")
-                        span.badge-dot
-                        | Pending
-                    else if app.status === 'under_review'
-                      span.badge(style="background:rgba(59,130,246,0.15);color:#60a5fa;")
-                        span.badge-dot
-                        | Under Review
-                    else if app.status === 'approved'
-                      span.badge.badge-success
-                        span.badge-dot
-                        | Approved
-                    else if app.status === 'rejected'
-                      span.badge.badge-danger
-                        span.badge-dot
-                        | Rejected
-                  td= new Date(app.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+                    if s.study_level === 'Master'
+                      span.badge-level.badge-master Master
+                    else
+                      span.badge-level.badge-bachelor Bachelor
+                  td= s.enrolment_year || '—'
                   td
-                    a.btn.btn-secondary.btn-sm(href=`/applications/${app.id}`) View
-      else
-        p(style="color: var(--text-muted);") No recent applications.
+                    if s.scholarship_type === 'Full'
+                      span.scholarship-badge.scholarship-full ★ Full (100%)
+                    else if s.scholarship_type === 'Partial'
+                      span.scholarship-badge.scholarship-partial ◑ Partial (#{s.scholarship_percentage}%)
+                    else
+                      span.scholarship-badge.scholarship-none None
+                  td
+                    if s.is_active
+                      span.badge-level.badge-active Active
+                    else
+                      span.badge-level.badge-inactive Inactive
