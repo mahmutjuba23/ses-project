@@ -2,114 +2,242 @@ extends ../layout
 
 block content
   style.
-    .dash-container { max-width: 1300px; margin: 0 auto; padding: 30px; animation: fadeIn 0.4s ease-out; }
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    .dash { max-width: 1200px; margin: 0 auto; padding: 30px; }
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
 
-    .admin-header { margin-bottom: 28px; display: flex; justify-content: space-between; align-items: flex-end; }
-    .admin-header h1 { margin: 0 0 4px; font-size: 2rem; font-weight: 700; color: var(--text-primary); }
-    .admin-header p { margin: 0; color: var(--text-secondary); font-size: 0.95rem; }
-    .period-badge { background: var(--accent-glow); color: var(--accent); padding: 6px 12px; border-radius: 20px; font-size: 0.85rem; font-weight: 600; }
+    /* ─── Header ─── */
+    .dash-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 32px; }
+    .dash-header h1 { margin: 0; font-size: 2rem; font-weight: 800; color: var(--text-primary); }
+    .dash-header p { margin: 4px 0 0; color: var(--text-secondary); font-size: 0.95rem; }
+    .period-pill { background: rgba(16,185,129,0.12); color: var(--success); padding: 8px 16px; border-radius: 20px; font-size: 0.88rem; font-weight: 700; border: 1px solid rgba(16,185,129,0.3); }
 
-    /* Summary Bar */
-    .summary-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 16px; padding: 30px; margin-bottom: 40px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); text-align: center; }
-    .summary-title { font-size: 1.1rem; color: var(--text-secondary); font-weight: 600; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 15px; }
-    .summary-stats { display: flex; justify-content: center; align-items: center; gap: 40px; margin-bottom: 20px; }
-    .s-stat { text-align: center; }
-    .s-val { font-size: 3rem; font-weight: 800; color: var(--text-primary); line-height: 1; }
-    .s-lbl { font-size: 0.9rem; color: var(--text-secondary); margin-top: 5px; }
-    .s-divider { font-size: 2.5rem; color: var(--border-color); font-weight: 300; }
+    /* ─── Top Summary ─── */
+    .sys-card {
+      background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+      border: 1px solid #334155; border-radius: 20px;
+      padding: 32px 40px; margin-bottom: 32px;
+      display: flex; align-items: center; gap: 40px;
+      animation: fadeUp 0.4s ease-out;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+    }
+    .sys-ring { position: relative; flex-shrink: 0; }
+    .sys-ring svg { transform: rotate(-90deg); }
+    .sys-ring-text { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+    .sys-ring-pct { font-size: 1.6rem; font-weight: 800; color: #fff; line-height: 1; }
+    .sys-ring-sub { font-size: 0.7rem; color: #94a3b8; text-transform: uppercase; letter-spacing: 1px; margin-top: 4px; }
 
-    /* Progress Bar */
-    .pg-wrap { width: 100%; background: var(--bg-primary); border-radius: 12px; height: 12px; overflow: hidden; box-shadow: inset 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 8px; }
-    .pg-bar { height: 100%; border-radius: 12px; transition: width 1s cubic-bezier(0.4, 0, 0.2, 1); }
-    .pg-bar.c-green { background: var(--success); }
-    .pg-bar.c-yellow { background: var(--warning); }
-    .pg-bar.c-red { background: var(--danger); }
-    .pg-text { font-size: 0.85rem; font-weight: 600; color: var(--text-secondary); text-align: right; }
+    .sys-info { flex: 1; }
+    .sys-info h2 { margin: 0 0 6px; font-size: 1.5rem; font-weight: 700; color: #fff; }
+    .sys-info p { margin: 0 0 20px; color: #94a3b8; font-size: 0.9rem; }
+    .sys-totals { display: flex; gap: 32px; }
+    .sys-t { }
+    .sys-t-val { font-size: 1.8rem; font-weight: 800; color: #fff; line-height: 1; }
+    .sys-t-lbl { font-size: 0.78rem; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 4px; }
+    .sys-t:nth-child(1) .sys-t-val { color: #38bdf8; }
+    .sys-t:nth-child(2) .sys-t-val { color: #a78bfa; }
 
-    /* Faculty Grid */
-    .faculties-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(500px, 1fr)); gap: 30px; }
-    .faculty-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 16px; box-shadow: var(--shadow); overflow: hidden; }
+    .sys-faculties-count { margin-left: auto; text-align: center; flex-shrink: 0; }
+    .big-num { font-size: 3.5rem; font-weight: 900; color: #fff; line-height: 1; }
+    .big-lbl { font-size: 0.75rem; color: #64748b; text-transform: uppercase; letter-spacing: 1px; }
+
+    /* ─── Faculty Accordion Grid ─── */
+    .fac-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 16px; }
+
+    .fac-item {
+      background: var(--bg-card); border: 1px solid var(--border-color);
+      border-radius: 16px; overflow: hidden;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+      transition: box-shadow 0.2s, border-color 0.2s;
+      animation: fadeUp 0.4s ease-out both;
+    }
+    .fac-item:hover { box-shadow: 0 8px 30px rgba(0,0,0,0.12); border-color: var(--accent); }
+
+    .fac-trigger {
+      display: flex; align-items: center; gap: 16px;
+      padding: 20px 22px; cursor: pointer;
+      user-select: none; transition: background 0.15s;
+    }
+    .fac-trigger:hover { background: rgba(37,99,235,0.04); }
+
+    .fac-icon { font-size: 1.5rem; flex-shrink: 0; width: 44px; height: 44px; background: var(--bg-primary); border-radius: 12px; display: flex; align-items: center; justify-content: center; }
+    .fac-title { flex: 1; min-width: 0; }
+    .fac-name { font-size: 1rem; font-weight: 700; color: var(--text-primary); margin: 0 0 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .fac-subtitle { font-size: 0.8rem; color: var(--text-muted); }
+
+    /* Mini ring per faculty */
+    .fac-ring { position: relative; flex-shrink: 0; }
+    .fac-ring svg { transform: rotate(-90deg); }
+    .fac-ring-text { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 0.72rem; font-weight: 700; color: var(--accent); }
     
-    .fac-header { padding: 24px; border-bottom: 1px solid var(--border-color); background: var(--bg-primary); }
-    .fac-title-row { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px; }
-    .fac-name { font-size: 1.4rem; font-weight: 700; margin: 0; color: var(--text-primary); }
-    .fac-totals { text-align: right; }
-    .fac-t-val { font-size: 1.2rem; font-weight: 700; color: var(--accent); }
-    .fac-t-lbl { font-size: 0.75rem; color: var(--text-secondary); text-transform: uppercase; }
+    .fac-chevron { color: var(--text-muted); font-size: 0.85rem; transition: transform 0.3s; flex-shrink: 0; }
+    .fac-item.open .fac-chevron { transform: rotate(180deg); }
 
-    /* Department List */
-    .dept-list { padding: 0; margin: 0; list-style: none; }
-    .dept-item { padding: 16px 24px; border-bottom: 1px solid var(--border-color); }
-    .dept-item:last-child { border-bottom: none; }
-    
-    .dept-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-    .dept-name { font-size: 1.05rem; font-weight: 600; color: var(--text-primary); }
-    .dept-stats { font-size: 0.95rem; font-weight: 500; color: var(--text-secondary); }
-    .dept-stats span.c { color: var(--text-primary); font-weight: 700; }
-    
-    .empty-state { text-align: center; padding: 60px 20px; color: var(--text-secondary); }
-    .empty-state h3 { font-size: 1.5rem; margin-bottom: 10px; color: var(--text-primary); }
+    /* Progress mini bar inside trigger */
+    .fac-prog { height: 3px; background: var(--border-color); border-radius: 2px; margin: 0 22px 14px; }
+    .fac-prog-fill { height: 100%; border-radius: 2px; transition: width 0.8s cubic-bezier(0.4,0,0.2,1); }
+    .fac-prog-fill.c-green { background: var(--success); }
+    .fac-prog-fill.c-yellow { background: var(--warning); }
+    .fac-prog-fill.c-red { background: var(--danger); }
 
-  .dash-container
-    .admin-header
+    /* ─── Departments Drawer ─── */
+    .dept-drawer {
+      max-height: 0; overflow: hidden;
+      transition: max-height 0.4s cubic-bezier(0.4,0,0.2,1);
+      border-top: 0px solid var(--border-color);
+    }
+    .fac-item.open .dept-drawer {
+      max-height: 600px;
+      border-top: 1px solid var(--border-color);
+    }
+    .dept-inner { padding: 12px 0; }
+    .dept-row {
+      display: flex; align-items: center; gap: 12px;
+      padding: 10px 22px; transition: background 0.15s; cursor: default;
+    }
+    .dept-row:hover { background: var(--bg-primary); }
+    .dept-row-name { flex: 1; font-size: 0.9rem; font-weight: 600; color: var(--text-primary); }
+    .dept-pts { font-size: 0.85rem; color: var(--text-secondary); white-space: nowrap; }
+    .dept-pts b { color: var(--text-primary); }
+    .dept-bar-wrap { width: 80px; height: 4px; background: var(--border-color); border-radius: 3px; flex-shrink: 0; }
+    .dept-bar { height: 100%; border-radius: 3px; transition: width 0.8s cubic-bezier(0.4,0,0.2,1); }
+    .dept-bar.c-green { background: var(--success); }
+    .dept-bar.c-yellow { background: var(--warning); }
+    .dept-bar.c-red { background: var(--danger); }
+    .dept-pct { font-size: 0.78rem; font-weight: 700; width: 34px; text-align: right; flex-shrink: 0; }
+    .dept-pct.c-green { color: var(--success); }
+    .dept-pct.c-yellow { color: var(--warning); }
+    .dept-pct.c-red { color: var(--danger); }
+
+    .no-active { text-align: center; padding: 80px 20px; color: var(--text-secondary); }
+    .no-active h3 { font-size: 1.6rem; margin-bottom: 10px; color: var(--text-primary); }
+
+  .dash
+    .dash-header
       div
-        h1 Organization Performance
+        h1 Organization Dashboard
         if activePeriod
-          p Tracking macro-level points for the active period.
+          p Live tracking for the active period.
         else
-          p No active period found.
+          p No active period.
       if activePeriod
-        .period-badge 🟢 #{activePeriod.name}
+        .period-pill 🟢 #{activePeriod.name}
 
     if !activePeriod
-      .empty-state
+      .no-active
         h3 No Active Period
-        p Activate a period in the Periods tab to start tracking organization goals.
+        p Activate a period in the Periods tab to start tracking.
     else
-      //- Overall System Summary
-      .summary-card
-        .summary-title Total University Progress
-        .summary-stats
-          .s-stat
-            .s-val= systemCollected
-            .s-lbl POINTS COLLECTED
-          .s-divider /
-          .s-stat
-            .s-val= systemGoal
-            .s-lbl SYSTEM GOAL
-        
-        - var sysPct = systemGoal > 0 ? Math.min(100, Math.round((systemCollected / systemGoal) * 100)) : 0;
-        - var sysColorClass = sysPct >= 80 ? 'c-green' : (sysPct >= 50 ? 'c-yellow' : 'c-red');
-        .pg-wrap(style="height: 16px;")
-          .pg-bar(class=sysColorClass style=`width: ${sysPct}%`)
-        .pg-text #{sysPct}% Completed
+      //- ─── System Summary Card ───
+      - var sysPct = systemGoal > 0 ? Math.min(100, Math.round((systemCollected / systemGoal) * 100)) : 0;
+      - var sysStroke = Math.round(sysPct * 2.827);
+      - var facCount = Object.keys(facultyData).length;
 
-      //- Faculties Grid
-      .faculties-grid
+      .sys-card
+        //- Animated donut ring
+        .sys-ring
+          svg(width="120" height="120" viewBox="0 0 120 120")
+            circle(cx="60" cy="60" r="45" fill="none" stroke="#1e3a5f" stroke-width="10")
+            circle(cx="60" cy="60" r="45" fill="none" stroke="url(#sysGrad)" stroke-width="10"
+              stroke-dasharray=`${sysStroke} 283`
+              stroke-linecap="round"
+              style="transition: stroke-dasharray 1.2s cubic-bezier(0.4,0,0.2,1);"
+            )
+            defs
+              linearGradient#sysGrad(x1="0" y1="0" x2="1" y2="0")
+                stop(offset="0%" stop-color="#38bdf8")
+                stop(offset="100%" stop-color="#818cf8")
+          .sys-ring-text
+            .sys-ring-pct #{sysPct}%
+            .sys-ring-sub Done
+
+        .sys-info
+          h2 University Progress
+          p Points collected across all active students & departments.
+          .sys-totals
+            .sys-t
+              .sys-t-val.js-counter(data-val=systemCollected) 0
+              .sys-t-lbl Points Collected
+            .sys-t
+              .sys-t-val.js-counter(data-val=systemGoal) 0
+              .sys-t-lbl Total Goal
+
+        .sys-faculties-count
+          .big-num= facCount
+          .big-lbl Faculties
+
+      //- ─── Faculty Accordion Grid ───
+      .fac-grid
         each facData, facName in facultyData
-          .faculty-card
-            .fac-header
-              .fac-title-row
-                h3.fac-name= facName
-                .fac-totals
-                  .fac-t-val #{facData.collected} / #{facData.goal}
-                  .fac-t-lbl Total Points
-              
-              - var facPct = facData.goal > 0 ? Math.min(100, Math.round((facData.collected / facData.goal) * 100)) : 0;
-              - var facColorClass = facPct >= 80 ? 'c-green' : (facPct >= 50 ? 'c-yellow' : 'c-red');
-              .pg-wrap
-                .pg-bar(class=facColorClass style=`width: ${facPct}%`)
-              .pg-text #{facPct}%
+          - var facPct = facData.goal > 0 ? Math.min(100, Math.round((facData.collected / facData.goal) * 100)) : 0;
+          - var facColorClass = facPct >= 80 ? 'c-green' : (facPct >= 50 ? 'c-yellow' : 'c-red');
+          - var facIcon = facName.includes('Eng') ? '⚙️' : facName.includes('Bus') ? '💼' : facName.includes('Law') ? '⚖️' : facName.includes('Arts') ? '🎨' : facName.includes('Med') ? '🩺' : facName.includes('Sci') ? '🔬' : '🏛️';
+          - var facStroke = Math.round(facPct * 0.942); // 30*PI ~ 94.2, scale accordingly
 
-            ul.dept-list
-              each deptData, deptName in facData.departments
-                li.dept-item
-                  .dept-header
-                    .dept-name= deptName
-                    .dept-stats <span class="c">#{deptData.collected}</span> / #{deptData.goal} pts
-                  
+          .fac-item(data-fac=facName)
+            //- Clickable trigger
+            .fac-trigger(onclick=`toggleFac(this)`)
+              .fac-icon= facIcon
+              .fac-title
+                .fac-name= facName
+                .fac-subtitle #{Object.keys(facData.departments).length} Department(s) · #{facData.collected} / #{facData.goal} pts
+              
+              //- Mini ring
+              .fac-ring
+                svg(width="48" height="48" viewBox="0 0 48 48")
+                  circle(cx="24" cy="24" r="15" fill="none" stroke="var(--border-color)" stroke-width="5")
+                  circle(cx="24" cy="24" r="15" fill="none"
+                    stroke=facPct >= 80 ? 'var(--success)' : (facPct >= 50 ? 'var(--warning)' : 'var(--danger)')
+                    stroke-width="5"
+                    stroke-dasharray=`${facStroke} 94`
+                    stroke-linecap="round"
+                  )
+                .fac-ring-text #{facPct}%
+              
+              .fac-chevron ▼
+            
+            //- Progress bar line
+            .fac-prog
+              .fac-prog-fill(class=facColorClass style=`width: ${facPct}%`)
+            
+            //- Departments drawer
+            .dept-drawer
+              .dept-inner
+                each deptData, deptName in facData.departments
                   - var deptPct = deptData.goal > 0 ? Math.min(100, Math.round((deptData.collected / deptData.goal) * 100)) : 0;
                   - var deptColorClass = deptPct >= 80 ? 'c-green' : (deptPct >= 50 ? 'c-yellow' : 'c-red');
-                  .pg-wrap(style="height: 8px;")
-                    .pg-bar(class=deptColorClass style=`width: ${deptPct}%`)
+                  .dept-row
+                    .dept-row-name= deptName
+                    .dept-pts #[b #{deptData.collected}] / #{deptData.goal} pts
+                    .dept-bar-wrap
+                      .dept-bar(class=deptColorClass style=`width: ${deptPct}%`)
+                    .dept-pct(class=deptColorClass) #{deptPct}%
+
+  script.
+    // Toggle accordion
+    function toggleFac(trigger) {
+      var item = trigger.closest('.fac-item');
+      var isOpen = item.classList.contains('open');
+      // Close all first
+      document.querySelectorAll('.fac-item.open').forEach(function(el) {
+        el.classList.remove('open');
+      });
+      // Open clicked one unless it was already open
+      if (!isOpen) item.classList.add('open');
+    }
+
+    // Animated counters
+    document.addEventListener('DOMContentLoaded', function () {
+      document.querySelectorAll('.js-counter').forEach(function(el) {
+        var target = parseInt(el.getAttribute('data-val'), 10);
+        var start = 0;
+        var duration = 1200;
+        var step = function(timestamp) {
+          if (!start) start = timestamp;
+          var progress = Math.min((timestamp - start) / duration, 1);
+          var eased = 1 - Math.pow(1 - progress, 3);
+          el.textContent = Math.round(eased * target);
+          if (progress < 1) requestAnimationFrame(step);
+        };
+        requestAnimationFrame(step);
+      });
+    });
