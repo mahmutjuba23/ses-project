@@ -1,4 +1,4 @@
-const { User, Role, Student } = require("../../models");
+const { User, Role, Student, PeriodEnrolment, Period } = require("../../models");
 const { Op } = require("sequelize");
 
 async function dashboardPage(req, res) {
@@ -15,65 +15,71 @@ async function dashboardPage(req, res) {
       return res.redirect("/scholarships");
     }
 
-    const selectedFaculty = req.query.faculty ? req.query.faculty.trim() : null;
-    const selectedDepartment = req.query.department ? req.query.department.trim() : null;
+    // Find the active period to track live progress
+    const activePeriod = await Period.findOne({ where: { status: "active" } });
 
-    // Get all unique faculties
-    const faculties = await Student.findAll({
-      attributes: ['faculty'],
-      where: { faculty: { [Op.ne]: null } },
-      group: ['faculty'],
-      order: [['faculty', 'ASC']]
-    });
+    let systemGoal = 0;
+    let systemCollected = 0;
+    let facultyData = {}; // Structure: { [facultyName]: { goal: 0, collected: 0, departments: { [deptName]: { goal: 0, collected: 0 } } } }
 
-    // Build a map of all departments grouped by faculty (for hover flyout)
-    const allDeptRows = await Student.findAll({
-      attributes: ['faculty', 'department'],
-      where: { faculty: { [Op.ne]: null }, department: { [Op.ne]: null } },
-      group: ['faculty', 'department'],
-      order: [['faculty', 'ASC'], ['department', 'ASC']]
-    });
-    const allDepartments = {};
-    for (const row of allDeptRows) {
-      if (!allDepartments[row.faculty]) allDepartments[row.faculty] = [];
-      allDepartments[row.faculty].push(row.department);
+    if (activePeriod) {
+      // Fetch all enrolments for the active period, including the student to get faculty/dept
+      const enrolments = await PeriodEnrolment.findAll({
+        where: { period_id: activePeriod.id },
+        include: [{ 
+          model: Student, 
+          attributes: ['faculty', 'department'],
+          where: { is_active: true }
+        }]
+      });
+
+      // Aggregate data
+      for (const enr of enrolments) {
+        const student = enr.Student;
+        if (!student || !student.faculty || !student.department) continue;
+        
+        const fac = student.faculty;
+        const dept = student.department;
+        const goal = enr.goal_points || 0;
+        const collected = enr.collected_points || 0;
+
+        systemGoal += goal;
+        systemCollected += collected;
+
+        if (!facultyData[fac]) {
+          facultyData[fac] = { goal: 0, collected: 0, departments: {} };
+        }
+        if (!facultyData[fac].departments[dept]) {
+          facultyData[fac].departments[dept] = { goal: 0, collected: 0 };
+        }
+
+        facultyData[fac].goal += goal;
+        facultyData[fac].collected += collected;
+        facultyData[fac].departments[dept].goal += goal;
+        facultyData[fac].departments[dept].collected += collected;
+      }
     }
 
-    // Get departments for the selected faculty (still used for breadcrumb logic)
-    let departments = allDepartments[selectedFaculty] || [];
-
-    // Get student list based on filters
-    const whereClause = {};
-    if (selectedFaculty) whereClause.faculty = selectedFaculty;
-    if (selectedDepartment) whereClause.department = selectedDepartment;
-
-    const students = (selectedFaculty) ? await Student.findAll({
-      where: whereClause,
-      order: [['last_name', 'ASC'], ['first_name', 'ASC']]
-    }) : [];
-
-    // Summary stats
-    const totalStudents = await Student.count();
-    const activeStudents = await Student.count({ where: { is_active: true } });
-    const totalFaculties = faculties.length;
-
     res.render("dashboard/index", {
-      title: "Dashboard — SES",
-      currentPage: "dashboard",
       user: req.user,
-      faculties: faculties.map(f => f.faculty),
-      allDepartments,
-      departments,
-      students,
-      selectedFaculty,
-      selectedDepartment,
-      stats: { totalStudents, activeStudents, totalFaculties }
+      title: "Dashboard Statistics",
+      activePeriod,
+      systemGoal,
+      systemCollected,
+      facultyData,
+      Math // Pass Math object for percentage calculation in Pug
     });
-
   } catch (error) {
-    console.error("Dashboard page error:", error);
-    res.redirect("/");
+    console.error("Dashboard error:", error);
+    res.render("dashboard/index", { 
+      user: req.user, 
+      error: "Error loading dashboard data", 
+      title: "Dashboard",
+      facultyData: {}
+    });
   }
 }
 
-module.exports = { dashboardPage };
+module.exports = {
+  dashboardPage,
+};

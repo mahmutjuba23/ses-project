@@ -5,207 +5,111 @@ block content
     .dash-container { max-width: 1300px; margin: 0 auto; padding: 30px; animation: fadeIn 0.4s ease-out; }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-    .admin-header { margin-bottom: 28px; }
+    .admin-header { margin-bottom: 28px; display: flex; justify-content: space-between; align-items: flex-end; }
     .admin-header h1 { margin: 0 0 4px; font-size: 2rem; font-weight: 700; color: var(--text-primary); }
     .admin-header p { margin: 0; color: var(--text-secondary); font-size: 0.95rem; }
+    .period-badge { background: var(--accent-glow); color: var(--accent); padding: 6px 12px; border-radius: 20px; font-size: 0.85rem; font-weight: 600; }
 
-    .stats-bar { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin-bottom: 28px; }
-    .stat-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; padding: 20px 24px; display: flex; align-items: center; gap: 16px; box-shadow: var(--shadow); }
-    .stat-icon { font-size: 2rem; }
-    .stat-val { font-size: 1.9rem; font-weight: 700; line-height: 1; }
-    .stat-lbl { font-size: 0.82rem; color: var(--text-secondary); margin-top: 3px; }
-    .stat-card.c-accent .stat-val { color: var(--accent); }
-    .stat-card.c-success .stat-val { color: var(--success); }
-    .stat-card.c-warn .stat-val { color: #fbbf24; }
+    /* Summary Bar */
+    .summary-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 16px; padding: 30px; margin-bottom: 40px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); text-align: center; }
+    .summary-title { font-size: 1.1rem; color: var(--text-secondary); font-weight: 600; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 15px; }
+    .summary-stats { display: flex; justify-content: center; align-items: center; gap: 40px; margin-bottom: 20px; }
+    .s-stat { text-align: center; }
+    .s-val { font-size: 3rem; font-weight: 800; color: var(--text-primary); line-height: 1; }
+    .s-lbl { font-size: 0.9rem; color: var(--text-secondary); margin-top: 5px; }
+    .s-divider { font-size: 2.5rem; color: var(--border-color); font-weight: 300; }
 
-    /* ---- Hover Dropdown Filter Bar ---- */
-    .filter-bar { display: flex; align-items: center; gap: 12px; margin-bottom: 24px; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; padding: 16px 20px; box-shadow: var(--shadow); }
-    .filter-label { font-size: 0.82rem; font-weight: 700; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; white-space: nowrap; }
+    /* Progress Bar */
+    .pg-wrap { width: 100%; background: var(--bg-primary); border-radius: 12px; height: 12px; overflow: hidden; box-shadow: inset 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 8px; }
+    .pg-bar { height: 100%; border-radius: 12px; transition: width 1s cubic-bezier(0.4, 0, 0.2, 1); }
+    .pg-bar.c-green { background: var(--success); }
+    .pg-bar.c-yellow { background: var(--warning); }
+    .pg-bar.c-red { background: var(--danger); }
+    .pg-text { font-size: 0.85rem; font-weight: 600; color: var(--text-secondary); text-align: right; }
 
-    /* Custom hover dropdown */
-    .hover-dropdown { position: relative; display: inline-block; }
-    .hover-dropdown-trigger {
-      display: inline-flex; align-items: center; gap: 8px;
-      padding: 9px 16px; border-radius: 8px;
-      background: var(--bg-secondary); border: 1px solid var(--border-color);
-      color: var(--text-primary); font-size: 0.92rem; font-weight: 500;
-      cursor: pointer; user-select: none; transition: all 0.2s;
-      white-space: nowrap; min-width: 180px; justify-content: space-between;
-    }
-    .hover-dropdown-trigger:hover, .hover-dropdown:hover .hover-dropdown-trigger {
-      border-color: var(--accent); color: var(--accent);
-      background: rgba(14,165,233,0.06);
-    }
-    .hover-dropdown-trigger .caret { font-size: 0.7rem; transition: transform 0.2s; }
-    .hover-dropdown:hover .caret { transform: rotate(180deg); }
+    /* Faculty Grid */
+    .faculties-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(500px, 1fr)); gap: 30px; }
+    .faculty-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 16px; box-shadow: var(--shadow); overflow: hidden; }
+    
+    .fac-header { padding: 24px; border-bottom: 1px solid var(--border-color); background: var(--bg-primary); }
+    .fac-title-row { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px; }
+    .fac-name { font-size: 1.4rem; font-weight: 700; margin: 0; color: var(--text-primary); }
+    .fac-totals { text-align: right; }
+    .fac-t-val { font-size: 1.2rem; font-weight: 700; color: var(--accent); }
+    .fac-t-lbl { font-size: 0.75rem; color: var(--text-secondary); text-transform: uppercase; }
 
-    .hover-dropdown-menu {
-      display: none;
-      position: absolute;
-      top: calc(100% + 4px);
-      left: 0;
-      min-width: 220px;
-      background: var(--bg-card);
-      border: 1px solid var(--border-color);
-      border-radius: 10px;
-      box-shadow: 0 10px 40px rgba(0,0,0,0.2);
-      z-index: 200;
-      padding: 6px 0;
-      animation: ddFadeIn 0.15s ease-out;
-    }
-    @keyframes ddFadeIn { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: translateY(0); } }
-    .hover-dropdown:hover .hover-dropdown-menu { display: block; }
-
-    .dd-item {
-      display: block; width: 100%; text-align: left;
-      padding: 9px 16px; background: none; border: none;
-      font-family: inherit; font-size: 0.9rem; color: var(--text-secondary);
-      cursor: pointer; transition: background 0.12s, color 0.12s;
-      text-decoration: none; border-left: 3px solid transparent;
-    }
-    .dd-item:hover { background: rgba(14,165,233,0.06); color: var(--accent); border-left-color: var(--accent); }
-    .dd-item.dd-active { color: var(--accent); font-weight: 600; background: rgba(14,165,233,0.08); border-left-color: var(--accent); }
-    .dd-divider { height: 1px; background: var(--border-color); margin: 4px 0; }
-
-    .filter-arrow { color: var(--text-muted); font-size: 1.1rem; }
-    .clear-link { margin-left: auto; font-size: 0.85rem; color: var(--text-muted); text-decoration: none; padding: 6px 12px; border-radius: 6px; border: 1px solid var(--border-color); transition: all 0.2s; }
-    .clear-link:hover { color: var(--text-primary); border-color: var(--accent); }
-
-    /* ---- Results Table ---- */
-    .results-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; overflow: hidden; box-shadow: var(--shadow); }
-    .results-header { display: flex; justify-content: space-between; align-items: center; padding: 18px 22px; border-bottom: 1px solid var(--border-color); }
-    .results-header h3 { margin: 0; font-size: 1.05rem; font-weight: 600; color: var(--text-primary); }
-    .count-badge { background: var(--bg-secondary); color: var(--text-secondary); font-size: 0.82rem; padding: 3px 12px; border-radius: 20px; }
-
-    .modern-table { width: 100%; border-collapse: collapse; }
-    .modern-table th { background: var(--bg-secondary); padding: 11px 16px; text-align: left; font-weight: 600; font-size: 0.8rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; }
-    .modern-table td { padding: 13px 16px; border-bottom: 1px solid rgba(0,0,0,0.04); font-size: 0.92rem; vertical-align: middle; }
-    .modern-table tbody tr { cursor: pointer; transition: background 0.12s; }
-    .modern-table tbody tr:hover { background: rgba(14,165,233,0.05); }
-    .modern-table tbody tr:last-child td { border-bottom: none; }
-
-    .sname { font-weight: 600; color: var(--text-primary); }
-    .sid { font-size: 0.8rem; color: var(--accent); margin-top: 2px; }
-    .pill { display: inline-block; padding: 2px 9px; border-radius: 20px; font-size: 0.78rem; font-weight: 600; }
-    .pill-bachelor { background: rgba(99,102,241,0.12); color: #818cf8; }
-    .pill-master { background: rgba(14,165,233,0.12); color: #38bdf8; }
-    .pill-active { background: rgba(16,185,129,0.12); color: var(--success); }
-    .pill-inactive { background: rgba(239,68,68,0.12); color: var(--danger); }
-    .schol-full { color: var(--success); font-weight: 600; font-size: 0.85rem; }
-    .schol-partial { color: #fbbf24; font-weight: 600; font-size: 0.85rem; }
-    .schol-none { color: var(--text-muted); font-size: 0.85rem; }
-
-    .empty-state { text-align: center; padding: 70px 20px; }
-    .empty-state .ei { font-size: 3.5rem; margin-bottom: 12px; }
-    .empty-state h3 { margin: 0 0 8px; color: var(--text-primary); font-size: 1.15rem; }
-    .empty-state p { margin: 0; color: var(--text-secondary); font-size: 0.9rem; }
+    /* Department List */
+    .dept-list { padding: 0; margin: 0; list-style: none; }
+    .dept-item { padding: 16px 24px; border-bottom: 1px solid var(--border-color); }
+    .dept-item:last-child { border-bottom: none; }
+    
+    .dept-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+    .dept-name { font-size: 1.05rem; font-weight: 600; color: var(--text-primary); }
+    .dept-stats { font-size: 0.95rem; font-weight: 500; color: var(--text-secondary); }
+    .dept-stats span.c { color: var(--text-primary); font-weight: 700; }
+    
+    .empty-state { text-align: center; padding: 60px 20px; color: var(--text-secondary); }
+    .empty-state h3 { font-size: 1.5rem; margin-bottom: 10px; color: var(--text-primary); }
 
   .dash-container
     .admin-header
-      h1 Student Directory
-      p Browse all enrolled students by Faculty and Department.
+      div
+        h1 Organization Performance
+        if activePeriod
+          p Tracking macro-level points for the active period.
+        else
+          p No active period found.
+      if activePeriod
+        .period-badge 🟢 #{activePeriod.name}
 
-    .stats-bar
-      .stat-card.c-accent
-        .stat-icon 🎓
-        div
-          .stat-val= stats.totalStudents
-          .stat-lbl Total Students
-      .stat-card.c-success
-        .stat-icon ✅
-        div
-          .stat-val= stats.activeStudents
-          .stat-lbl Active Students
-      .stat-card.c-warn
-        .stat-icon 🏛️
-        div
-          .stat-val= stats.totalFaculties
-          .stat-lbl Faculties
+    if !activePeriod
+      .empty-state
+        h3 No Active Period
+        p Activate a period in the Periods tab to start tracking organization goals.
+    else
+      //- Overall System Summary
+      .summary-card
+        .summary-title Total University Progress
+        .summary-stats
+          .s-stat
+            .s-val= systemCollected
+            .s-lbl POINTS COLLECTED
+          .s-divider /
+          .s-stat
+            .s-val= systemGoal
+            .s-lbl SYSTEM GOAL
+        
+        - var sysPct = systemGoal > 0 ? Math.min(100, Math.round((systemCollected / systemGoal) * 100)) : 0;
+        - var sysColorClass = sysPct >= 80 ? 'c-green' : (sysPct >= 50 ? 'c-yellow' : 'c-red');
+        .pg-wrap(style="height: 16px;")
+          .pg-bar(class=sysColorClass style=`width: ${sysPct}%`)
+        .pg-text #{sysPct}% Completed
 
-    //- Hover filter bar
-    .filter-bar
-      span.filter-label Filter by:
+      //- Faculties Grid
+      .faculties-grid
+        each facData, facName in facultyData
+          .faculty-card
+            .fac-header
+              .fac-title-row
+                h3.fac-name= facName
+                .fac-totals
+                  .fac-t-val #{facData.collected} / #{facData.goal}
+                  .fac-t-lbl Total Points
+              
+              - var facPct = facData.goal > 0 ? Math.min(100, Math.round((facData.collected / facData.goal) * 100)) : 0;
+              - var facColorClass = facPct >= 80 ? 'c-green' : (facPct >= 50 ? 'c-yellow' : 'c-red');
+              .pg-wrap
+                .pg-bar(class=facColorClass style=`width: ${facPct}%`)
+              .pg-text #{facPct}%
 
-      //- Faculty hover dropdown
-      .hover-dropdown
-        .hover-dropdown-trigger
-          span= selectedFaculty || 'Faculty'
-          span.caret ▼
-        .hover-dropdown-menu
-          a.dd-item(href="/dashboard" class=(!selectedFaculty ? 'dd-active' : '')) All Faculties
-          .dd-divider
-          each f in faculties
-            a.dd-item(href=`/dashboard?faculty=${encodeURIComponent(f)}` class=(selectedFaculty===f ? 'dd-active' : ''))= f
-
-      if selectedFaculty
-        span.filter-arrow ›
-
-        //- Department hover dropdown (only appears after faculty is chosen)
-        .hover-dropdown
-          .hover-dropdown-trigger
-            span= selectedDepartment || 'All Departments'
-            span.caret ▼
-          .hover-dropdown-menu
-            a.dd-item(href=`/dashboard?faculty=${encodeURIComponent(selectedFaculty)}` class=(!selectedDepartment ? 'dd-active' : '')) All Departments
-            .dd-divider
-            each d in departments
-              a.dd-item(href=`/dashboard?faculty=${encodeURIComponent(selectedFaculty)}&department=${encodeURIComponent(d)}` class=(selectedDepartment===d ? 'dd-active' : ''))= d
-
-      if selectedFaculty
-        a.clear-link(href="/dashboard") ✕ Clear
-
-    //- Results
-    .results-card
-      .results-header
-        h3
-          if selectedDepartment
-            | #{selectedDepartment}
-          else if selectedFaculty
-            | #{selectedFaculty} — All Departments
-          else
-            | Hover over "Faculty" above to start browsing
-        if students.length > 0
-          span.count-badge #{students.length} student#{students.length !== 1 ? 's' : ''}
-
-      if students.length === 0
-        .empty-state
-          .ei= selectedFaculty ? '🔍' : '🏛️'
-          h3= selectedFaculty ? 'No students found' : 'Select a Faculty'
-          p= selectedFaculty ? 'No students match the selected filters.' : 'Hover over the Faculty dropdown above and click one to see its students.'
-      else
-        table.modern-table
-          thead
-            tr
-              th Student
-              th Department
-              th Program
-              th Level
-              th Enrolled
-              th Scholarship
-              th Status
-          tbody
-            each s in students
-              tr(onclick=`window.location='/admin/students/${s.id}'`)
-                td
-                  div.sname #{s.first_name} #{s.last_name}
-                  div.sid= s.student_number
-                td(style="color: var(--text-secondary);")= s.department || '—'
-                td(style="max-width: 180px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--text-secondary);")= s.program || '—'
-                td
-                  if s.study_level === 'Master'
-                    span.pill.pill-master Master
-                  else
-                    span.pill.pill-bachelor Bachelor
-                td(style="color: var(--text-secondary);")= s.enrolment_year || '—'
-                td
-                  if s.scholarship_type === 'Full'
-                    span.schol-full ★ Full
-                  else if s.scholarship_type === 'Partial'
-                    span.schol-partial ◑ #{s.scholarship_percentage}%
-                  else
-                    span.schol-none —
-                td
-                  if s.is_active
-                    span.pill.pill-active Active
-                  else
-                    span.pill.pill-inactive Inactive
+            ul.dept-list
+              each deptData, deptName in facData.departments
+                li.dept-item
+                  .dept-header
+                    .dept-name= deptName
+                    .dept-stats <span class="c">#{deptData.collected}</span> / #{deptData.goal} pts
+                  
+                  - var deptPct = deptData.goal > 0 ? Math.min(100, Math.round((deptData.collected / deptData.goal) * 100)) : 0;
+                  - var deptColorClass = deptPct >= 80 ? 'c-green' : (deptPct >= 50 ? 'c-yellow' : 'c-red');
+                  .pg-wrap(style="height: 8px;")
+                    .pg-bar(class=deptColorClass style=`width: ${deptPct}%`)
