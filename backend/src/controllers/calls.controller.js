@@ -40,7 +40,7 @@ async function listEventCalls(req, res) {
 async function createCall(req, res) {
   try {
     const {
-      event_id, task_type_id, quota,
+      event_id, task_type_name, quota,
       application_start, application_end,
       task_start, task_end,
       auto_approve, has_waitlist,
@@ -51,6 +51,16 @@ async function createCall(req, res) {
     if (new Date(application_end) <= new Date(application_start)) {
       return res.redirect(`/admin/events/${event_id}?warning=dates_invalid`);
     }
+
+    // Find or create the TaskType by name
+    const trimmedName = (task_type_name || '').trim();
+    if (!trimmedName) {
+      return res.redirect(`/admin/events/${event_id}?warning=no_task_type`);
+    }
+    const [taskType] = await TaskType.findOrCreate({
+      where: { name: trimmedName },
+      defaults: { name: trimmedName, is_active: true }
+    });
 
     let parsedEligibility = null;
     if (eligibility_rule_json && eligibility_rule_json.trim()) {
@@ -63,7 +73,7 @@ async function createCall(req, res) {
 
     const call = await Call.create({
       event_id,
-      task_type_id,
+      task_type_id: taskType.id,
       quota: parseInt(quota),
       application_start,
       application_end,
@@ -79,7 +89,7 @@ async function createCall(req, res) {
       entity: "Call",
       entity_id: call.id,
       action: "CREATE_CALL",
-      reason: "Admin created a new call"
+      reason: `Admin created a new call with task type: ${trimmedName}`
     });
 
     res.redirect(`/admin/events/${event_id}`);

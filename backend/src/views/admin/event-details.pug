@@ -245,9 +245,7 @@ block content
         input(type="hidden" name="event_id" value=event.id)
         div(style="margin-bottom: 15px;")
           label(style="display:block; margin-bottom: 5px; font-size:0.9rem;") Task Type
-          select(name="task_type_id" required style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid var(--border-color); background: var(--bg-input); color: var(--text-primary);")
-            each tt in taskTypes
-              option(value=tt.id)= tt.name
+          input(type="text" name="task_type_name" required placeholder="e.g. Volunteering, Workshop, Sports Event" style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid var(--border-color); background: var(--bg-input); color: var(--text-primary); box-sizing: border-box;")
         div(style="margin-bottom: 15px;")
           label(style="display:block; margin-bottom: 5px; font-size:0.9rem;") Quota
           input(type="number" name="quota" min="1" required style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid var(--border-color); background: var(--bg-input); color: var(--text-primary);")
