@@ -124,7 +124,7 @@ async function activatePeriod(req, res) {
       goal_points: period.point_goal,
       collected_points: 0,
       final_points: 0,
-      result_status: 'pending'
+      result_status: null
     }));
 
     await PeriodEnrolment.bulkCreate(enrolments);
