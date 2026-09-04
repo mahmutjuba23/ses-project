@@ -1,43 +1,120 @@
 extends ../layout
 
 block content
-  .page-header
-    div
-      h1 Available Calls
-      p(style="color:var(--text-secondary); margin-top:0.25rem;") Browse open volunteer calls and apply. Applications close on the dates shown.
+  style.
+    .calls-page { max-width: 900px; margin: 0 auto; padding: 30px; animation: fadeIn 0.4s ease-out; }
+    @keyframes fadeIn { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
 
-  if openCalls.length === 0
-    .card(style="text-align:center; padding:3rem;")
-      p(style="font-size:1.1rem; color:var(--text-secondary);") 🎉 No calls are currently open. Check back soon!
+    .page-top { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 28px; }
+    .page-top h1 { margin: 0 0 4px; font-size: 1.9rem; font-weight: 800; }
+    .page-top p { margin: 0; color: var(--text-secondary); font-size: 0.9rem; }
 
-  each call in openCalls
-    .card(style="margin-bottom:1.5rem;")
-      .page-header(style="margin-bottom:1rem;")
-        div
-          h2(style="font-size:1.2rem; font-weight:600; margin-bottom:0.25rem;")= call.Event.title
-          p(style="color:var(--text-secondary); font-size:0.875rem;")
-            | #{call.TaskType ? call.TaskType.name : 'General Task'} 
-            | &bull; Period: #{(call.Event && call.Event.Period) ? call.Event.Period.code : 'N/A'}
-        div(style="text-align:right;")
-          span.badge.badge-success Accepting Applications
-      
-      .detail-row
-        span.detail-label Quota
-        span.detail-value #{call.quota} students
-      .detail-row
-        span.detail-label Application Deadline
-        span.detail-value #{new Date(call.application_end).toLocaleDateString()}
-      .detail-row
-        span.detail-label Task Dates
-        span.detail-value
-          | #{new Date(call.task_start).toLocaleDateString()} → #{new Date(call.task_end).toLocaleDateString()}
-      .detail-row
-        span.detail-label Auto-approved
-        span.detail-value= call.auto_approve ? 'Yes — you will be confirmed immediately' : 'No — awaiting staff review'
-      .detail-row
-        span.detail-label Waitlist
-        span.detail-value= call.has_waitlist ? 'Available if quota is full' : 'Not available'
-      
-      div(style="margin-top:1.5rem;")
-        form(action="/calls/" + call.id + "/apply" method="POST")
-          button.btn.btn-primary(type="submit") Apply Now
+    .call-card {
+      background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 16px;
+      padding: 24px; margin-bottom: 18px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+      transition: box-shadow 0.2s, border-color 0.2s, transform 0.15s;
+    }
+    .call-card:hover { box-shadow: 0 10px 35px rgba(0,0,0,0.1); border-color: var(--accent); transform: translateY(-2px); }
+    .call-card.applied { border-color: var(--success); opacity: 0.75; }
+
+    .call-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px; gap: 16px; }
+    .call-title { font-size: 1.2rem; font-weight: 700; color: var(--text-primary); margin: 0 0 5px; }
+    .call-meta { font-size: 0.82rem; color: var(--text-muted); display: flex; flex-wrap: wrap; gap: 10px; }
+    .meta-chip { display: inline-flex; align-items: center; gap: 4px; background: var(--bg-primary); padding: 3px 8px; border-radius: 20px; font-size: 0.8rem; color: var(--text-secondary); }
+
+    .call-badges { display: flex; flex-wrap: wrap; gap: 8px; flex-shrink: 0; }
+    .badge { display: inline-flex; align-items: center; gap: 5px; padding: 5px 12px; border-radius: 20px; font-size: 0.78rem; font-weight: 700; }
+    .badge-open { background: rgba(16,185,129,0.1); color: var(--success); border: 1px solid rgba(16,185,129,0.3); }
+    .badge-auto { background: rgba(37,99,235,0.1); color: var(--accent); border: 1px solid rgba(37,99,235,0.2); }
+    .badge-waitlist { background: rgba(139,92,246,0.1); color: #7c3aed; border: 1px solid rgba(139,92,246,0.2); }
+    .badge-applied { background: rgba(16,185,129,0.1); color: var(--success); border: 1px solid rgba(16,185,129,0.3); }
+
+    .call-details { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 20px; margin-bottom: 20px; }
+    .detail-line { display: flex; flex-direction: column; }
+    .d-label { font-size: 0.73rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 2px; }
+    .d-val { font-size: 0.9rem; color: var(--text-primary); font-weight: 500; }
+
+    .deadline-bar { background: var(--bg-primary); border-radius: 8px; padding: 10px 14px; margin-bottom: 18px; display: flex; align-items: center; justify-content: space-between; }
+    .deadline-label { font-size: 0.82rem; color: var(--text-secondary); }
+    .deadline-val { font-size: 0.88rem; font-weight: 700; color: var(--text-primary); }
+    .deadline-urgent { color: var(--danger); }
+
+    .btn-apply { display: inline-flex; align-items: center; gap: 8px; padding: 11px 24px; background: var(--accent); color: #fff; border-radius: 10px; font-weight: 700; font-size: 0.95rem; border: none; cursor: pointer; transition: background 0.2s, transform 0.1s; width: 100%; justify-content: center; }
+    .btn-apply:hover { background: var(--accent-hover); transform: translateY(-1px); }
+    .btn-applied { display: flex; align-items: center; justify-content: center; gap: 8px; padding: 11px 24px; background: rgba(16,185,129,0.1); color: var(--success); border-radius: 10px; font-weight: 700; font-size: 0.95rem; border: 1px solid rgba(16,185,129,0.3); width: 100%; }
+
+    .empty-state { text-align: center; padding: 80px 20px; }
+    .empty-state .ei { font-size: 4rem; margin-bottom: 16px; }
+    .empty-state h3 { font-size: 1.4rem; margin: 0 0 8px; }
+    .empty-state p { color: var(--text-secondary); }
+
+  .calls-page
+    if success
+      div(style="background:rgba(16,185,129,0.1); border:1px solid var(--success); color:var(--success); padding:12px 16px; border-radius:10px; margin-bottom:20px; font-weight:600;")= success
+    if error
+      div(style="background:rgba(239,68,68,0.1); border:1px solid var(--danger); color:var(--danger); padding:12px 16px; border-radius:10px; margin-bottom:20px; font-weight:600;")= error
+
+    .page-top
+      div
+        h1 📢 Available Calls
+        p Volunteer opportunities open for applications right now.
+      a(href="/calls/my-tasks" style="font-size:0.9rem; color:var(--accent); font-weight:600; text-decoration:none;") My Applications →
+
+    if openCalls.length === 0
+      .empty-state
+        .ei 🎉
+        h3 No Open Calls
+        p No volunteer calls are currently accepting applications. Check back soon!
+    else
+      each call in openCalls
+        - var isApplied = appliedCallIds && appliedCallIds.includes(call.id);
+        - var deadline = new Date(call.application_end);
+        - var now = new Date();
+        - var daysLeft = Math.ceil((deadline - now) / (1000 * 60 * 60 * 24));
+        - var isUrgent = daysLeft <= 3;
+
+        .call-card(class=isApplied ? 'applied' : '')
+          .call-top
+            div
+              .call-title= call.Event.title
+              .call-meta
+                span.meta-chip 📁 #{call.TaskType ? call.TaskType.name : 'General Task'}
+                if call.Event && call.Event.Period
+                  span.meta-chip 📅 #{call.Event.Period.code}
+                if call.Event && call.Event.location
+                  span.meta-chip 📍 #{call.Event.location}
+            .call-badges
+              span.badge.badge-open ● Open
+              if call.auto_approve
+                span.badge.badge-auto ⚡ Auto-Approved
+              if call.has_waitlist
+                span.badge.badge-waitlist 🕒 Has Waitlist
+
+          .deadline-bar
+            .deadline-label 🗓️ Application Deadline
+            .deadline-val(class=isUrgent ? 'deadline-urgent' : '')
+              if isUrgent
+                | ⚠️ #{daysLeft} day(s) left — #{deadline.toLocaleDateString()}
+              else
+                | #{deadline.toLocaleDateString()}
+
+          .call-details
+            .detail-line
+              .d-label Spots Available
+              .d-val #{call.quota} students
+            .detail-line
+              .d-label Task Date
+              .d-val #{new Date(call.task_start).toLocaleDateString()} → #{new Date(call.task_end).toLocaleDateString()}
+            .detail-line
+              .d-label Approval
+              .d-val= call.auto_approve ? '⚡ Instant — confirmed immediately' : '👤 Manual — awaiting staff review'
+            .detail-line
+              .d-label Waitlist
+              .d-val= call.has_waitlist ? '✅ Available if full' : '❌ Not available'
+
+          if isApplied
+            .btn-applied ✅ Already Applied
+          else
+            form(action=`/calls/${call.id}/apply` method="POST")
+              button.btn-apply(type="submit") Apply Now →

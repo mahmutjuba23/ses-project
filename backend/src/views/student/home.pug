@@ -1,0 +1,187 @@
+extends ../layout
+
+block content
+  style.
+    .s-home { max-width: 1000px; margin: 0 auto; padding: 30px; animation: fadeIn 0.4s ease-out; }
+    @keyframes fadeIn { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
+
+    /* Hero */
+    .hero-card {
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+      border: 1px solid #334155; border-radius: 20px;
+      padding: 36px 40px; margin-bottom: 28px;
+      display: flex; align-items: center; gap: 32px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+    }
+    .hero-avatar {
+      width: 80px; height: 80px; border-radius: 50%;
+      background: linear-gradient(135deg, #2563eb, #7c3aed);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 2rem; font-weight: 800; color: #fff; flex-shrink: 0;
+      box-shadow: 0 8px 25px rgba(37,99,235,0.4);
+    }
+    .hero-info { flex: 1; }
+    .hero-info h1 { margin: 0 0 5px; font-size: 1.9rem; font-weight: 800; color: #fff; }
+    .hero-info p { margin: 0; color: #94a3b8; font-size: 0.95rem; }
+    .hero-period { margin-left: auto; text-align: center; flex-shrink: 0; }
+    .hero-period .p-name { font-size: 0.8rem; color: #64748b; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+
+    /* Donut ring */
+    .ring-wrap { position: relative; width: 100px; height: 100px; margin: 0 auto; }
+    .ring-wrap svg { transform: rotate(-90deg); }
+    .ring-center { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+    .ring-pct { font-size: 1.4rem; font-weight: 800; color: #fff; line-height: 1; }
+    .ring-sub { font-size: 0.65rem; color: #64748b; text-transform: uppercase; }
+
+    /* Stat pills */
+    .stat-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 28px; }
+    .stat-pill {
+      background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 14px;
+      padding: 20px 22px; text-align: center;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    }
+    .stat-pill .s-val { font-size: 2rem; font-weight: 800; color: var(--text-primary); line-height: 1; }
+    .stat-pill .s-lbl { font-size: 0.78rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; margin-top: 6px; }
+    .stat-pill.c-blue .s-val { color: var(--accent); }
+    .stat-pill.c-green .s-val { color: var(--success); }
+    .stat-pill.c-purple .s-val { color: #7c3aed; }
+
+    /* Sections */
+    .section-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 16px; padding: 24px; margin-bottom: 20px; }
+    .section-card h3 { margin: 0 0 18px; font-size: 1.1rem; font-weight: 700; color: var(--text-primary); display: flex; align-items: center; gap: 8px; }
+    
+    /* Activity feed */
+    .activity-item { display: flex; align-items: center; gap: 14px; padding: 12px 0; border-bottom: 1px solid var(--border-color); }
+    .activity-item:last-child { border-bottom: none; }
+    .act-icon { width: 38px; height: 38px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; flex-shrink: 0; }
+    .act-icon.pending { background: rgba(245,158,11,0.12); }
+    .act-icon.approved { background: rgba(16,185,129,0.12); }
+    .act-icon.attended { background: rgba(37,99,235,0.12); }
+    .act-icon.rejected { background: rgba(239,68,68,0.12); }
+    .act-icon.waitlisted { background: rgba(139,92,246,0.12); }
+    .act-body { flex: 1; min-width: 0; }
+    .act-title { font-size: 0.95rem; font-weight: 600; color: var(--text-primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .act-sub { font-size: 0.8rem; color: var(--text-secondary); margin-top: 2px; }
+    .act-badge { font-size: 0.75rem; font-weight: 700; padding: 4px 10px; border-radius: 20px; white-space: nowrap; }
+    .act-badge.pending { background: rgba(245,158,11,0.12); color: #f59e0b; }
+    .act-badge.approved { background: rgba(16,185,129,0.12); color: var(--success); }
+    .act-badge.attended { background: rgba(37,99,235,0.12); color: var(--accent); }
+    .act-badge.rejected { background: rgba(239,68,68,0.12); color: var(--danger); }
+    .act-badge.waitlisted { background: rgba(139,92,246,0.12); color: #7c3aed; }
+
+    /* CTA button */
+    .btn-cta { display: inline-flex; align-items: center; gap: 8px; padding: 12px 22px; background: var(--accent); color: #fff; border-radius: 10px; font-weight: 600; font-size: 0.95rem; text-decoration: none; transition: background 0.2s, transform 0.1s; border: none; cursor: pointer; }
+    .btn-cta:hover { background: var(--accent-hover); transform: translateY(-1px); }
+    .btn-cta.outline { background: transparent; color: var(--accent); border: 1px solid var(--accent); }
+    .btn-cta.outline:hover { background: var(--accent-glow); }
+
+    .empty-hint { color: var(--text-muted); font-size: 0.9rem; font-style: italic; text-align: center; padding: 20px; }
+
+    .no-enrol-cta { text-align: center; padding: 30px; }
+    .no-enrol-cta h3 { font-size: 1.3rem; margin-bottom: 8px; }
+    .no-enrol-cta p { color: var(--text-secondary); margin-bottom: 20px; }
+
+  .s-home
+    if success
+      div(style="background:rgba(16,185,129,0.1); border:1px solid var(--success); color:var(--success); padding:12px 16px; border-radius:10px; margin-bottom:20px; font-weight:600;")= success
+    if error
+      div(style="background:rgba(239,68,68,0.1); border:1px solid var(--danger); color:var(--danger); padding:12px 16px; border-radius:10px; margin-bottom:20px; font-weight:600;")= error
+
+    //- Hero card
+    - var firstName = student ? student.first_name : (user.full_name ? user.full_name.split(' ')[0] : 'Student');
+    - var lastName = student ? student.last_name : '';
+    - var initials = (firstName.charAt(0) + (lastName ? lastName.charAt(0) : '')).toUpperCase();
+    - var collectedPts = (enrolment && enrolment.collected_points) ? enrolment.collected_points : 0;
+    - var goalPts = (enrolment && enrolment.goal_points) ? enrolment.goal_points : 0;
+    - var pct = goalPts > 0 ? Math.min(100, Math.round((collectedPts / goalPts) * 100)) : 0;
+    - var stroke = Math.round(pct * 2.513); // r=40, circumference ≈ 251.3
+    - var strokeColor = pct >= 80 ? '#10b981' : (pct >= 50 ? '#f59e0b' : '#3b82f6');
+
+    .hero-card
+      .hero-avatar= initials
+      .hero-info
+        h1 Welcome back, #{firstName}!
+        p
+          if student && student.faculty
+            | #{student.faculty}
+            if student.department
+              |  · #{student.department}
+          else
+            | Scholarship Engagement System
+      .hero-period
+        .p-name
+          if activePeriod
+            | Active Period
+          else
+            | No Active Period
+        if activePeriod && enrolment
+          .ring-wrap
+            svg(width="100" height="100" viewBox="0 0 100 100")
+              circle(cx="50" cy="50" r="40" fill="none" stroke="#1e3a5f" stroke-width="8")
+              circle(cx="50" cy="50" r="40" fill="none"
+                stroke=strokeColor
+                stroke-width="8"
+                stroke-dasharray=`${stroke} 251`
+                stroke-linecap="round"
+                style="transition: stroke-dasharray 1.2s ease;"
+              )
+            .ring-center
+              .ring-pct #{pct}%
+              .ring-sub Goal
+        else if activePeriod
+          p(style="color:#64748b; font-size:0.85rem; margin:0;") Not enrolled
+        else
+          p(style="color:#64748b; font-size:0.85rem; margin:0;") No active period
+
+    //- Stat pills
+    - var totalApps = recentApps.length;
+    - var attendedApps = recentApps.filter(function(a){ return a.status === 'attended'; }).length;
+    - var pendingApps = recentApps.filter(function(a){ return a.status === 'pending' || a.status === 'approved'; }).length;
+
+    .stat-row
+      .stat-pill.c-blue
+        .s-val= collectedPts
+        .s-lbl Points Earned
+      .stat-pill.c-green
+        .s-val= attendedApps
+        .s-lbl Events Attended
+      .stat-pill.c-purple
+        .s-val= goalPts > 0 ? (goalPts - collectedPts) : '—'
+        .s-lbl Points to Go
+
+    //- No enrolment CTA
+    if activePeriod && !enrolment
+      .section-card
+        .no-enrol-cta
+          h3 You're not enrolled in the active period
+          p Contact your administrator to get enrolled in #{activePeriod.name}.
+          a.btn-cta.outline(href="/calls") Browse Available Calls →
+
+    //- Recent activity
+    .section-card
+      h3 📋 Recent Activity
+      if recentApps.length === 0
+        .empty-hint You haven't applied to any calls yet.
+        div(style="text-align:center; margin-top:12px;")
+          a.btn-cta(href="/calls") Browse Open Calls →
+      else
+        each app in recentApps
+          - var icons = { pending: '⏳', approved: '✅', attended: '🎉', rejected: '❌', waitlisted: '🕒' };
+          .activity-item
+            .act-icon(class=app.status)= icons[app.status] || '📌'
+            .act-body
+              .act-title= app.Call.Event.title
+              .act-sub #{app.Call.TaskType ? app.Call.TaskType.name : 'Task'} · #{new Date(app.createdAt).toLocaleDateString()}
+            if app.points_awarded
+              span(style="font-size:0.9rem; font-weight:700; color:var(--success); white-space:nowrap;") +#{app.points_awarded} pts
+            else
+              span.act-badge(class=app.status)= app.status.charAt(0).toUpperCase() + app.status.slice(1)
+        div(style="text-align:right; margin-top:16px;")
+          a.btn-cta.outline(href="/calls/my-tasks") View All My Tasks →
+
+    //- Quick links
+    .section-card
+      h3 🚀 Quick Actions
+      div(style="display:flex; gap:12px; flex-wrap:wrap;")
+        a.btn-cta(href="/calls") 📢 Browse Open Calls
+        a.btn-cta.outline(href="/calls/my-tasks") 📋 My Applications

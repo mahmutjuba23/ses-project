@@ -1,59 +1,136 @@
 extends ../layout
 
 block content
-  .page-header
-    div
-      h1 My Volunteer Tasks
-      p(style="color:var(--text-secondary); margin-top:0.25rem;") Track the status of your applications and upcoming tasks.
+  style.
+    .tasks-page { max-width: 900px; margin: 0 auto; padding: 30px; animation: fadeIn 0.4s ease-out; }
+    @keyframes fadeIn { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
+    .page-top { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 28px; }
+    .page-top h1 { margin: 0 0 4px; font-size: 1.9rem; font-weight: 800; }
+    .page-top p { margin: 0; color: var(--text-secondary); font-size: 0.9rem; }
 
-  if applications.length === 0
-    .card(style="text-align:center; padding:3rem;")
-      p(style="font-size:1.1rem; color:var(--text-secondary);") You haven't applied to any calls yet. Go to Available Calls to apply!
+    /* Period timeline */
+    .period-section { margin-bottom: 32px; }
+    .period-header { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
+    .period-dot { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; }
+    .period-dot.active { background: var(--success); box-shadow: 0 0 0 3px rgba(16,185,129,0.2); }
+    .period-dot.closed { background: var(--text-muted); }
+    .period-dot.draft { background: var(--warning); }
+    .period-label { font-size: 1rem; font-weight: 700; color: var(--text-primary); }
+    .period-sublabel { font-size: 0.82rem; color: var(--text-secondary); margin-left: auto; }
 
-  each app in applications
-    .card(style="margin-bottom:1.5rem;")
-      .page-header(style="margin-bottom:1rem;")
-        div
-          h2(style="font-size:1.2rem; font-weight:600; margin-bottom:0.25rem;")= app.Call.Event.title
-          p(style="color:var(--text-secondary); font-size:0.875rem;")
-            | #{app.Call.TaskType ? app.Call.TaskType.name : 'Task'} 
-            | &bull; Period: #{(app.Call.Event && app.Call.Event.Period) ? app.Call.Event.Period.code : 'N/A'}
-        div(style="text-align:right;")
-          if app.status === 'pending'
-            span.badge.badge-warning(style="background:#fef3c7; color:#d97706;") ⏳ Pending Review
-          else if app.status === 'approved'
-            span.badge.badge-success ✅ Approved
-          else if app.status === 'rejected'
-            span.badge.badge-danger ❌ Rejected
-          else if app.status === 'waitlisted'
-            span.badge.badge-warning(style="background:#fef3c7; color:#d97706;") 🕒 Waitlisted
-          else if app.status === 'attended'
-            span.badge.badge-success 🎉 Attended
-          else if app.status === 'no_show'
-            span.badge.badge-danger 🚨 No Show
-      
-      .detail-row
-        span.detail-label Task Dates
-        span.detail-value
-          | #{new Date(app.Call.task_start).toLocaleDateString()} → #{new Date(app.Call.task_end).toLocaleDateString()}
-      .detail-row
-        span.detail-label Points Awarded
-        span.detail-value= app.points_awarded !== null ? app.points_awarded : 'Pending'
-      
-      if app.reviewer_notes
-        .detail-row
-          span.detail-label Notes
-          span.detail-value= app.reviewer_notes
+    /* Period enrolment summary */
+    .enr-summary { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; padding: 16px 20px; margin-bottom: 12px; display: flex; align-items: center; gap: 16px; }
+    .enr-pts { flex: 1; }
+    .enr-pts-val { font-size: 1.5rem; font-weight: 800; color: var(--accent); line-height: 1; }
+    .enr-pts-lbl { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; margin-top: 3px; }
+    .enr-status { font-size: 0.78rem; font-weight: 700; padding: 5px 12px; border-radius: 20px; }
+    .enr-status.PASS { background: rgba(16,185,129,0.12); color: var(--success); }
+    .enr-status.FAIL { background: rgba(239,68,68,0.12); color: var(--danger); }
+    .enr-status.progress { background: rgba(37,99,235,0.12); color: var(--accent); }
+    .enr-bar-wrap { width: 100px; height: 6px; background: var(--border-color); border-radius: 4px; }
+    .enr-bar { height: 100%; border-radius: 4px; }
+    .enr-bar.c-green { background: var(--success); }
+    .enr-bar.c-yellow { background: var(--warning); }
+    .enr-bar.c-blue { background: var(--accent); }
 
-      if app.status === 'approved'
-        div(style="margin-top:1.5rem; text-align:center; padding:1.5rem; background:rgba(99, 102, 241, 0.05); border-radius:12px; border:1px solid var(--border-color);")
-          p(style="font-weight:600; margin-bottom:0.5rem;") Your Check-in QR Code
-          p(style="color:var(--text-secondary); font-size:0.875rem; margin-bottom:1rem;") Show this to the event organizer on the day of the event.
+    /* App cards */
+    .app-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; padding: 16px 20px; margin-bottom: 10px; display: flex; align-items: center; gap: 16px; transition: border-color 0.2s; }
+    .app-card:hover { border-color: var(--accent); }
+    .app-card.attended { border-left: 3px solid var(--success); }
+    .app-card.rejected { border-left: 3px solid var(--danger); opacity: 0.7; }
+    .app-card.pending { border-left: 3px solid var(--warning); }
+    .app-card.approved { border-left: 3px solid var(--accent); }
+    .app-card.waitlisted { border-left: 3px solid #7c3aed; }
+    
+    .app-icon { width: 42px; height: 42px; border-radius: 11px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; flex-shrink: 0; }
+    .app-icon.pending { background: rgba(245,158,11,0.1); }
+    .app-icon.approved { background: rgba(37,99,235,0.1); }
+    .app-icon.attended { background: rgba(16,185,129,0.1); }
+    .app-icon.rejected { background: rgba(239,68,68,0.1); }
+    .app-icon.waitlisted { background: rgba(139,92,246,0.1); }
+    
+    .app-body { flex: 1; min-width: 0; }
+    .app-title { font-size: 0.98rem; font-weight: 700; color: var(--text-primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 3px; }
+    .app-sub { font-size: 0.8rem; color: var(--text-secondary); }
+    
+    .app-right { text-align: right; flex-shrink: 0; }
+    .app-badge { display: inline-block; font-size: 0.75rem; font-weight: 700; padding: 4px 10px; border-radius: 20px; }
+    .app-badge.pending { background: rgba(245,158,11,0.1); color: #f59e0b; }
+    .app-badge.approved { background: rgba(37,99,235,0.1); color: var(--accent); }
+    .app-badge.attended { background: rgba(16,185,129,0.1); color: var(--success); }
+    .app-badge.rejected { background: rgba(239,68,68,0.1); color: var(--danger); }
+    .app-badge.waitlisted { background: rgba(139,92,246,0.1); color: #7c3aed; }
+    .app-pts { font-size: 1rem; font-weight: 800; color: var(--success); margin-top: 4px; }
+
+    .empty-state { text-align: center; padding: 60px 20px; color: var(--text-secondary); }
+    .empty-state .ei { font-size: 3.5rem; margin-bottom: 14px; }
+    .empty-state h3 { font-size: 1.3rem; margin: 0 0 8px; color: var(--text-primary); }
+    .btn-link { display: inline-flex; align-items: center; gap: 8px; padding: 10px 20px; background: var(--accent); color: #fff; border-radius: 10px; font-weight: 600; font-size: 0.9rem; text-decoration: none; transition: background 0.2s; margin-top: 12px; }
+    .btn-link:hover { background: var(--accent-hover); }
+
+    .no-apps { font-size: 0.85rem; color: var(--text-muted); font-style: italic; padding: 10px 0 6px; }
+
+  .tasks-page
+    .page-top
+      div
+        h1 📋 My Applications
+        p Track all your volunteer applications and period results.
+      a(href="/calls" style="font-size:0.9rem; color:var(--accent); font-weight:600; text-decoration:none;") ← Browse Open Calls
+
+    if enrolments.length === 0 && applications.length === 0
+      .empty-state
+        .ei 🗂️
+        h3 No activity yet
+        p You haven't applied to any calls and aren't enrolled in any period.
+        a.btn-link(href="/calls") Browse Available Calls
+
+    else
+      //- Group applications by period
+      - var appsByPeriod = {};
+      - var noPeriodApps = [];
+      each app in applications
+        - var pId = app.Call && app.Call.Event && app.Call.Event.Period ? app.Call.Event.Period.id : null;
+        - var pCode = app.Call && app.Call.Event && app.Call.Event.Period ? app.Call.Event.Period.code : null;
+        if pId
+          - if(!appsByPeriod[pId]) appsByPeriod[pId] = { code: pCode, apps: [] };
+          - appsByPeriod[pId].apps.push(app);
+        else
+          - noPeriodApps.push(app);
+
+      each enr in enrolments
+        - var period = enr.Period;
+        - var pApps = appsByPeriod[period.id] ? appsByPeriod[period.id].apps : [];
+        - var pct = enr.goal_points > 0 ? Math.min(100, Math.round((enr.collected_points / enr.goal_points) * 100)) : 0;
+        - var barClass = pct >= 80 ? 'c-green' : (pct >= 50 ? 'c-yellow' : 'c-blue');
+        - var statusLabel = enr.result_status || 'IN PROGRESS';
+        - var statusClass = enr.result_status === 'PASS' ? 'PASS' : (enr.result_status === 'FAIL' ? 'FAIL' : 'progress');
+
+        .period-section
+          .period-header
+            .period-dot(class=period.status)
+            .period-label= period.name
+            .period-sublabel #{period.code} · #{new Date(period.start_date).toLocaleDateString()} – #{new Date(period.end_date).toLocaleDateString()}
           
-          if app.qrCodeDataUri
-            img(src=app.qrCodeDataUri alt="QR Code" style="width:150px; height:150px; border-radius:8px; box-shadow:0 2px 4px rgba(0,0,0,0.1);")
+          .enr-summary
+            div
+              .enr-pts-val #{enr.collected_points || 0} / #{enr.goal_points || 0}
+              .enr-pts-lbl Points Collected / Goal
+            .enr-bar-wrap
+              .enr-bar(class=barClass style=`width:${pct}%`)
+            span.enr-status(class=statusClass)= statusLabel
+
+          if pApps.length > 0
+            each app in pApps
+              - var icons = { pending: '⏳', approved: '✅', attended: '🎉', rejected: '❌', waitlisted: '🕒' };
+              .app-card(class=app.status)
+                .app-icon(class=app.status)= icons[app.status] || '📌'
+                .app-body
+                  .app-title= app.Call.Event.title
+                  .app-sub
+                    | #{app.Call.TaskType ? app.Call.TaskType.name : 'Task'} · Applied #{new Date(app.createdAt).toLocaleDateString()}
+                .app-right
+                  span.app-badge(class=app.status)= app.status.charAt(0).toUpperCase() + app.status.slice(1)
+                  if app.points_awarded
+                    .app-pts +#{app.points_awarded} pts
           else
-            div(style="width:150px; height:150px; background:#fff; margin:0 auto; display:flex; align-items:center; justify-content:center; color:#000; border-radius:8px;")
-              | [ ERROR ]
-          
-          p(style="font-family:monospace; font-size:0.8rem; margin-top:0.5rem;") #{app.qr_code_token.substring(0,8)}...
+            p.no-apps No applications for this period yet.

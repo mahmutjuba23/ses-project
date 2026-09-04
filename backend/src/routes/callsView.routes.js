@@ -1,13 +1,16 @@
 const express = require("express");
-const { listOpenCalls, applyToCall, listMyTasks } = require("../controllers/studentCalls.controller");
+const { studentHome, listOpenCalls, applyToCall, listMyTasks } = require("../controllers/studentCalls.controller");
 const { authenticateView, isStudent } = require("../middleware/viewAuth.middleware");
 
 const router = express.Router();
 
-// Any authenticated user can browse calls
+// Student home / dashboard
+router.get("/home", authenticateView, isStudent, studentHome);
+
+// Browse open calls (any authenticated user)
 router.get("/", authenticateView, listOpenCalls);
 
-// Students apply and view their tasks
+// Apply + view own tasks (students only)
 router.post("/:call_id/apply", authenticateView, isStudent, applyToCall);
 router.get("/my-tasks", authenticateView, isStudent, listMyTasks);
 

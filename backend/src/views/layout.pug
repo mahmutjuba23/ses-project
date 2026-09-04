@@ -636,24 +636,21 @@ html(lang="en")
                 a(href="/admin/events" class=(currentPage === 'admin-events' ? 'active' : ''))
                   span.nav-icon 🗓️
                   | Events
-              li
-                a(href="/grader/scan" class=(currentPage === 'grader-scan' ? 'active' : ''))
-                  span.nav-icon 📷
-                  | QR Scanner
+
             else
               li.sidebar-section-label Student
               li
-                a(href="/dashboard" class=(currentPage === 'dashboard' ? 'active' : ''))
-                  span.nav-icon 📊
-                  | Dashboard
+                a(href="/calls/home" class=(currentPage === 'student-home' ? 'active' : ''))
+                  span.nav-icon 🏠
+                  | My Dashboard
               li
                 a(href="/calls" class=(currentPage === 'student-calls' ? 'active' : ''))
-                  span.nav-icon 📋
+                  span.nav-icon 📢
                   | Available Calls
               li
                 a(href="/calls/my-tasks" class=(currentPage === 'student-tasks' ? 'active' : ''))
-                  span.nav-icon ✅
-                  | My Tasks
+                  span.nav-icon 📋
+                  | My Applications
 
           .sidebar-footer
             a(href="/auth/me" class=(currentPage === 'profile' ? 'active' : ''))
