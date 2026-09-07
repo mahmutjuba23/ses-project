@@ -1,4 +1,4 @@
-const { Call, Event, TaskType, Period, Student, PeriodEnrolment, CallApplication } = require("../../models");
+const { sequelize, Call, Event, TaskType, Period, Student, PeriodEnrolment, CallApplication } = require("../../models");
 const { Op } = require("sequelize");
 const crypto = require("crypto");
 
@@ -91,48 +91,59 @@ async function listOpenCalls(req, res) {
 async function applyToCall(req, res) {
   try {
     const { call_id } = req.params;
-    const call = await Call.findByPk(call_id);
-    if (!call) return res.redirect("/calls?error=Call not found");
 
-    let student = await Student.findOne({ where: { user_id: req.user.id } });
-    if (!student && req.user.email) {
-      student = await Student.findOne({ where: { email: req.user.email } });
-      if (student) { student.user_id = req.user.id; await student.save(); }
-    }
-    if (!student) {
-      student = await Student.create({
-        user_id: req.user.id,
-        email: req.user.email,
-        first_name: req.user.full_name ? req.user.full_name.split(' ')[0] : 'Student',
-        last_name: req.user.full_name ? req.user.full_name.split(' ').slice(1).join(' ') : '',
-        is_active: true
+    // Use a transaction with row locking to prevent race condition on quota
+    await sequelize.transaction(async (t) => {
+      const call = await Call.findByPk(call_id, { lock: t.LOCK.UPDATE, transaction: t });
+      if (!call) throw new Error("Call not found");
+
+      let student = await Student.findOne({ where: { user_id: req.user.id }, transaction: t });
+      if (!student && req.user.email) {
+        student = await Student.findOne({ where: { email: req.user.email }, transaction: t });
+        if (student) { student.user_id = req.user.id; await student.save({ transaction: t }); }
+      }
+      if (!student) {
+        student = await Student.create({
+          user_id: req.user.id,
+          email: req.user.email,
+          first_name: req.user.full_name ? req.user.full_name.split(' ')[0] : 'Student',
+          last_name: req.user.full_name ? req.user.full_name.split(' ').slice(1).join(' ') : '',
+          is_active: true
+        }, { transaction: t });
+      }
+
+      const existing = await CallApplication.findOne({ 
+        where: { call_id: call.id, student_id: student.id },
+        transaction: t 
       });
-    }
+      if (existing) throw new Error("You have already applied to this call");
 
-    const existing = await CallApplication.findOne({ where: { call_id: call.id, student_id: student.id } });
-    if (existing) return res.redirect("/calls?error=You have already applied to this call");
+      // Check quota — count approved+attended
+      const approvedCount = await CallApplication.count({ 
+        where: { call_id: call.id, status: ['approved', 'attended'] },
+        transaction: t 
+      });
+      
+      let status;
+      if (call.auto_approve) {
+        status = approvedCount < call.quota ? 'approved' : (call.has_waitlist ? 'waitlisted' : null);
+      } else {
+        status = approvedCount < call.quota ? 'pending' : (call.has_waitlist ? 'waitlisted' : null);
+      }
+      if (!status) throw new Error("This call is full and has no waitlist");
 
-    // Check quota — count approved+attended
-    const approvedCount = await CallApplication.count({ where: { call_id: call.id, status: ['approved', 'attended'] } });
-    let status;
-    if (call.auto_approve) {
-      status = approvedCount < call.quota ? 'approved' : (call.has_waitlist ? 'waitlisted' : null);
-    } else {
-      status = approvedCount < call.quota ? 'pending' : (call.has_waitlist ? 'waitlisted' : null);
-    }
-    if (!status) return res.redirect("/calls?error=This call is full and has no waitlist");
-
-    await CallApplication.create({
-      call_id: call.id,
-      student_id: student.id,
-      status,
-      qr_code_token: crypto.randomBytes(16).toString("hex")
+      await CallApplication.create({
+        call_id: call.id,
+        student_id: student.id,
+        status,
+        qr_code_token: crypto.randomBytes(16).toString("hex")
+      }, { transaction: t });
     });
 
     res.redirect("/calls?success=Application submitted successfully!");
   } catch (err) {
     console.error("Apply to Call error:", err);
-    res.redirect("/calls?error=Failed to apply: " + err.message);
+    res.redirect("/calls?error=" + err.message);
   }
 }
 
