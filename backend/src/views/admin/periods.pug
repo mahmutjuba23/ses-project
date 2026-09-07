@@ -103,6 +103,10 @@ block content
       background-color: rgba(245, 158, 11, 0.15);
       color: var(--warning);
     }
+    .status-closed {
+      background-color: rgba(100, 116, 139, 0.15);
+      color: var(--text-muted);
+    }
 
     .btn-modern {
       padding: 10px 20px;
@@ -233,7 +237,11 @@ block content
                       input(type="hidden" name="period_id" value=p.id)
                       button.btn-modern.btn-modern-success(type="submit" style="padding: 6px 12px; font-size: 0.85rem;") Activate
                   if p.status === 'active'
-                    a.btn-modern.btn-modern-primary(href=`/admin/periods/${p.id}/enrolments` style="padding: 6px 12px; font-size: 0.85rem;") View Enrolments
+                    div(style="display: flex; gap: 8px;")
+                      a.btn-modern.btn-modern-primary(href=`/admin/periods/${p.id}/enrolments` style="padding: 6px 12px; font-size: 0.85rem;") View Enrolments
+                      form(action="/admin/periods/close" method="POST" onsubmit="return confirm('Are you sure you want to close this period? This will permanently finalize all student results as PASS or FAIL based on their collected points vs goals.');")
+                        input(type="hidden" name="period_id" value=p.id)
+                        button.btn-modern(type="submit" style="background: rgba(239, 68, 68, 0.1); color: var(--danger); border: 1px solid rgba(239, 68, 68, 0.3); padding: 6px 12px; font-size: 0.85rem;") Close Period
 
     dialog#createPeriodModal(style="padding: 30px; border: 1px solid var(--border-color); background: var(--bg-card); color: var(--text-primary); border-radius: 16px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.5); width: 500px; max-width: 90vw;")
       div(style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;")

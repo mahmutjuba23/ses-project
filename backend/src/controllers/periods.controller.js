@@ -1,4 +1,4 @@
-const { Period, PeriodEnrolment, Student } = require("../../models");
+const { sequelize, Period, PeriodEnrolment, Student } = require("../../models");
 const { logAction } = require("../services/audit.service");
 const { Op } = require("sequelize");
 
@@ -205,10 +205,51 @@ async function overrideGoal(req, res) {
   }
 }
 
+async function closePeriod(req, res) {
+  try {
+    const { period_id } = req.body;
+    
+    await sequelize.transaction(async (t) => {
+      const period = await Period.findByPk(period_id, { transaction: t });
+      if (!period || period.status !== 'active') {
+        throw new Error("Invalid period or period is not active");
+      }
+
+      period.status = 'closed';
+      await period.save({ transaction: t });
+
+      const enrolments = await PeriodEnrolment.findAll({
+        where: { period_id: period.id },
+        transaction: t
+      });
+
+      for (let enr of enrolments) {
+        enr.final_points = enr.collected_points || 0;
+        enr.result_status = enr.final_points >= enr.goal_points ? 'PASS' : 'FAIL';
+        await enr.save({ transaction: t });
+      }
+    });
+
+    await logAction({
+      actor_user_id: req.user ? req.user.id : 1,
+      entity: "Period",
+      entity_id: period_id,
+      action: "CLOSE_PERIOD",
+      reason: `Closed period and finalized enrolments`
+    });
+
+    res.redirect("/admin/periods?success=closed");
+  } catch (error) {
+    console.error("Close Period error:", error);
+    res.redirect("/admin/periods?error=close_failed");
+  }
+}
+
 module.exports = {
   listPeriods,
   createPeriod,
   activatePeriod,
   showEnrolments,
-  overrideGoal
+  overrideGoal,
+  closePeriod
 };
