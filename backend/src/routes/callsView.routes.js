@@ -1,6 +1,7 @@
 const express = require("express");
 const { studentHome, listOpenCalls, applyToCall, listMyTasks } = require("../controllers/studentCalls.controller");
 const { authenticateView, isStudent } = require("../middleware/viewAuth.middleware");
+const { applyLimiter } = require("../middleware/rateLimit.middleware");
 
 const router = express.Router();
 
@@ -11,7 +12,7 @@ router.get("/home", authenticateView, isStudent, studentHome);
 router.get("/", authenticateView, listOpenCalls);
 
 // Apply + view own tasks (students only)
-router.post("/:call_id/apply", authenticateView, isStudent, applyToCall);
+router.post("/:call_id/apply", authenticateView, isStudent, applyLimiter, applyToCall);
 router.get("/my-tasks", authenticateView, isStudent, listMyTasks);
 
 module.exports = router;

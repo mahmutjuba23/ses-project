@@ -11,12 +11,13 @@ const {
 } = require("../controllers/auth.controller");
 
 const { authenticateView } = require("../middleware/viewAuth.middleware");
+const { loginLimiter } = require("../middleware/rateLimit.middleware");
 
 const router = express.Router();
 
 // GET pages
 router.get("/login", loginPage);
-router.post("/login", loginSubmit);
+router.post("/login", loginLimiter, loginSubmit);
 router.get("/mock-google", mockGoogleLogin);
 router.get("/mock-student", mockStudentLogin);
 router.get("/register", registerPage);
