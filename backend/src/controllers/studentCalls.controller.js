@@ -68,7 +68,7 @@ async function listOpenCalls(req, res) {
     const openCalls = await Call.findAll({
       where: { application_end: { [Op.gte]: now } },
       include: [
-        { model: Event, include: [{ model: Period }] },
+        { model: Event, where: { status: 'published' }, include: [{ model: Period }] },
         { model: TaskType }
       ],
       order: [['application_end', 'ASC']]
