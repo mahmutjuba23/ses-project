@@ -1,5 +1,6 @@
 const { Call, Event, TaskType, Period, CallApplication, Student, User, PeriodEnrolment } = require("../../models");
 const { logAction } = require("../services/audit.service");
+const { sendMail } = require("../services/mailer.service");
 
 async function listEventCalls(req, res) {
   try {
@@ -165,7 +166,11 @@ async function updateApplicationStatus(req, res) {
       include: [
         { 
           model: Call,
-          include: [{ model: Event }]
+          include: [{ model: Event }, { model: TaskType }]
+        },
+        {
+          model: Student,
+          include: ['User']
         }
       ]
     });
@@ -177,6 +182,7 @@ async function updateApplicationStatus(req, res) {
       return res.redirect(`/admin/events/${application.Call.event_id}?call_id=${application.call_id}`);
     }
 
+    const previousStatus = application.status;
     application.status = status;
     
     if (status === 'attended' && points !== undefined) {
@@ -184,11 +190,28 @@ async function updateApplicationStatus(req, res) {
       application.points_awarded = awarded;
       
       // Update PeriodEnrolment collected_points
+      // Primary: use the event's period_id
       const periodId = application.Call.Event.period_id;
-      const enrolment = await PeriodEnrolment.findOne({
-        where: { student_id: application.student_id, period_id: periodId }
-      });
+      let enrolment = null;
+
+      if (periodId) {
+        enrolment = await PeriodEnrolment.findOne({
+          where: { student_id: application.student_id, period_id: periodId }
+        });
+      }
       
+      // Fallback: find their enrolment in any currently active period
+      if (!enrolment) {
+        const activePeriod = await (require("../../models").Period).findOne({
+          where: { status: 'active' }
+        });
+        if (activePeriod) {
+          enrolment = await PeriodEnrolment.findOne({
+            where: { student_id: application.student_id, period_id: activePeriod.id }
+          });
+        }
+      }
+
       if (enrolment) {
         enrolment.collected_points = (enrolment.collected_points || 0) + awarded;
         
@@ -197,6 +220,9 @@ async function updateApplicationStatus(req, res) {
           enrolment.result_status = 'PASS';
         }
         await enrolment.save();
+        console.log(`[Points] Awarded ${awarded} pts to student_id=${application.student_id} in period_id=${enrolment.period_id}. Total: ${enrolment.collected_points}`);
+      } else {
+        console.warn(`[Points] No enrolment found for student_id=${application.student_id}. Points were NOT saved to any enrolment.`);
       }
     }
 
@@ -210,7 +236,33 @@ async function updateApplicationStatus(req, res) {
       reason: `Admin updated status to ${status}${status === 'attended' ? ` with ${application.points_awarded} points` : ''}`
     });
 
-    res.redirect(`/admin/events/${application.Call.event_id}?call_id=${application.call_id}`);
+    try {
+      if (application.Student && application.Student.User) {
+        await sendMail({
+          to: application.Student.User.email,
+          subject: "SES: Application Status Update",
+          template: "application-status",
+          locals: {
+            studentName: application.Student.first_name,
+            callTitle: application.Call.TaskType ? application.Call.TaskType.name : 'Event Call',
+            status: status,
+            promoted: status === 'approved' && previousStatus === 'waitlisted',
+            loginUrl: "http://localhost:3010/login"
+          }
+        });
+      }
+    } catch (mailErr) {
+      console.error("Failed to send status update email:", mailErr);
+    }
+
+    const returnHash = req.body.return_hash ? '#' + req.body.return_hash : '';
+    const referer = req.get('Referrer');
+    if (referer) {
+      const urlWithoutHash = referer.split('#')[0];
+      res.redirect(`${urlWithoutHash}${returnHash}`);
+    } else {
+      res.redirect(`/admin/events/${application.Call.event_id}?call_id=${application.call_id}${returnHash}`);
+    }
   } catch (err) {
     console.error("Update Application Status error:", err);
     res.redirect(`/admin/events`);

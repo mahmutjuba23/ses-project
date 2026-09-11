@@ -5,130 +5,145 @@ block content
     .details-container {
       max-width: 1300px;
       margin: 0 auto;
-      padding: 20px;
+      padding: 15px;
       animation: fadeIn 0.4s ease-out;
     }
+    @keyframes fadeIn { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
+
     .admin-header {
       display: flex; justify-content: space-between; align-items: center;
-      margin-bottom: 30px; padding-bottom: 15px;
+      margin-bottom: 15px; padding-bottom: 10px;
       border-bottom: 1px solid var(--border-color);
     }
-    .admin-header h1 { margin: 0; color: var(--text-primary); font-size: 2rem; font-weight: 600; }
-    .admin-header p { margin: 5px 0 0; color: var(--text-secondary); font-size: 0.95rem; }
+    .admin-header h1 { margin: 0; color: var(--text-primary); font-size: 1.4rem; font-weight: 700; }
+    .admin-header p { margin: 3px 0 0; color: var(--text-secondary); font-size: 0.82rem; }
 
     .grid-layout {
       display: grid;
-      grid-template-columns: 300px 1fr;
-      gap: 30px;
+      grid-template-columns: 260px 1fr;
+      gap: 20px;
       align-items: start;
     }
 
     .card {
-      background: var(--bg-card); border-radius: 12px; box-shadow: var(--shadow);
-      padding: 25px; border: 1px solid var(--border-color);
+      background: var(--bg-card); border-radius: 10px; box-shadow: var(--shadow);
+      padding: 15px; border: 1px solid var(--border-color);
     }
 
-    /* Sidebar List styles */
-    .calls-sidebar h3 {
-      margin-top: 0; margin-bottom: 20px; color: var(--text-primary); font-size: 1.2rem;
-    }
+    /* Sidebar */
     .call-item {
-      display: block;
-      padding: 15px;
-      border-radius: 8px;
-      background: var(--bg-secondary);
-      color: var(--text-primary);
-      text-decoration: none;
-      margin-bottom: 10px;
-      border: 1px solid var(--border-color);
-      transition: all 0.2s;
+      display: block; padding: 10px 12px; border-radius: 7px;
+      background: var(--bg-secondary); color: var(--text-primary);
+      text-decoration: none; margin-bottom: 7px;
+      border: 1px solid var(--border-color); transition: all 0.2s;
     }
-    .call-item:hover {
-      border-color: var(--accent);
-      transform: translateY(-1px);
-    }
-    .call-item.active {
-      background: rgba(14, 165, 233, 0.1);
-      border-color: var(--accent);
-      box-shadow: inset 3px 0 0 var(--accent);
-    }
-    .call-title {
-      font-weight: 600; font-size: 1rem; margin-bottom: 5px;
-    }
-    .call-meta {
-      font-size: 0.85rem; color: var(--text-secondary);
-    }
+    .call-item:hover { border-color: var(--accent); transform: translateY(-1px); }
+    .call-item.active { background: rgba(14,165,233,0.1); border-color: var(--accent); box-shadow: inset 3px 0 0 var(--accent); }
+    .call-title { font-weight: 600; font-size: 0.9rem; margin-bottom: 3px; }
+    .call-meta { font-size: 0.78rem; color: var(--text-secondary); }
 
-    /* Table styles */
-    .table-responsive { overflow-x: auto; border-radius: 8px; }
-    table.modern-table { width: 100%; border-collapse: collapse; text-align: left; }
-    table.modern-table th {
-      background-color: var(--bg-secondary); color: var(--text-secondary); font-weight: 600;
-      padding: 15px; border-bottom: 2px solid var(--border-color);
-      font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.5px;
-    }
-    table.modern-table td {
-      padding: 15px; border-bottom: 1px solid rgba(0,0,0,0.05);
-      color: var(--text-primary); font-size: 0.95rem; vertical-align: middle;
-    }
-    table.modern-table tbody tr:hover { background-color: rgba(0,0,0,0.02); }
-
-    .btn-modern {
-      padding: 8px 16px; border-radius: 6px; font-weight: 500; transition: all 0.2s;
-      border: none; cursor: pointer; display: inline-flex; align-items: center;
-      justify-content: center; gap: 5px; text-decoration: none; font-size: 0.85rem;
-    }
-    .btn-modern-primary {
-      background: var(--gradient-1); color: white;
-    }
-    .btn-success { background: linear-gradient(135deg, #10b981, #059669); color: white; }
-    .btn-danger { background: linear-gradient(135deg, #ef4444, #dc2626); color: white; }
-
-    .status-badge {
-      padding: 4px 10px; border-radius: 20px; font-size: 0.8rem; font-weight: 500; text-transform: capitalize;
-    }
-    .status-pending { background-color: rgba(245,158,11,0.15); color: var(--warning); }
-    .status-approved { background-color: rgba(16,185,129,0.15); color: var(--success); }
-    .status-rejected { background-color: rgba(239,68,68,0.15); color: var(--danger); }
-
-    /* ── Stats Bar ───────────────────────────────────── */
+    /* Stats */
     .stats-bar {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 16px;
-      margin-bottom: 28px;
+      display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 18px;
     }
     .stat-card {
-      background: var(--bg-card);
-      border: 1px solid var(--border-color);
-      border-radius: 12px;
-      padding: 20px 24px;
-      display: flex;
-      align-items: center;
-      gap: 16px;
-      box-shadow: var(--shadow);
+      background: var(--bg-card); border: 1px solid var(--border-color);
+      border-radius: 10px; padding: 14px 16px;
+      display: flex; align-items: center; gap: 12px; box-shadow: var(--shadow);
     }
-    .stat-icon {
-      font-size: 1.8rem;
-      line-height: 1;
-    }
-    .stat-val {
-      font-size: 1.9rem;
-      font-weight: 700;
-      color: var(--text-primary);
-      line-height: 1;
-    }
-    .stat-lbl {
-      font-size: 0.75rem;
-      color: var(--text-muted);
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      margin-top: 3px;
-    }
+    .stat-icon { font-size: 1.5rem; line-height: 1; }
+    .stat-val { font-size: 1.6rem; font-weight: 700; color: var(--text-primary); line-height: 1; }
+    .stat-lbl { font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-top: 2px; }
     .stat-card.stat-approved { border-left: 3px solid var(--success); }
     .stat-card.stat-pending  { border-left: 3px solid var(--warning); }
     .stat-card.stat-rejected { border-left: 3px solid var(--danger); }
-    /* ───────────────────────────────────────────────── */
+
+    /* ── Application Tabs ── */
+    .app-tabs {
+      display: flex; gap: 4px; margin-bottom: 0;
+      border-bottom: 2px solid var(--border-color);
+      padding-bottom: 0;
+    }
+    .app-tab {
+      display: inline-flex; align-items: center; gap: 7px;
+      padding: 8px 16px; cursor: pointer;
+      font-size: 0.82rem; font-weight: 600;
+      color: var(--text-secondary);
+      border: 1px solid transparent;
+      border-bottom: none;
+      border-radius: 7px 7px 0 0;
+      background: none;
+      transition: all 0.15s;
+      position: relative;
+      top: 2px;
+    }
+    .app-tab:hover { color: var(--text-primary); background: var(--bg-primary); }
+    .app-tab.active {
+      color: var(--text-primary);
+      background: var(--bg-card);
+      border-color: var(--border-color);
+      border-bottom-color: var(--bg-card);
+    }
+    .app-tab.tab-pending.active  { color: var(--warning); }
+    .app-tab.tab-approved.active { color: var(--success); }
+    .app-tab.tab-rejected.active { color: var(--danger);  }
+    .tab-count {
+      font-size: 0.7rem; font-weight: 700;
+      padding: 1px 7px; border-radius: 20px;
+      background: var(--bg-primary);
+      color: var(--text-muted);
+    }
+    .app-tab.tab-pending.active  .tab-count { background: rgba(245,158,11,0.15); color: var(--warning); }
+    .app-tab.tab-approved.active .tab-count { background: rgba(16,185,129,0.15); color: var(--success); }
+    .app-tab.tab-rejected.active .tab-count { background: rgba(239,68,68,0.15);  color: var(--danger); }
+
+    .tab-panel { display: none; padding-top: 12px; }
+    .tab-panel.active { display: block; }
+
+    /* Table */
+    .table-responsive { overflow-x: auto; border-radius: 7px; }
+    table.modern-table { width: 100%; border-collapse: collapse; text-align: left; }
+    table.modern-table th {
+      background-color: var(--bg-secondary); color: var(--text-secondary); font-weight: 600;
+      padding: 9px 10px; border-bottom: 2px solid var(--border-color);
+      font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.5px;
+    }
+    table.modern-table td {
+      padding: 9px 10px; border-bottom: 1px solid rgba(0,0,0,0.05);
+      color: var(--text-primary); font-size: 0.85rem; vertical-align: middle;
+    }
+    table.modern-table tbody tr:hover { background-color: rgba(0,0,0,0.02); }
+    table.modern-table tbody tr:last-child td { border-bottom: none; }
+
+    .btn-modern {
+      padding: 5px 12px; border-radius: 6px; font-weight: 600; transition: all 0.2s;
+      border: none; cursor: pointer; display: inline-flex; align-items: center;
+      justify-content: center; gap: 4px; text-decoration: none; font-size: 0.78rem;
+    }
+    .btn-primary-mod { background: var(--gradient-1); color: white; }
+    .btn-success { background: linear-gradient(135deg, #10b981, #059669); color: white; }
+    .btn-danger  { background: linear-gradient(135deg, #ef4444, #dc2626); color: white; }
+    .btn-warning { background: linear-gradient(135deg, #f59e0b, #d97706); color: white; }
+    .btn-secondary { background: var(--bg-secondary); color: var(--text-secondary); border: 1px solid var(--border-color); }
+    .btn-secondary:hover { border-color: var(--accent); color: var(--accent); }
+
+    .status-badge {
+      padding: 3px 9px; border-radius: 20px; font-size: 0.72rem; font-weight: 600; text-transform: capitalize;
+    }
+    .status-pending   { background-color: rgba(245,158,11,0.15); color: var(--warning); }
+    .status-approved  { background-color: rgba(16,185,129,0.15); color: var(--success); }
+    .status-rejected  { background-color: rgba(239,68,68,0.15);  color: var(--danger);  }
+    .status-attended  { background-color: rgba(37,99,235,0.15);  color: var(--accent);  }
+    .status-waitlisted { background-color: rgba(139,92,246,0.15); color: #7c3aed; }
+
+    .empty-tab { text-align: center; padding: 40px 20px; color: var(--text-muted); font-style: italic; font-size: 0.875rem; }
+
+    .pts-inline { display: flex; gap: 5px; align-items: center; }
+    .pts-input {
+      width: 65px; padding: 4px 7px; border-radius: 5px;
+      border: 1px solid var(--border-color); background: var(--bg-input);
+      color: var(--text-primary); font-size: 0.8rem; font-family: inherit;
+    }
 
     dialog::backdrop { background-color: rgba(0,0,0,0.7); backdrop-filter: blur(8px); }
     dialog { position: fixed; top: 50%; left: 50%; transform: translate(-50%,-50%); margin: 0; }
@@ -137,16 +152,17 @@ block content
     .admin-header
       div
         h1 #{event.title}
-        p Event Status: #{event.status} | Period: #{event.Period ? event.Period.code : 'None'}
-      div(style="display: flex; gap: 10px;")
-        a.btn-modern.btn-modern-primary(href="/admin/events") ← Back to Events
+        p Status: #{event.status} · Period: #{event.Period ? event.Period.code : 'None'}
+      div(style="display: flex; gap: 8px;")
+        a.btn-modern.btn-primary-mod(href="/admin/events") ← Back
 
-    //- Summary Stats
+    //-  Summary Stats
     -
-      var totalApps = applications.length;
-      var approvedCount = applications.filter(function(a){ return a.status === 'approved'; }).length;
-      var pendingCount  = applications.filter(function(a){ return a.status === 'pending'; }).length;
+      var totalApps   = applications.length;
+      var approvedCount = applications.filter(function(a){ return a.status === 'approved' || a.status === 'attended'; }).length;
+      var pendingCount  = applications.filter(function(a){ return a.status === 'pending';  }).length;
       var rejectedCount = applications.filter(function(a){ return a.status === 'rejected'; }).length;
+      var attendedCount = applications.filter(function(a){ return a.status === 'attended'; }).length;
 
     .stats-bar
       .stat-card
@@ -163,7 +179,7 @@ block content
         .stat-icon ⏳
         div
           .stat-val= pendingCount
-          .stat-lbl Pending Review
+          .stat-lbl Pending
       .stat-card.stat-rejected
         .stat-icon ✕
         div
@@ -173,10 +189,10 @@ block content
     .grid-layout
       //- Sidebar: Calls List
       .calls-sidebar
-        .card(style="padding: 20px;")
-          div(style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;")
-            h3(style="margin:0;") Event Calls
-            button.btn-modern.btn-modern-primary(onclick="document.getElementById('createCallModal').showModal()" style="padding: 4px 10px;") + New
+        .card
+          div(style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;")
+            h3(style="margin:0; font-size: 1rem; font-weight: 700;") Event Calls
+            button.btn-modern.btn-primary-mod(onclick="document.getElementById('createCallModal').showModal()") + New
           
           a.call-item(href=`/admin/events/${event.id}` class=(!selectedCallId ? 'active' : ''))
             .call-title All Calls
@@ -185,17 +201,31 @@ block content
           each call in calls
             a.call-item(href=`/admin/events/${event.id}?call_id=${call.id}` class=(selectedCallId == call.id ? 'active' : ''))
               .call-title= call.TaskType ? call.TaskType.name : 'Unknown Task'
-              .call-meta Quota: #{call.quota} | Apps: #{applications.filter(a => a.call_id === call.id).length}
+              .call-meta Quota: #{call.quota} · #{applications.filter(a => a.call_id === call.id).length} apps
 
-      //- Main Content: Applications Table
+      //- Main Content: Tabbed Applications
       .applications-content
-        .card
-          h3(style="margin-top: 0; margin-bottom: 20px; font-size: 1.2rem; color: var(--text-primary);") 
-            | Applications #{selectedCallId ? `for Selected Call` : `(All Calls)`}
-          
-          if applications.length === 0
-            p(style="color: var(--text-secondary); font-style: italic;") No applications found.
-          else
+        .card(style="padding: 0; min-height: 450px;")
+          div(style="padding: 15px 15px 0;")
+            h3(style="margin: 0 0 12px; font-size: 1rem; font-weight: 700; color: var(--text-primary);")
+              | Applications #{selectedCallId ? 'for Selected Call' : '(All Calls)'}
+
+            //- Tab Bar
+            .app-tabs
+              button.app-tab.tab-approved(id="tab-approved" onclick="switchTab('approved')")
+                | ✅ Approved
+                span.tab-count= approvedCount
+              button.app-tab.tab-rejected(id="tab-rejected" onclick="switchTab('rejected')")
+                | ✕ Rejected
+                span.tab-count= rejectedCount
+              button.app-tab.tab-pending(id="tab-pending" onclick="switchTab('pending')")
+                | ⏳ Pending
+                span.tab-count= pendingCount
+
+          //- ── PENDING TAB ─────────────────────────────────────────────
+          #panel-pending.tab-panel(style="padding: 12px 15px 15px;")
+            -
+              var pendingApps = applications.filter(function(a){ return a.status === 'pending'; });
             .table-responsive
               table.modern-table
                 thead
@@ -204,64 +234,170 @@ block content
                     if !selectedCallId
                       th Call
                     th Status
-                    th Date Applied
+                    th Applied
                     th Actions
                 tbody
-                  each app in applications
+                  if pendingApps.length === 0
                     tr
-                      td
-                        a(href=app.Student ? `/admin/students/${app.Student.id}` : '#' style="text-decoration: none; color: inherit;")
-                          div(style="font-weight: 500;") #{app.Student ? app.Student.first_name + ' ' + app.Student.last_name : 'Unknown'}
-                          div(style="font-size: 0.85rem; color: var(--accent);") #{app.Student ? app.Student.student_number : ''}
-                      if !selectedCallId
-                        td #{app.Call && app.Call.TaskType ? app.Call.TaskType.name : 'Unknown'}
-                      td
-                        span.status-badge(class=`status-${app.status}`)= app.status
-                      td #{new Date(app.createdAt).toLocaleDateString('en-GB')}
-                      td
-                        if app.status === 'pending'
+                      td(colspan=!selectedCallId ? 5 : 4)
+                        .empty-tab No pending applications.
+                  else
+                    each app in pendingApps
+                      tr
+                        td
+                          a(href=app.Student ? `/admin/students/${app.Student.id}` : '#' style="text-decoration: none; color: inherit;")
+                            div(style="font-weight: 600;") #{app.Student ? app.Student.first_name + ' ' + app.Student.last_name : 'Unknown'}
+                            div(style="font-size: 0.78rem; color: var(--accent);") #{app.Student ? app.Student.student_number : ''}
+                        if !selectedCallId
+                          td(style="font-size: 0.8rem; color: var(--text-secondary);") #{app.Call && app.Call.TaskType ? app.Call.TaskType.name : 'Unknown'}
+                        td
+                          span.status-badge(class=`status-${app.status}`)= app.status
+                        td(style="font-size: 0.78rem; color: var(--text-muted);") #{new Date(app.createdAt).toLocaleDateString('en-GB')}
+                        td
                           div(style="display: flex; gap: 5px;")
                             form(action="/admin/calls/applications/status" method="POST" style="margin: 0;")
+                              input(type="hidden" name="return_hash" value="pending")
                               input(type="hidden" name="app_id" value=app.id)
                               input(type="hidden" name="status" value="approved")
                               button.btn-modern.btn-success(type="submit") ✔ Approve
                             form(action="/admin/calls/applications/status" method="POST" style="margin: 0;")
+                              input(type="hidden" name="return_hash" value="pending")
                               input(type="hidden" name="app_id" value=app.id)
                               input(type="hidden" name="status" value="rejected")
                               button.btn-modern.btn-danger(type="submit") ✖ Reject
-                        else if app.status === 'approved'
-                          form(action="/admin/calls/applications/status" method="POST" style="margin: 0; display: flex; gap: 5px; align-items: center;")
+
+          //- ── APPROVED TAB ────────────────────────────────────────────
+          #panel-approved.tab-panel(style="padding: 12px 15px 15px;")
+            -
+              var approvedApps = applications.filter(function(a){ return a.status === 'approved' || a.status === 'attended'; });
+            .table-responsive
+              table.modern-table
+                thead
+                  tr
+                    th Student
+                    if !selectedCallId
+                      th Call
+                    th Status
+                    th Applied
+                    th Actions
+                tbody
+                  if approvedApps.length === 0
+                    tr
+                      td(colspan=!selectedCallId ? 5 : 4)
+                        .empty-tab No approved students yet. Approve students from the Pending tab.
+                  else
+                    each app in approvedApps
+                      tr
+                        td
+                          a(href=app.Student ? `/admin/students/${app.Student.id}` : '#' style="text-decoration: none; color: inherit;")
+                            div(style="font-weight: 600;") #{app.Student ? app.Student.first_name + ' ' + app.Student.last_name : 'Unknown'}
+                            div(style="font-size: 0.78rem; color: var(--accent);") #{app.Student ? app.Student.student_number : ''}
+                        if !selectedCallId
+                          td(style="font-size: 0.8rem; color: var(--text-secondary);") #{app.Call && app.Call.TaskType ? app.Call.TaskType.name : 'Unknown'}
+                        td
+                          span.status-badge(class=`status-${app.status}`)= app.status
+                        td(style="font-size: 0.78rem; color: var(--text-muted);") #{new Date(app.createdAt).toLocaleDateString('en-GB')}
+                        td
+                          if app.status === 'attended'
+                            span(style="font-size: 0.78rem; color: var(--success); font-weight: 600;") ✅ #{app.points_awarded || 0} pts awarded
+                          else
+                            div.pts-inline
+                              form(action="/admin/calls/applications/status" method="POST" style="margin: 0; display: flex; gap: 5px; align-items: center;")
+                                input(type="hidden" name="return_hash" value="approved")
+                                input(type="hidden" name="app_id" value=app.id)
+                                input(type="hidden" name="status" value="attended")
+                                input.pts-input(type="number" name="points" placeholder="Pts" min="0" required)
+                                button.btn-modern.btn-primary-mod(type="submit") ✅ Award
+                              form(action="/admin/calls/applications/status" method="POST" style="margin: 0;")
+                                input(type="hidden" name="return_hash" value="approved")
+                                input(type="hidden" name="app_id" value=app.id)
+                                input(type="hidden" name="status" value="rejected")
+                                button.btn-modern.btn-danger(type="submit" title="Move to Rejected") ✖
+
+          //- ── REJECTED TAB ────────────────────────────────────────────
+          #panel-rejected.tab-panel(style="padding: 12px 15px 15px;")
+            -
+              var rejectedApps = applications.filter(function(a){ return a.status === 'rejected'; });
+            .table-responsive
+              table.modern-table
+                thead
+                  tr
+                    th Student
+                    if !selectedCallId
+                      th Call
+                    th Status
+                    th Applied
+                    th Actions
+                tbody
+                  if rejectedApps.length === 0
+                    tr
+                      td(colspan=!selectedCallId ? 5 : 4)
+                        .empty-tab No rejected students.
+                  else
+                    each app in rejectedApps
+                      tr
+                        td
+                          a(href=app.Student ? `/admin/students/${app.Student.id}` : '#' style="text-decoration: none; color: inherit;")
+                            div(style="font-weight: 600;") #{app.Student ? app.Student.first_name + ' ' + app.Student.last_name : 'Unknown'}
+                            div(style="font-size: 0.78rem; color: var(--accent);") #{app.Student ? app.Student.student_number : ''}
+                        if !selectedCallId
+                          td(style="font-size: 0.8rem; color: var(--text-secondary);") #{app.Call && app.Call.TaskType ? app.Call.TaskType.name : 'Unknown'}
+                        td
+                          span.status-badge(class=`status-${app.status}`)= app.status
+                        td(style="font-size: 0.78rem; color: var(--text-muted);") #{new Date(app.createdAt).toLocaleDateString('en-GB')}
+                        td
+                          form(action="/admin/calls/applications/status" method="POST" style="margin: 0;")
+                            input(type="hidden" name="return_hash" value="rejected")
                             input(type="hidden" name="app_id" value=app.id)
-                            input(type="hidden" name="status" value="attended")
-                            input(type="number" name="points" placeholder="Pts" min="0" required style="width: 60px; padding: 4px; border-radius: 4px; border: 1px solid var(--border-color); background: var(--bg-input); color: var(--text-primary);")
-                            button.btn-modern.btn-modern-primary(type="submit" style="padding: 4px 10px; font-size: 0.85rem;") ✅ Award Points
+                            input(type="hidden" name="status" value="approved")
+                            button.btn-modern.btn-success(type="submit") ↩ Re-Approve
 
     //- Create Call Modal
-    dialog#createCallModal(style="padding: 30px; border: 1px solid var(--border-color); background: var(--bg-card); color: var(--text-primary); border-radius: 16px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.5); width: 500px; max-width: 90vw;")
-      div(style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;")
-        h3(style="margin: 0; font-size: 1.4rem; font-weight: 600;") ✦ Create New Call
-        button(onclick="document.getElementById('createCallModal').close()" style="background: transparent; border: none; font-size: 1.5rem; cursor: pointer; color: var(--text-secondary);") &times;
+    dialog#createCallModal(style="padding: 25px; border: 1px solid var(--border-color); background: var(--bg-card); color: var(--text-primary); border-radius: 14px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.5); width: 480px; max-width: 90vw;")
+      div(style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px;")
+        h3(style="margin: 0; font-size: 1.1rem; font-weight: 700;") ✦ Create New Call
+        button(onclick="document.getElementById('createCallModal').close()" style="background: transparent; border: none; font-size: 1.4rem; cursor: pointer; color: var(--text-secondary);") &times;
       form(action="/admin/events/calls/create" method="POST")
         input(type="hidden" name="event_id" value=event.id)
-        div(style="margin-bottom: 15px;")
-          label(style="display:block; margin-bottom: 5px; font-size:0.9rem;") Task Type
-          input(type="text" name="task_type_name" required placeholder="e.g. Volunteering, Workshop, Sports Event" style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid var(--border-color); background: var(--bg-input); color: var(--text-primary); box-sizing: border-box;")
-        div(style="margin-bottom: 15px;")
-          label(style="display:block; margin-bottom: 5px; font-size:0.9rem;") Quota
-          input(type="number" name="quota" min="1" required style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid var(--border-color); background: var(--bg-input); color: var(--text-primary);")
-        div(style="display: flex; gap: 10px; margin-bottom: 15px;")
+        div(style="margin-bottom: 12px;")
+          label(style="display:block; margin-bottom: 4px; font-size:0.8rem; font-weight:600; color:var(--text-secondary); text-transform:uppercase;") Task Type
+          input(type="text" name="task_type_name" required placeholder="e.g. Volunteering, Workshop..." style="width: 100%; padding: 8px 10px; border-radius: 6px; border: 1px solid var(--border-color); background: var(--bg-input); color: var(--text-primary); box-sizing: border-box; font-size: 0.875rem;")
+        div(style="margin-bottom: 12px;")
+          label(style="display:block; margin-bottom: 4px; font-size:0.8rem; font-weight:600; color:var(--text-secondary); text-transform:uppercase;") Quota
+          input(type="number" name="quota" min="1" required style="width: 100%; padding: 8px 10px; border-radius: 6px; border: 1px solid var(--border-color); background: var(--bg-input); color: var(--text-primary); font-size: 0.875rem;")
+        div(style="display: flex; gap: 10px; margin-bottom: 12px;")
           div(style="flex: 1;")
-            label(style="display:block; margin-bottom: 5px; font-size:0.9rem;") App Start
-            input(type="datetime-local" name="application_start" required style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid var(--border-color); background: var(--bg-input); color: var(--text-primary);")
+            label(style="display:block; margin-bottom: 4px; font-size:0.8rem; font-weight:600; color:var(--text-secondary); text-transform:uppercase;") App Start
+            input(type="datetime-local" name="application_start" required style="width: 100%; padding: 8px 10px; border-radius: 6px; border: 1px solid var(--border-color); background: var(--bg-input); color: var(--text-primary); font-size: 0.875rem;")
           div(style="flex: 1;")
-            label(style="display:block; margin-bottom: 5px; font-size:0.9rem;") App End
-            input(type="datetime-local" name="application_end" required style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid var(--border-color); background: var(--bg-input); color: var(--text-primary);")
-        div(style="display: flex; gap: 10px; margin-bottom: 15px;")
+            label(style="display:block; margin-bottom: 4px; font-size:0.8rem; font-weight:600; color:var(--text-secondary); text-transform:uppercase;") App End
+            input(type="datetime-local" name="application_end" required style="width: 100%; padding: 8px 10px; border-radius: 6px; border: 1px solid var(--border-color); background: var(--bg-input); color: var(--text-primary); font-size: 0.875rem;")
+        div(style="display: flex; gap: 10px; margin-bottom: 12px;")
           div(style="flex: 1;")
-            label(style="display:block; margin-bottom: 5px; font-size:0.9rem;") Task Start
-            input(type="datetime-local" name="task_start" required style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid var(--border-color); background: var(--bg-input); color: var(--text-primary);")
+            label(style="display:block; margin-bottom: 4px; font-size:0.8rem; font-weight:600; color:var(--text-secondary); text-transform:uppercase;") Task Start
+            input(type="datetime-local" name="task_start" required style="width: 100%; padding: 8px 10px; border-radius: 6px; border: 1px solid var(--border-color); background: var(--bg-input); color: var(--text-primary); font-size: 0.875rem;")
           div(style="flex: 1;")
-            label(style="display:block; margin-bottom: 5px; font-size:0.9rem;") Task End
-            input(type="datetime-local" name="task_end" required style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid var(--border-color); background: var(--bg-input); color: var(--text-primary);")
-        div(style="margin-top: 25px;")
-          button.btn-modern.btn-modern-primary(type="submit" style="width: 100%; padding: 12px;") ✦ Create Call
+            label(style="display:block; margin-bottom: 4px; font-size:0.8rem; font-weight:600; color:var(--text-secondary); text-transform:uppercase;") Task End
+            input(type="datetime-local" name="task_end" required style="width: 100%; padding: 8px 10px; border-radius: 6px; border: 1px solid var(--border-color); background: var(--bg-input); color: var(--text-primary); font-size: 0.875rem;")
+        div(style="margin-top: 18px;")
+          button.btn-modern.btn-primary-mod(type="submit" style="width: 100%; padding: 10px; font-size: 0.875rem;") ✦ Create Call
+
+  script.
+    // ── Tab system ──────────────────────────────────
+    function switchTab(name) {
+      ['pending','approved','rejected'].forEach(function(t) {
+        document.getElementById('tab-' + t).classList.toggle('active', t === name);
+        document.getElementById('panel-' + t).classList.toggle('active', t === name);
+      });
+      // remember in URL hash so page reload keeps correct tab
+      history.replaceState(null, '', (location.search || '') + '#' + name);
+    }
+
+    // On load: pick tab from hash, or default to 'approved'
+    (function() {
+      var hash = location.hash.replace('#', '');
+      var valid = ['pending','approved','rejected'];
+      switchTab(valid.includes(hash) ? hash : 'approved');
+    })();
+
+
