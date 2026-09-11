@@ -1,0 +1,75 @@
+//- src/views/emails/layout.pug
+//- Base layout for all outgoing emails.
+//- Extend this in your email templates: extends layout
+doctype html
+html(lang="en")
+  head
+    meta(charset="UTF-8")
+    meta(name="viewport" content="width=device-width, initial-scale=1.0")
+    title= subject || "SES Notification"
+    style.
+      /* ── Reset ── */
+      body, table, td, a { -webkit-text-size-adjust:100%; -ms-text-size-adjust:100%; }
+      table, td { mso-table-lspace:0; mso-table-rspace:0; }
+      img { -ms-interpolation-mode:bicubic; border:0; height:auto; line-height:100%; outline:none; text-decoration:none; }
+
+      /* ── Base ── */
+      body {
+        margin:0; padding:0; background:#f4f6f9;
+        font-family:'Helvetica Neue', Helvetica, Arial, sans-serif;
+        font-size:15px; color:#333;
+      }
+
+      /* ── Wrapper ── */
+      .wrapper { width:100%; background:#f4f6f9; padding:40px 0; }
+      .container {
+        max-width:600px; margin:0 auto; background:#ffffff;
+        border-radius:8px; overflow:hidden;
+        box-shadow:0 2px 8px rgba(0,0,0,.08);
+      }
+
+      /* ── Header ── */
+      .header {
+        background:linear-gradient(135deg,#1a73e8 0%,#0d47a1 100%);
+        padding:32px 40px; text-align:center;
+      }
+      .header h1 { margin:0; color:#fff; font-size:24px; font-weight:700; letter-spacing:.5px; }
+      .header p  { margin:6px 0 0; color:rgba(255,255,255,.8); font-size:13px; }
+
+      /* ── Body ── */
+      .body { padding:40px; }
+      .body h2 { margin:0 0 16px; font-size:20px; color:#1a73e8; }
+      .body p  { margin:0 0 16px; line-height:1.6; }
+
+      /* ── Button ── */
+      .btn {
+        display:inline-block; padding:14px 28px;
+        background:#1a73e8; color:#fff !important;
+        text-decoration:none; border-radius:6px;
+        font-weight:600; font-size:15px; margin:8px 0;
+      }
+      .btn:hover { background:#1558b0; }
+
+      /* ── Divider ── */
+      .divider { border:none; border-top:1px solid #e8eaed; margin:28px 0; }
+
+      /* ── Footer ── */
+      .footer {
+        background:#f4f6f9; padding:24px 40px;
+        text-align:center; font-size:12px; color:#999;
+        border-top:1px solid #e8eaed;
+      }
+      .footer a { color:#1a73e8; text-decoration:none; }
+  body
+    .wrapper
+      .container
+        .header
+          h1 SES – Scholarship Engagement System
+          p Automated notification
+        .body
+          block content
+            p This email was sent automatically by the SES system.
+        .footer
+          p &copy; #{new Date().getFullYear()} SES. All rights reserved.
+          p
+            a(href="mailto:support@ses.local") Contact Support

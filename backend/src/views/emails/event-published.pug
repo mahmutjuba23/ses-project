@@ -1,0 +1,14 @@
+extends layout
+
+block content
+  h2 New Event Published
+  p Hello #{studentName},
+  p 
+    | A new event, 
+    strong #{eventTitle}
+    | , has just been published in the SES system!
+  p
+    | Check the available calls for this event to see if there are any opportunities to apply for.
+  hr.divider
+  p
+    a.btn(href=callsUrl) View Available Calls

@@ -1,0 +1,22 @@
+extends layout
+
+block content
+  h2 Application Confirmation
+  p Hello #{studentName},
+  p 
+    | We have successfully received your application for the call 
+    strong #{callTitle}
+    |  (Event: #{eventName}).
+  p 
+    | Your current status is: 
+    strong #{status}
+  if qrToken
+    p
+      | Keep this QR Code token for attendance if you are approved:
+      br
+      strong #{qrToken}
+  hr.divider
+  p
+    | You can track your application status on your dashboard.
+  p
+    a.btn(href=loginUrl) Go to My Dashboard

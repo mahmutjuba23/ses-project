@@ -1,0 +1,26 @@
+//- src/views/emails/welcome.pug
+//- Example: sent when a new user account is created.
+//- Usage:
+//-   const mailer = require('../services/mailer.service');
+//-   await mailer.sendMail({
+//-     to: user.email,
+//-     subject: 'Welcome to SES',
+//-     template: 'welcome',
+//-     locals: { name: user.name, loginUrl: 'https://yourapp.com/login' }
+//-   });
+extends layout
+
+block content
+  h2 Welcome, #{name}!
+  p
+    | Your account on the 
+    strong Scholarship Engagement System
+    |  has been successfully created.
+  p Click the button below to log in and get started:
+  p
+    a.btn(href=loginUrl) Log In to SES
+  hr.divider
+  p
+    | If you did not create this account, please ignore this email or 
+    a(href="mailto:support@ses.local") contact support
+    | .

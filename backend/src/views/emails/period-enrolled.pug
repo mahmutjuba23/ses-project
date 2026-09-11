@@ -1,0 +1,18 @@
+extends layout
+
+block content
+  h2 Period Enrolment Confirmation
+  p Hello #{studentName},
+  p 
+    | You have been successfully enrolled in the new active period: 
+    strong #{periodName}
+    | .
+  p 
+    | Your point goal for this period is: 
+    strong #{goalPoints} points
+    | .
+  hr.divider
+  p
+    | Log in to view available calls and start applying!
+  p
+    a.btn(href=loginUrl) Explore Calls

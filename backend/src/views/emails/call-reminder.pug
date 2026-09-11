@@ -1,0 +1,14 @@
+extends layout
+
+block content
+  h2 Action Required: Call Closing Soon
+  p Hello #{studentName},
+  p 
+    | This is a reminder that the call for 
+    strong #{callTitle}
+    |  is closing in exactly 48 hours.
+  p 
+    | If you haven't applied yet, please log in and submit your application before the deadline.
+  hr.divider
+  p
+    a.btn(href=callsUrl) Apply Now

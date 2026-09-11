@@ -26,6 +26,7 @@
     "multer": "^2.3.0",
     "mysql2": "^3.23.4",
     "node-cron": "^4.6.0",
+    "nodemailer": "^10.0.1",
     "pug": "^3.0.4",
     "qrcode": "^1.5.4",
     "sequelize": "^6.37.8",

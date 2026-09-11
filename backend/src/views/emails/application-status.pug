@@ -1,0 +1,23 @@
+extends layout
+
+block content
+  h2 Status Update on Your Application
+  p Hello #{studentName},
+  p 
+    | Your application for the call 
+    strong #{callTitle}
+    |  has been updated.
+  p 
+    | Your new status is: 
+    strong #{status}
+  if reviewerNotes
+    p 
+      strong Reviewer Notes: 
+      | #{reviewerNotes}
+  if promoted
+    p Congratulations on being promoted from the waitlist!
+  hr.divider
+  p
+    | Please log in to your dashboard to view more details.
+  p
+    a.btn(href=loginUrl) Log In to SES
