@@ -6,10 +6,25 @@ block content
     @keyframes fadeUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
 
     /* ─── Header ─── */
-    .dash-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 32px; }
-    .dash-header h1 { margin: 0; font-size: 2rem; font-weight: 800; color: var(--text-primary); }
-    .dash-header p { margin: 4px 0 0; color: var(--text-secondary); font-size: 0.95rem; }
-    .period-pill { background: rgba(16,185,129,0.12); color: var(--success); padding: 8px 16px; border-radius: 20px; font-size: 0.88rem; font-weight: 700; border: 1px solid rgba(16,185,129,0.3); }
+    .dash-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+    .dash-header h1 { margin: 0; font-size: 1.5rem; font-weight: 800; color: var(--text-primary); }
+    .dash-header p { margin: 4px 0 0; color: var(--text-secondary); font-size: 0.875rem; }
+    .period-pill { background: rgba(16,185,129,0.12); color: var(--success); padding: 6px 14px; border-radius: 20px; font-size: 0.8rem; font-weight: 700; border: 1px solid rgba(16,185,129,0.3); }
+
+    /* ─── Period Selector ─── */
+    .period-selector-bar {
+      display: flex; align-items: center; gap: 12px;
+      background: var(--bg-card); border: 1px solid var(--border-color);
+      border-radius: 10px; padding: 10px 16px; margin-bottom: 20px;
+      box-shadow: var(--shadow);
+    }
+    .period-selector-bar label { font-size: 0.75rem; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.05em; white-space: nowrap; }
+    .period-selector-bar select { background: var(--bg-input); border: 1px solid var(--border-color); color: var(--text-primary); border-radius: 6px; padding: 5px 10px; font-size: 0.825rem; font-family: inherit; cursor: pointer; flex: 1; max-width: 400px; }
+    .period-selector-bar select:focus { outline: none; border-color: var(--border-focus); }
+    .period-tag { font-size: 0.7rem; font-weight: 700; padding: 3px 10px; border-radius: 20px; text-transform: uppercase; letter-spacing: 0.05em; }
+    .period-tag.active { background: rgba(16,185,129,0.15); color: var(--success); border: 1px solid rgba(16,185,129,0.3); }
+    .period-tag.closed { background: rgba(100,116,139,0.15); color: var(--text-muted); border: 1px solid rgba(100,116,139,0.3); }
+    .period-tag.draft { background: rgba(245,158,11,0.15); color: var(--warning); border: 1px solid rgba(245,158,11,0.3); }
 
     /* ─── Top Summary ─── */
     .sys-card {
@@ -115,14 +130,25 @@ block content
     .dash-header
       div
         h1 Organization Dashboard
-        if activePeriod
-          p Live tracking for the active period.
+        if selectedPeriod
+          p Viewing stats for: #{selectedPeriod.name}
         else
-          p No active period.
+          p No periods found. Create a period first.
       if activePeriod
-        .period-pill 🟢 #{activePeriod.name}
+        .period-pill 🟢 #{activePeriod.name} (Active)
 
-    if !activePeriod
+    //- ─── Period Selector Bar ───
+    if allPeriods && allPeriods.length > 0
+      form.period-selector-bar(action="/dashboard" method="GET")
+        label 📅 Viewing Period:
+        select(name="period_id" onchange="this.form.submit()")
+          each p in allPeriods
+            option(value=p.id selected=(selectedPeriod && selectedPeriod.id === p.id))
+              | #{p.name} (#{p.code}) — #{p.status.toUpperCase()}
+        if selectedPeriod
+          span.period-tag(class=selectedPeriod.status)= selectedPeriod.status
+
+    if !selectedPeriod
       .no-active
         h3 No Active Period
         p Activate a period in the Periods tab to start tracking.

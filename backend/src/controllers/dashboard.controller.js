@@ -15,28 +15,41 @@ async function dashboardPage(req, res) {
       return res.redirect("/scholarships");
     }
 
-    // Find the active period to track live progress
-    const activePeriod = await Period.findOne({ where: { status: "active" } });
+    // Load all periods for the dropdown selector
+    const allPeriods = await Period.findAll({
+      order: [['start_date', 'DESC']]
+    });
+
+    // Determine which period to show: query param > active > most recent
+    let selectedPeriod = null;
+    if (req.query.period_id) {
+      selectedPeriod = await Period.findByPk(req.query.period_id);
+    }
+    if (!selectedPeriod) {
+      selectedPeriod = await Period.findOne({ where: { status: "active" } });
+    }
+    if (!selectedPeriod && allPeriods.length > 0) {
+      selectedPeriod = allPeriods[0]; // Most recent
+    }
 
     let systemGoal = 0;
     let systemCollected = 0;
     let facultyData = {}; // Structure: { [facultyName]: { goal: 0, collected: 0, departments: { [deptName]: { goal: 0, collected: 0 } } } }
 
-    if (activePeriod) {
-      // Fetch all enrolments for the active period, including the student to get faculty/dept
+    if (selectedPeriod) {
+      // Fetch all enrolments for the selected period, including student info
       const enrolments = await PeriodEnrolment.findAll({
-        where: { period_id: activePeriod.id },
+        where: { period_id: selectedPeriod.id },
         include: [{ 
           model: Student, 
-          attributes: ['faculty', 'department'],
-          where: { is_active: true }
+          attributes: ['faculty', 'department', 'is_active'],
         }]
       });
 
       // Aggregate data
       for (const enr of enrolments) {
         const student = enr.Student;
-        if (!student || !student.faculty || !student.department) continue;
+        if (!student || !student.faculty || !student.department || !student.is_active) continue;
         
         const fac = student.faculty;
         const dept = student.department;
@@ -60,10 +73,15 @@ async function dashboardPage(req, res) {
       }
     }
 
+    // Keep activePeriod for display (the actual active one, separate from selected)
+    const activePeriod = await Period.findOne({ where: { status: "active" } });
+
     res.render("dashboard/index", {
       user: req.user,
       title: "Dashboard Statistics",
       activePeriod,
+      selectedPeriod,
+      allPeriods,
       systemGoal,
       systemCollected,
       facultyData,
@@ -75,7 +93,8 @@ async function dashboardPage(req, res) {
       user: req.user, 
       error: "Error loading dashboard data", 
       title: "Dashboard",
-      facultyData: {}
+      facultyData: {},
+      allPeriods: []
     });
   }
 }
