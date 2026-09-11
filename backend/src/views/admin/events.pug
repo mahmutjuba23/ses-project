@@ -5,7 +5,7 @@ block content
     .events-container {
       max-width: 1200px;
       margin: 0 auto;
-      padding: 20px;
+      padding: 15px;
       animation: fadeIn 0.4s ease-out;
     }
     body::-webkit-scrollbar, .events-container::-webkit-scrollbar,
@@ -18,27 +18,27 @@ block content
 
     .admin-header {
       display: flex; justify-content: space-between; align-items: center;
-      margin-bottom: 30px; padding-bottom: 15px;
+      margin-bottom: 15px; padding-bottom: 10px;
       border-bottom: 1px solid var(--border-color);
     }
-    .admin-header h1 { margin: 0; color: var(--text-primary); font-size: 2rem; font-weight: 600; }
-    .admin-header p { margin: 5px 0 0; color: var(--text-secondary); font-size: 0.95rem; }
+    .admin-header h1 { margin: 0; color: var(--text-primary); font-size: 1.5rem; font-weight: 600; }
+    .admin-header p { margin: 5px 0 0; color: var(--text-secondary); font-size: 0.85rem; }
 
     .card {
       background: var(--bg-card); border-radius: 12px; box-shadow: var(--shadow);
-      padding: 25px; margin-bottom: 30px; border: 1px solid var(--border-color);
+      padding: 15px; margin-bottom: 20px; border: 1px solid var(--border-color);
     }
     .table-responsive { overflow-x: auto; border-radius: 8px; }
 
     table.modern-table { width: 100%; border-collapse: collapse; text-align: left; }
     table.modern-table th {
       background-color: var(--bg-secondary); color: var(--text-secondary); font-weight: 600;
-      padding: 15px; border-bottom: 2px solid var(--border-color);
-      font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.5px;
+      padding: 10px; border-bottom: 2px solid var(--border-color);
+      font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px;
     }
     table.modern-table td {
-      padding: 15px; border-bottom: 1px solid rgba(0,0,0,0.05);
-      color: var(--text-primary); font-size: 0.95rem; vertical-align: middle;
+      padding: 10px; border-bottom: 1px solid rgba(0,0,0,0.05);
+      color: var(--text-primary); font-size: 0.85rem; vertical-align: middle;
     }
     table.modern-table tbody tr.clickable-row { cursor: pointer; }
     table.modern-table tbody tr.clickable-row:hover { background-color: rgba(0,0,0,0.05); transition: background-color 0.2s; }
@@ -62,11 +62,11 @@ block content
     .status-cancelled { background-color: rgba(239,68,68,0.15); color: var(--danger); }
 
     .btn-modern {
-      padding: 10px 20px; border-radius: 8px; font-weight: 500; transition: all 0.2s;
+      padding: 8px 15px; border-radius: 8px; font-weight: 500; font-size: 0.85rem; transition: all 0.2s;
       border: none; cursor: pointer; display: inline-flex; align-items: center;
       justify-content: center; gap: 5px; text-decoration: none;
     }
-    .btn-modern-sm { padding: 6px 11px; font-size: 0.82rem; border-radius: 6px; }
+    .btn-modern-sm { padding: 4px 8px; font-size: 0.75rem; border-radius: 6px; }
 
     .btn-modern-primary {
       background: var(--gradient-1); color: white; box-shadow: 0 4px 6px var(--accent-glow);
@@ -114,40 +114,40 @@ block content
     }
 
     .form-control-modern {
-      width: 100%; padding: 10px 15px; background: var(--bg-input);
+      width: 100%; padding: 8px 12px; background: var(--bg-input);
       border: 1px solid var(--border-color); color: var(--text-primary);
-      border-radius: 6px; font-size: 0.95rem;
+      border-radius: 6px; font-size: 0.85rem;
       transition: border-color 0.2s, box-shadow 0.2s; box-sizing: border-box;
     }
     .form-control-modern:focus {
       outline: none; border-color: var(--border-focus);
       box-shadow: 0 0 0 3px var(--accent-glow);
     }
-    .form-group-modern { margin-bottom: 18px; }
+    .form-group-modern { margin-bottom: 12px; }
     .form-group-modern label {
-      display: block; margin-bottom: 6px; font-weight: 500;
-      color: var(--text-secondary); font-size: 0.9rem;
+      display: block; margin-bottom: 4px; font-weight: 500;
+      color: var(--text-secondary); font-size: 0.8rem;
     }
     .cancel-inline { display: flex; gap: 5px; align-items: center; margin: 0; }
-    .cancel-inline input { width: 110px; padding: 6px 10px; font-size: 0.82rem; }
+    .cancel-inline input { width: 110px; padding: 4px 8px; font-size: 0.75rem; }
 
     /* ── Status Filter Bar ──────────────────────────────── */
     .filter-bar {
       display: flex;
-      gap: 8px;
-      margin-bottom: 20px;
+      gap: 6px;
+      margin-bottom: 15px;
       flex-wrap: wrap;
     }
     .filter-tab {
       display: inline-flex;
       align-items: center;
-      gap: 6px;
-      padding: 7px 16px;
+      gap: 4px;
+      padding: 5px 12px;
       border-radius: 99px;
       border: 1px solid var(--border-color);
       background: var(--bg-card);
       color: var(--text-secondary);
-      font-size: 0.85rem;
+      font-size: 0.8rem;
       font-weight: 500;
       cursor: pointer;
       transition: all 0.18s;
@@ -230,7 +230,7 @@ block content
             each e in events
               tr.clickable-row(
                 data-status=e.status
-                onclick=e.status === 'draft' ? `openEditModal(${e.id}, '${e.title.replace(/'/g, "\\'")}', '${(e.description||'').replace(/'/g, "\\'")}', '${e.start_date}', '${e.end_date}', ${e.category_id || 'null'})` : `window.location.href='/admin/events/${e.id}'`
+                onclick=e.status === 'draft' ? `openEditModal(${e.id}, '${e.title.replace(/'/g, "\\'")}', '${(e.description||'').replace(/'/g, "\\'")}', '${e.start_date}', '${e.end_date}', ${e.category_id || 'null'}, ${e.period_id || 'null'})` : `window.location.href='/admin/events/${e.id}'`
               )
                 td
                   span.event-title-link(style="pointer-events: none;")
@@ -298,6 +298,12 @@ block content
             option(value="") -- Select Category --
             each cat in categories
               option(value=cat.id)= cat.name
+        .form-group-modern
+          label Period
+          select.form-control-modern(name="period_id")
+            option(value="") -- No Period --
+            each p in periods
+              option(value=p.id) #{p.name} (#{p.code}) — #{p.status}
         div(style="display: flex; gap: 15px;")
           .form-group-modern(style="flex: 1;")
             label Start Date
@@ -308,8 +314,8 @@ block content
         .form-group-modern
           label Description
           textarea.form-control-modern(name="description" rows="3")
-        div(style="margin-top: 30px;")
-          button.btn-modern.btn-modern-primary(type="submit" style="width: 100%; padding: 12px; font-size: 1rem;") ✦ Create Draft Event
+        div(style="margin-top: 20px;")
+          button.btn-modern.btn-modern-primary(type="submit" style="width: 100%; padding: 10px; font-size: 0.9rem;") ✦ Create Draft Event
 
     //- Edit Event Modal
     dialog#editEventModal(style="padding: 30px; border: 1px solid var(--border-color); background: var(--bg-card); color: var(--text-primary); border-radius: 16px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.5); width: 500px; max-width: 90vw;")
@@ -328,6 +334,12 @@ block content
             option(value="") -- Select Category --
             each cat in categories
               option(value=cat.id)= cat.name
+        .form-group-modern
+          label Period
+          select#edit_period.form-control-modern(name="period_id")
+            option(value="") -- No Period --
+            each p in periods
+              option(value=p.id) #{p.name} (#{p.code}) — #{p.status}
         div(style="display: flex; gap: 15px;")
           .form-group-modern(style="flex: 1;")
             label Start Date
@@ -338,17 +350,19 @@ block content
         .form-group-modern
           label Description
           textarea#edit_description.form-control-modern(name="description" rows="3")
-        div(style="margin-top: 30px;")
-          button.btn-modern.btn-modern-primary(type="submit" style="width: 100%; padding: 12px; font-size: 1rem;") 💾 Save Changes
+        div(style="margin-top: 20px;")
+          button.btn-modern.btn-modern-primary(type="submit" style="width: 100%; padding: 10px; font-size: 0.9rem;") 💾 Save Changes
 
   script.
-    function openEditModal(id, title, description, start_date, end_date, category_id) {
+    function openEditModal(id, title, description, start_date, end_date, category_id, period_id) {
       document.getElementById('edit_event_id').value = id;
       document.getElementById('edit_title').value = title;
       document.getElementById('edit_description').value = description;
       document.getElementById('edit_start_date').value = start_date ? start_date.substring(0, 10) : '';
       document.getElementById('edit_end_date').value = end_date ? end_date.substring(0, 10) : '';
       if (category_id) document.getElementById('edit_category').value = category_id;
+      if (period_id) document.getElementById('edit_period').value = period_id;
+      else document.getElementById('edit_period').value = '';
       document.getElementById('editEventModal').showModal();
     }
 

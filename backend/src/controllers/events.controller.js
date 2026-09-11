@@ -13,12 +13,14 @@ async function listEvents(req, res) {
     });
 
     const categories = await EventCategory.findAll({ where: { is_active: true } });
+    const periods = await Period.findAll({ order: [['start_date', 'DESC']] });
 
     res.render("admin/events", {
       title: "Manage Events — SES",
       currentPage: "admin-events",
       events,
       categories,
+      periods,
       user: req.user,
       error: req.query.error || null,
       pageWarning: req.query.warning || null
@@ -31,16 +33,7 @@ async function listEvents(req, res) {
 
 async function createEvent(req, res) {
   try {
-    const { title, description, start_date, end_date, category_id } = req.body;
-    
-    // Find matching active period
-    const period = await Period.findOne({
-      where: {
-        status: 'active',
-        start_date: { [Op.lte]: start_date },
-        end_date: { [Op.gte]: end_date }
-      }
-    });
+    const { title, description, start_date, end_date, category_id, period_id } = req.body;
 
     const newEvent = await Event.create({
       title,
@@ -48,7 +41,7 @@ async function createEvent(req, res) {
       start_date,
       end_date,
       category_id,
-      period_id: period ? period.id : null,
+      period_id: period_id || null,
       status: "draft"
     });
 
@@ -59,10 +52,6 @@ async function createEvent(req, res) {
       action: "CREATE_EVENT",
       reason: "Admin created a new event"
     });
-
-    if (!period) {
-      return res.redirect("/admin/events?warning=no_period_match");
-    }
 
     res.redirect("/admin/events");
   } catch (error) {
@@ -135,21 +124,12 @@ async function cancelEvent(req, res) {
 
 async function updateEvent(req, res) {
   try {
-    const { event_id, title, description, start_date, end_date, category_id } = req.body;
+    const { event_id, title, description, start_date, end_date, category_id, period_id } = req.body;
     const event = await Event.findByPk(event_id);
 
     if (!event) return res.redirect("/admin/events?error=not_found");
 
-    // Re-match to an active period based on new dates
-    const period = await Period.findOne({
-      where: {
-        status: 'active',
-        start_date: { [Op.lte]: start_date },
-        end_date: { [Op.gte]: end_date }
-      }
-    });
-
-    const oldValues = { title: event.title, description: event.description, start_date: event.start_date, end_date: event.end_date };
+    const oldValues = { title: event.title, description: event.description, start_date: event.start_date, end_date: event.end_date, period_id: event.period_id };
 
     await event.update({
       title,
@@ -157,7 +137,7 @@ async function updateEvent(req, res) {
       start_date,
       end_date,
       category_id,
-      period_id: period ? period.id : event.period_id
+      period_id: period_id || event.period_id
     });
 
     await logAction({
@@ -166,7 +146,7 @@ async function updateEvent(req, res) {
       entity_id: event.id,
       action: "UPDATE_EVENT",
       old_value: oldValues,
-      new_value: { title, description, start_date, end_date },
+      new_value: { title, description, start_date, end_date, period_id },
       reason: "Admin edited event details"
     });
 
