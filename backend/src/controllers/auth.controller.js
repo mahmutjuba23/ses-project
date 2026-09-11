@@ -5,6 +5,7 @@ const {
   comparePassword,
   generateToken,
 } = require("../services/auth.service");
+const { sendMail } = require("../services/mailer.service");
 
 // ── API Handlers (JSON) ──
 
@@ -256,7 +257,21 @@ async function registerSubmit(req, res) {
 
     const password_hash = await hashPassword(password);
 
-    await User.create({ email, full_name, password_hash });
+    const user = await User.create({ email, full_name, password_hash });
+
+    try {
+      await sendMail({
+        to: email,
+        subject: "Welcome to SES",
+        template: "welcome",
+        locals: {
+          name: full_name || "User",
+          loginUrl: "http://localhost:3010/login"
+        }
+      });
+    } catch (mailErr) {
+      console.error("Failed to send welcome email:", mailErr);
+    }
 
     return res.redirect("/auth/login");
   } catch (error) {

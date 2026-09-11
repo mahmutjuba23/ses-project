@@ -1,5 +1,6 @@
 const { sequelize, Period, PeriodEnrolment, Student } = require("../../models");
 const { logAction } = require("../services/audit.service");
+const { sendMail } = require("../services/mailer.service");
 const { Op } = require("sequelize");
 
 async function listPeriods(req, res) {
@@ -137,6 +138,31 @@ async function activatePeriod(req, res) {
       reason: `Activated period and enrolled ${enrolments.length} students` +
         (period.scope_rule_json ? ` (scope: ${JSON.stringify(period.scope_rule_json)})` : ' (all active students)')
     });
+
+    // Send emails in background
+    (async () => {
+      for (const student of activeStudents) {
+        if (student.email) {
+          try {
+            await sendMail({
+              to: student.email,
+              subject: "SES: You are enrolled in a new period",
+              template: "period-enrolled",
+              locals: {
+                studentName: student.first_name,
+                periodName: period.name,
+                goalPoints: period.point_goal,
+                loginUrl: "http://localhost:3010/login"
+              }
+            });
+            // basic delay for sandbox limits
+            await new Promise(r => setTimeout(r, 1500));
+          } catch (err) {
+            console.error("Failed to send period-enrolled email:", err);
+          }
+        }
+      }
+    })();
 
     res.redirect("/admin/periods");
   } catch (error) {

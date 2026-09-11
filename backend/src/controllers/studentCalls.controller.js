@@ -112,18 +112,18 @@ async function applyToCall(req, res) {
         }, { transaction: t });
       }
 
-      const existing = await CallApplication.findOne({ 
+      const existing = await CallApplication.findOne({
         where: { call_id: call.id, student_id: student.id },
-        transaction: t 
+        transaction: t
       });
       if (existing) throw new Error("You have already applied to this call");
 
       // Check quota — count approved+attended
-      const approvedCount = await CallApplication.count({ 
+      const approvedCount = await CallApplication.count({
         where: { call_id: call.id, status: ['approved', 'attended'] },
-        transaction: t 
+        transaction: t
       });
-      
+
       let status;
       if (call.auto_approve) {
         status = approvedCount < call.quota ? 'approved' : (call.has_waitlist ? 'waitlisted' : null);
