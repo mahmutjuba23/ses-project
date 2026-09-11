@@ -2,47 +2,47 @@ extends ../layout
 
 block content
   style.
-    .calls-page { max-width: 900px; margin: 0 auto; padding: 30px; animation: fadeIn 0.4s ease-out; }
+    .calls-page { max-width: 900px; margin: 0 auto; padding: 15px; animation: fadeIn 0.4s ease-out; }
     @keyframes fadeIn { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
 
-    .page-top { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 28px; }
-    .page-top h1 { margin: 0 0 4px; font-size: 1.9rem; font-weight: 800; }
-    .page-top p { margin: 0; color: var(--text-secondary); font-size: 0.9rem; }
+    .page-top { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 15px; }
+    .page-top h1 { margin: 0 0 4px; font-size: 1.5rem; font-weight: 800; }
+    .page-top p { margin: 0; color: var(--text-secondary); font-size: 0.85rem; }
 
     .call-card {
-      background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 16px;
-      padding: 24px; margin-bottom: 18px;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+      background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px;
+      padding: 15px; margin-bottom: 12px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.05);
       transition: box-shadow 0.2s, border-color 0.2s, transform 0.15s;
     }
-    .call-card:hover { box-shadow: 0 10px 35px rgba(0,0,0,0.1); border-color: var(--accent); transform: translateY(-2px); }
+    .call-card:hover { box-shadow: 0 8px 25px rgba(0,0,0,0.1); border-color: var(--accent); transform: translateY(-2px); }
     .call-card.applied { border-color: var(--success); opacity: 0.75; }
 
-    .call-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px; gap: 16px; }
-    .call-title { font-size: 1.2rem; font-weight: 700; color: var(--text-primary); margin: 0 0 5px; }
-    .call-meta { font-size: 0.82rem; color: var(--text-muted); display: flex; flex-wrap: wrap; gap: 10px; }
-    .meta-chip { display: inline-flex; align-items: center; gap: 4px; background: var(--bg-primary); padding: 3px 8px; border-radius: 20px; font-size: 0.8rem; color: var(--text-secondary); }
+    .call-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; gap: 12px; }
+    .call-title { font-size: 1.1rem; font-weight: 700; color: var(--text-primary); margin: 0 0 4px; }
+    .call-meta { font-size: 0.8rem; color: var(--text-muted); display: flex; flex-wrap: wrap; gap: 8px; }
+    .meta-chip { display: inline-flex; align-items: center; gap: 3px; background: var(--bg-primary); padding: 2px 6px; border-radius: 12px; font-size: 0.75rem; color: var(--text-secondary); }
 
-    .call-badges { display: flex; flex-wrap: wrap; gap: 8px; flex-shrink: 0; }
-    .badge { display: inline-flex; align-items: center; gap: 5px; padding: 5px 12px; border-radius: 20px; font-size: 0.78rem; font-weight: 700; }
+    .call-badges { display: flex; flex-wrap: wrap; gap: 6px; flex-shrink: 0; }
+    .badge { display: inline-flex; align-items: center; gap: 4px; padding: 3px 8px; border-radius: 12px; font-size: 0.7rem; font-weight: 700; }
     .badge-open { background: rgba(16,185,129,0.1); color: var(--success); border: 1px solid rgba(16,185,129,0.3); }
     .badge-auto { background: rgba(37,99,235,0.1); color: var(--accent); border: 1px solid rgba(37,99,235,0.2); }
     .badge-waitlist { background: rgba(139,92,246,0.1); color: #7c3aed; border: 1px solid rgba(139,92,246,0.2); }
     .badge-applied { background: rgba(16,185,129,0.1); color: var(--success); border: 1px solid rgba(16,185,129,0.3); }
 
-    .call-details { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 20px; margin-bottom: 20px; }
+    .call-details { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 15px; margin-bottom: 12px; }
     .detail-line { display: flex; flex-direction: column; }
-    .d-label { font-size: 0.73rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 2px; }
-    .d-val { font-size: 0.9rem; color: var(--text-primary); font-weight: 500; }
+    .d-label { font-size: 0.7rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 2px; }
+    .d-val { font-size: 0.8rem; color: var(--text-primary); font-weight: 500; }
 
-    .deadline-bar { background: var(--bg-primary); border-radius: 8px; padding: 10px 14px; margin-bottom: 18px; display: flex; align-items: center; justify-content: space-between; }
-    .deadline-label { font-size: 0.82rem; color: var(--text-secondary); }
-    .deadline-val { font-size: 0.88rem; font-weight: 700; color: var(--text-primary); }
+    .deadline-bar { background: var(--bg-primary); border-radius: 6px; padding: 6px 10px; margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between; }
+    .deadline-label { font-size: 0.75rem; color: var(--text-secondary); }
+    .deadline-val { font-size: 0.8rem; font-weight: 700; color: var(--text-primary); }
     .deadline-urgent { color: var(--danger); }
 
-    .btn-apply { display: inline-flex; align-items: center; gap: 8px; padding: 11px 24px; background: var(--accent); color: #fff; border-radius: 10px; font-weight: 700; font-size: 0.95rem; border: none; cursor: pointer; transition: background 0.2s, transform 0.1s; width: 100%; justify-content: center; }
+    .btn-apply { display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; background: var(--accent); color: #fff; border-radius: 8px; font-weight: 700; font-size: 0.85rem; border: none; cursor: pointer; transition: background 0.2s, transform 0.1s; width: 100%; justify-content: center; }
     .btn-apply:hover { background: var(--accent-hover); transform: translateY(-1px); }
-    .btn-applied { display: flex; align-items: center; justify-content: center; gap: 8px; padding: 11px 24px; background: rgba(16,185,129,0.1); color: var(--success); border-radius: 10px; font-weight: 700; font-size: 0.95rem; border: 1px solid rgba(16,185,129,0.3); width: 100%; }
+    .btn-applied { display: flex; align-items: center; justify-content: center; gap: 6px; padding: 8px 16px; background: rgba(16,185,129,0.1); color: var(--success); border-radius: 8px; font-weight: 700; font-size: 0.85rem; border: 1px solid rgba(16,185,129,0.3); width: 100%; }
 
     .empty-state { text-align: center; padding: 80px 20px; }
     .empty-state .ei { font-size: 4rem; margin-bottom: 16px; }

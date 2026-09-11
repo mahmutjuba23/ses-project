@@ -5,7 +5,7 @@ block content
     .users-container {
       max-width: 1200px;
       margin: 0 auto;
-      padding: 20px;
+      padding: 15px;
       animation: fadeIn 0.4s ease-out;
     }
     body::-webkit-scrollbar, dialog::-webkit-scrollbar, textarea::-webkit-scrollbar { display: none; }
@@ -16,20 +16,20 @@ block content
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 30px;
-      padding-bottom: 15px;
+      margin-bottom: 15px;
+      padding-bottom: 10px;
       border-bottom: 1px solid var(--border-color);
     }
-    .admin-header h1 { margin: 0; color: var(--text-primary); font-size: 2rem; font-weight: 600; }
-    .admin-header p  { margin: 5px 0 0; color: var(--text-secondary); font-size: 0.95rem; }
+    .admin-header h1 { margin: 0; color: var(--text-primary); font-size: 1.5rem; font-weight: 600; }
+    .admin-header p  { margin: 5px 0 0; color: var(--text-secondary); font-size: 0.85rem; }
     .header-actions { display: flex; gap: 10px; align-items: center; }
 
     .card {
       background: var(--bg-card);
       border-radius: 12px;
       box-shadow: var(--shadow);
-      padding: 25px;
-      margin-bottom: 30px;
+      padding: 15px;
+      margin-bottom: 20px;
       border: 1px solid var(--border-color);
     }
     .table-responsive { overflow-x: auto; border-radius: 8px; }
@@ -37,12 +37,12 @@ block content
     table.modern-table { width: 100%; border-collapse: collapse; text-align: left; }
     table.modern-table th {
       background-color: var(--bg-secondary); color: var(--text-secondary); font-weight: 600;
-      padding: 15px; border-bottom: 2px solid var(--border-color);
-      font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.5px;
+      padding: 10px; border-bottom: 2px solid var(--border-color);
+      font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px;
     }
     table.modern-table td {
-      padding: 15px; border-bottom: 1px solid rgba(0,0,0,0.05);
-      color: var(--text-primary); font-size: 0.95rem; vertical-align: middle;
+      padding: 10px; border-bottom: 1px solid rgba(0,0,0,0.05);
+      color: var(--text-primary); font-size: 0.85rem; vertical-align: middle;
     }
     table.modern-table tbody tr:hover { background-color: rgba(0,0,0,0.02); }
 
@@ -59,7 +59,7 @@ block content
     .role-pill button:hover { color: var(--danger); }
 
     .btn-modern {
-      padding: 10px 20px; border-radius: 8px; font-weight: 500;
+      padding: 8px 15px; border-radius: 8px; font-weight: 500; font-size: 0.85rem;
       transition: all 0.2s; border: none; cursor: pointer;
       display: inline-flex; align-items: center; justify-content: center;
       text-decoration: none; gap: 6px;
@@ -74,7 +74,7 @@ block content
       border: 1px solid var(--border-color);
     }
     .btn-modern-outline:hover { color: var(--text-primary); border-color: var(--accent); }
-    .btn-modern-sm { padding: 6px 12px; font-size: 0.85rem; border-radius: 6px; }
+    .btn-modern-sm { padding: 4px 8px; font-size: 0.75rem; border-radius: 6px; }
 
     dialog::backdrop {
       background-color: rgba(0, 0, 0, 0.7);
@@ -139,19 +139,19 @@ block content
     }
 
     .form-control-modern {
-      width: 100%; padding: 10px 15px;
+      width: 100%; padding: 8px 12px;
       background: var(--bg-input); border: 1px solid var(--border-color);
-      color: var(--text-primary); border-radius: 6px; font-size: 0.95rem;
+      color: var(--text-primary); border-radius: 6px; font-size: 0.85rem;
       transition: border-color 0.2s, box-shadow 0.2s; box-sizing: border-box;
     }
     .form-control-modern:focus {
       outline: none; border-color: var(--border-focus);
       box-shadow: 0 0 0 3px var(--accent-glow);
     }
-    .form-group-modern { margin-bottom: 18px; }
+    .form-group-modern { margin-bottom: 12px; }
     .form-group-modern label {
-      display: block; margin-bottom: 6px; font-weight: 500;
-      color: var(--text-secondary); font-size: 0.9rem;
+      display: block; margin-bottom: 4px; font-weight: 500;
+      color: var(--text-secondary); font-size: 0.8rem;
     }
 
   .users-container
